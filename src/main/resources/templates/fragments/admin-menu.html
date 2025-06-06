@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+<nav class="admin-menu" th:fragment="menu">
+    <div class="container">
+        <h3>Panel de Administración</h3>
+        <ul>
+            <li><a th:href="@{/admin/usuarios}">Gestión de Usuarios</a></li>
+            <li><a th:href="@{/admin/membresias}">Gestión de Membresías</a></li>
+            <li><a th:href="@{/admin/productos}">Gestión de Productos</a></li>
+            <li><a th:href="@{/admin/ventas}">Reporte de Ventas</a></li>
+            <li><a th:href="@{/admin/equipos}">Gestión de Equipos</a></li>
+            <li><a th:href="@{/admin/entrenadores}">Gestión de Entrenadores</a></li>
+            <li><a th:href="@{/admin/accesos}">Registro de Accesos</a></li>
+            <li><a th:href="@{/admin/pagos}">Historial de Pagos</a></li>
+        </ul>
+    </div>
+</nav>
+</body>
+</html>
