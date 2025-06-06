@@ -15,11 +15,13 @@ public class UsuarioServiceImpl
 
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AlmacenArchivoImpl almacenArchivo;
 
     @Autowired
-    public UsuarioServiceImpl(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
+    public UsuarioServiceImpl(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder, AlmacenArchivoImpl almacenArchivo) {
         this.usuarioRepository = usuarioRepository;
         this.passwordEncoder = passwordEncoder;
+        this.almacenArchivo = almacenArchivo;
     }
 
     @Override
@@ -44,9 +46,11 @@ public class UsuarioServiceImpl
         nuevoUsuario.setTelefonoEmergencia(usuarioDTO.getTelefonoEmergencia());
         nuevoUsuario.setPeso(usuarioDTO.getPeso());
         nuevoUsuario.setAltura(usuarioDTO.getAltura());
-        // ruta de imagen se manejará aparte o se inicializará vacía
-        nuevoUsuario.setRutaImagen(null); // O un valor por defecto
-
+        //Para manejar las rutas
+        if (usuarioDTO.getImagen() != null && !usuarioDTO.getImagen().isEmpty()) {
+            String rutaImagen = almacenArchivo.almacenarArchivo(usuarioDTO.getImagen());
+            nuevoUsuario.setRutaImagen(rutaImagen);
+        }
         // Los @PrePersist en la entidad Usuario manejarán fechaRegistro y activo
         return usuarioRepository.save(nuevoUsuario);
     }
