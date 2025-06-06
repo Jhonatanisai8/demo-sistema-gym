@@ -3,6 +3,7 @@ package com.isai.gym.app.dtos;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -48,6 +49,10 @@ public class RegistroUsuarioDTO {
 
     @Size(max = 50, message = "El teléfono de emergencia no puede exceder 50 caracteres")
     private String telefonoEmergencia;
+
+    private String rutaImagen;
+
+    private MultipartFile imagen;
 
     // Nota: Peso y Altura pueden ser opcionales en el registro inicial o dejarse para actualización de perfil
     @DecimalMin(value = "0.0", inclusive = false, message = "El peso debe ser mayor a 0")
