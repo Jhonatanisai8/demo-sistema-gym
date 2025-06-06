@@ -1,18 +1,61 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <body>
-<nav class="admin-menu" th:fragment="menu">
-    <div class="container">
-        <h3>Panel de Administración</h3>
-        <ul>
-            <li><a th:href="@{/admin/usuarios}">Gestión de Usuarios</a></li>
-            <li><a th:href="@{/admin/membresias}">Gestión de Membresías</a></li>
-            <li><a th:href="@{/admin/productos}">Gestión de Productos</a></li>
-            <li><a th:href="@{/admin/ventas}">Reporte de Ventas</a></li>
-            <li><a th:href="@{/admin/equipos}">Gestión de Equipos</a></li>
-            <li><a th:href="@{/admin/entrenadores}">Gestión de Entrenadores</a></li>
-            <li><a th:href="@{/admin/accesos}">Registro de Accesos</a></li>
-            <li><a th:href="@{/admin/pagos}">Historial de Pagos</a></li>
+<nav class="admin-menu bg-light p-3 border-end" th:fragment="menu">
+    <div class="container-fluid"><h3 class="mb-4 text-primary">Panel de Administración</h3>
+        <ul class="nav nav-pills flex-column">
+            <li class="nav-item mb-2"><a class="nav-link active" aria-current="page" th:href="@{/admin/dashboard}">
+                <i class="bi bi-house-door me-2"></i> Dashboard Admin
+            </a>
+            </li>
+            <li class="nav-item mb-2">
+                <a class="nav-link text-dark" th:href="@{/admin/usuarios}">
+                    <i class="bi bi-people me-2"></i>
+                    Gestión de Usuarios
+                </a>
+            </li>
+            <li class="nav-item mb-2">
+                <a class="nav-link text-dark" th:href="@{/admin/membresias}">
+                    <i class="bi bi-card-checklist me-2"></i>
+                    Gestión de Membresías
+                </a>
+            </li>
+            <li class="nav-item mb-2">
+                <a class="nav-link text-dark" th:href="@{/admin/productos}">
+                    <i class="bi bi-box-seam me-2"></i>
+                    Gestión de Productos
+                </a>
+            </li>
+            <li class="nav-item mb-2">
+                <a class="nav-link text-dark" th:href="@{/admin/ventas}">
+                    <i class="bi bi-currency-dollar me-2"></i>
+                    Reporte de Ventas
+                </a>
+            </li>
+            <li class="nav-item mb-2">
+                <a class="nav-link text-dark" th:href="@{/admin/equipos}">
+                    <i class="bi bi-tools me-2"></i>
+                    Gestión de Equipos
+                </a>
+            </li>
+            <li class="nav-item mb-2">
+                <a class="nav-link text-dark" th:href="@{/admin/entrenadores}">
+                    <i class="bi bi-person-workspace me-2"></i>
+                    Gestión de Entrenadores
+                </a>
+            </li>
+            <li class="nav-item mb-2">
+                <a class="nav-link text-dark" th:href="@{/admin/accesos}">
+                    <i class="bi bi-unlock me-2"></i>
+                    Registro de Accesos
+                </a>
+            </li>
+            <li class="nav-item mb-2">
+                <a class="nav-link text-dark" th:href="@{/admin/pagos}">
+                    <i class="bi bi-wallet-fill me-2"></i>
+                    Historial de Pagos
+                </a>
+            </li>
         </ul>
     </div>
 </nav>
