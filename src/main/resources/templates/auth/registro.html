@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Cliente</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+            crossorigin="anonymous"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            flex-direction: column; /* Cambiado a column para el header */
+            justify-content: flex-start; /* Alinear al inicio */
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .registro-container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 100%;
+            max-width: 600px; /* Un poco más ancho para más campos */
+            margin-top: 20px; /* Margen para el header */
+        }
+
+        .registro-container h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .registro-container form div {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .registro-container label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .registro-container input[type="text"],
+        .registro-container input[type="password"],
+        .registro-container input[type="email"],
+        .registro-container input[type="date"],
+        .registro-container input[type="tel"],
+        .registro-container input[type="number"],
+        .registro-container textarea {
+            width: calc(100% - 22px); /* Ajuste de padding y border */
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        .registro-container button {
+            background-color: #28a745; /* Color verde para registro */
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+
+        .registro-container button:hover {
+            background-color: #218838;
+        }
+
+        .registro-container .error-message {
+            color: red;
+            font-size: 0.9em;
+            margin-top: 5px;
+            display: block;
+        }
+
+        .registro-container .alert {
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .registro-container .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .registro-container p {
+            margin-top: 20px;
+            color: #666;
+        }
+
+        .registro-container a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .registro-container a:hover {
+            text-decoration: underline;
+        }
+
+        /* Grid para campos (opcional, si quieres columnas) */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-grid > div {
+            grid-column: span 1;
+        }
+
+        /* Para campos que ocupen toda la fila */
+        .form-grid .full-width {
+            grid-column: span 2;
+        }
+    </style>
+</head>
+<body>
+<div th:replace="~{fragments/main-header :: header}"></div>
+
+<div class="registro-container">
+    <h2>Registro de Nuevo Cliente</h2>
+
+    <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+    <form th:action="@{/registro}" th:object="${registroUsuarioDTO}" method="post">
+        <div class="form-grid">
+            <div>
+                <label for="nombreUsuario">Nombre de Usuario:</label>
+                <input type="text" id="nombreUsuario" th:field="*{nombreUsuario}" required autocomplete="username">
+                <span th:if="${#fields.hasErrors('nombreUsuario')}" th:errors="*{nombreUsuario}"
+                      class="error-message"></span>
+            </div>
+            <div>
+                <label for="email">Email:</label>
+                <input type="email" id="email" th:field="*{email}" required autocomplete="email">
+                <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="error-message"></span>
+            </div>
+            <div>
+                <label for="password">Contraseña:</label>
+                <input type="password" id="password" th:field="*{password}" required autocomplete="new-password">
+                <span th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="error-message"></span>
+            </div>
+            <div>
+                <label for="confirmPassword">Confirmar Contraseña:</label>
+                <input type="password" id="confirmPassword" th:field="*{confirmPassword}" required
+                       autocomplete="new-password">
+                <span th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"
+                      class="error-message"></span>
+            </div>
+            <div class="full-width">
+                <span th:if="${#fields.hasGlobalErrors()}" th:each="err : ${#fields.globalErrors()}" th:text="${err}"
+                      class="error-message"></span>
+            </div>
+
+            <div class="full-width">
+                <label for="nombreCompleto">Nombre Completo:</label>
+                <input type="text" id="nombreCompleto" th:field="*{nombreCompleto}" required>
+                <span th:if="${#fields.hasErrors('nombreCompleto')}" th:errors="*{nombreCompleto}"
+                      class="error-message"></span>
+            </div>
+            <div>
+                <label for="fechaNacimiento">Fecha de Nacimiento:</label>
+                <input type="date" id="fechaNacimiento" th:field="*{fechaNacimiento}" required>
+                <span th:if="${#fields.hasErrors('fechaNacimiento')}" th:errors="*{fechaNacimiento}"
+                      class="error-message"></span>
+            </div>
+            <div>
+                <label for="telefono">Teléfono:</label>
+                <input type="tel" id="telefono" th:field="*{telefono}">
+                <span th:if="${#fields.hasErrors('telefono')}" th:errors="*{telefono}" class="error-message"></span>
+            </div>
+            <div>
+                <label for="genero">Género:</label>
+                <input type="text" id="genero" th:field="*{genero}">
+                <span th:if="${#fields.hasErrors('genero')}" th:errors="*{genero}" class="error-message"></span>
+            </div>
+            <div>
+                <label for="peso">Peso (kg):</label>
+                <input type="number" step="0.01" id="peso" th:field="*{peso}">
+                <span th:if="${#fields.hasErrors('peso')}" th:errors="*{peso}" class="error-message"></span>
+            </div>
+            <div>
+                <label for="altura">Altura (m):</label>
+                <input type="number" step="0.01" id="altura" th:field="*{altura}">
+                <span th:if="${#fields.hasErrors('altura')}" th:errors="*{altura}" class="error-message"></span>
+            </div>
+            <div class="full-width">
+                <label for="direccion">Dirección:</label>
+                <textarea id="direccion" th:field="*{direccion}"></textarea>
+                <span th:if="${#fields.hasErrors('direccion')}" th:errors="*{direccion}" class="error-message"></span>
+            </div>
+            <div>
+                <label for="contactoEmergencia">Contacto de Emergencia:</label>
+                <input type="text" id="contactoEmergencia" th:field="*{contactoEmergencia}">
+                <span th:if="${#fields.hasErrors('contactoEmergencia')}" th:errors="*{contactoEmergencia}"
+                      class="error-message"></span>
+            </div>
+            <div>
+                <label for="telefonoEmergencia">Teléfono de Emergencia:</label>
+                <input type="tel" id="telefonoEmergencia" th:field="*{telefonoEmergencia}">
+                <span th:if="${#fields.hasErrors('telefonoEmergencia')}" th:errors="*{telefonoEmergencia}"
+                      class="error-message"></span>
+            </div>
+        </div>
+
+        <div>
+            <button type="submit">Registrarse</button>
+        </div>
+    </form>
+
+    <p>¿Ya tienes una cuenta? <a th:href="@{/login}">Inicia sesión aquí</a></p>
+</div>
+</body>
+</html>
