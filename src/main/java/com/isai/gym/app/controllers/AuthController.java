@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.IOException;
+
 @Controller
 public class AuthController {
 
@@ -44,25 +46,32 @@ public class AuthController {
     }
 
     @PostMapping(path = "/registro")
-    public String registrarUsuario(@Valid @ModelAttribute("registroUsuarioDTO") RegistroUsuarioDTO registroDTO,
-                                   BindingResult result,
-                                   RedirectAttributes redirectAttributes) {
-        //validaciones
+    public String registerUser(@Valid @ModelAttribute("registroUsuarioDTO") RegistroUsuarioDTO registroDTO,
+                               BindingResult result,
+                               RedirectAttributes redirectAttributes) {
+        if (registroDTO.getImagen() == null || registroDTO.getImagen().isEmpty()) {
+            result.rejectValue("imagen", "NotNull", "La imagen de perfil es obligatoria.");
+        }
         if (result.hasErrors()) {
             return "auth/registro";
         }
-
         try {
             usuarioService.registrarUsuario(registroDTO);
             redirectAttributes.addFlashAttribute("successMessage", "¡Registro exitoso! Ya puedes iniciar sesión.");
             return "redirect:/login";
         } catch (IllegalArgumentException e) {
-            result.rejectValue("email", "registro.email.exist", e.getMessage()); // O "nombreUsuario"
-            result.rejectValue("nombreUsuario", "registro.username.exist", e.getMessage());
-            return "redirect:/registro";
+            if (e.getMessage().contains("nombre de usuario")) {
+                result.rejectValue("nombreUsuario", null, e.getMessage());
+            } else if (e.getMessage().contains("email")) {
+                result.rejectValue("email", null, e.getMessage());
+            } else {
+                result.reject(null, e.getMessage());
+            }
+            return "auth/registro";
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Ocurrió un error inesperado durante el registro.");
-            return "redirect:/registro";
+            e.printStackTrace();
+            result.reject(null, "Ocurrió un error inesperado durante el registro: " + e.getMessage());
+            return "auth/registro";
         }
     }
 }
