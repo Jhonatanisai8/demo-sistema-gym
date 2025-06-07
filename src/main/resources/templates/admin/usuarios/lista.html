@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/admin-layout}">
+<head>
+    <title></title>
+    <th:block layout:fragment="styles">
+    </th:block>
+</head>
+<body>
+<th:block layout:fragment="header">
+    <h1><i class="bi bi-people me-2"></i>Gestión de Usuarios</h1>
+</th:block>
+
+<div layout:fragment="content">
+    <div class="container my-5">
+        <div class="card shadow-lg p-4">
+            <div class="card-body">
+                <h2 class="card-title text-center mb-4">Listado de Usuarios</h2>
+
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <form th:action="@{/admin/usuarios/lista}" method="get" class="d-flex">
+                        <input type="text" name="search" class="form-control me-2"
+                               placeholder="Buscar por nombre completo o email"
+                               th:value="${searchTerm}">
+                        <button type="submit" class="btn btn-primary"><i class="bi bi-search"></i> Buscar</button>
+                    </form>
+                    <a th:href="@{/admin/usuarios/crear}" class="btn btn-success">
+                        <i class="bi bi-plus-circle me-2"></i> Crear Nuevo Usuario
+                    </a>
+                </div>
+
+                <div th:if="${usuariosPage.isEmpty()}" class="alert alert-info text-center" role="alert">
+                    No se encontraron usuarios con los criterios de búsqueda.
+                </div>
+
+                <div th:if="${!usuariosPage.isEmpty()}">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped align-middle">
+                            <thead class="table-dark">
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre Usuario</th>
+                                <th>Nombre Completo</th>
+                                <th>Email</th>
+                                <th>Rol</th>
+                                <th>Teléfono</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="usuario : ${usuariosPage.content}">
+                                <td th:text="${usuario.id}"></td>
+                                <td th:text="${usuario.nombreUsuario}"></td>
+                                <td th:text="${usuario.nombreCompleto}"></td>
+                                <td th:text="${usuario.email}"></td>
+                                <td th:text="${usuario.rol != null ? usuario.rol.name() : 'N/A'}"></td>
+                                <td th:text="${usuario.telefono ?: 'N/A'}"></td>
+                                <td>
+                                    <span th:classappend="${usuario.activo ? 'badge bg-success' : 'badge bg-danger'}"
+                                          th:text="${usuario.activo ? 'Activo' : 'Inactivo'}"></span>
+                                </td>
+                                <td>
+                                    <a th:href="@{/admin/usuarios/detalle/} + ${usuario.id}"
+                                       class="btn btn-sm btn-info me-1" title="Ver Detalle"><i
+                                            class="bi bi-eye"></i></a>
+                                    <a th:href="@{/admin/usuarios/editar/} + ${usuario.id}"
+                                       class="btn btn-sm btn-warning me-1" title="Editar"><i
+                                            class="bi bi-pencil"></i></a>
+                                    <a th:href="@{/admin/usuarios/eliminar/} + ${usuario.id}"
+                                       class="btn btn-sm btn-danger" title="Eliminar"
+                                       onclick="return confirm('¿Estás seguro de que quieres eliminar a ' + ${usuario.nombreCompleto} + '?');">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <nav aria-label="Page navigation" th:if="${usuariosPage.totalPages > 1}">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item" th:classappend="${usuariosPage.first ? 'disabled' : ''}">
+                                <a class="page-link"
+                                   th:href="@{/admin/usuarios/lista(page=${usuariosPage.number - 1}, size=${usuariosPage.size}, search=${searchTerm})}"
+                                   aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                            <li class="page-item" th:each="i : ${pageNumbers}"
+                                th:classappend="${i == usuariosPage.number + 1 ? 'active' : ''}">
+                                <a class="page-link"
+                                   th:href="@{/admin/usuarios/lista(page=${i - 1}, size=${usuariosPage.size}, search=${searchTerm})}"
+                                   th:text="${i}"></a>
+                            </li>
+                            <li class="page-item" th:classappend="${usuariosPage.last ? 'disabled' : ''}">
+                                <a class="page-link"
+                                   th:href="@{/admin/usuarios/lista(page=${usuariosPage.number + 1}, size=${usuariosPage.size}, search=${searchTerm})}"
+                                   aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+
+                    <div class="text-center mt-3 small text-muted">
+                        Mostrando página [[${usuariosPage.number + 1}]] de [[${usuariosPage.totalPages}]].
+                        Total de usuarios: [[${usuariosPage.totalElements}]].
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block layout:fragment="scripts">
+</th:block>
+</body>
+</html>

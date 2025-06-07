@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/admin-layout}"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title layout:title-append=" | Dashboard Admin"></title>
+    <th:block layout:fragment="styles">
+    </th:block>
+</head>
+<body>
+<th:block layout:fragment="header">
+    <h1><i class="bi bi-speedometer2 me-2"></i>Dashboard de Administración</h1>
+</th:block>
+
+<div layout:fragment="content">
+    <div class="container my-5">
+        <div class="card shadow-lg p-4">
+            <div class="card-body">
+                <h2 class="card-title text-center mb-4">Bienvenido al Dashboard</h2>
+
+                <p class="lead text-center mb-4">
+                    Has iniciado sesión como: <strong class="text-primary" sec:authentication="name"></strong>
+                </p>
+                <p class="text-center mb-4">
+                    Tu rol es: <span class="badge bg-info text-dark" sec:authentication="principal.authorities"></span>
+                </p>
+
+                <hr class="my-4">
+                <p class="text-center">Aquí verás información relevante según tu rol y actividad.</p>
+
+                <div class="mt-4">
+                    <h4 class="text-center mb-3">Acciones rápidas para el Administrador:</h4>
+                    <div class="d-grid gap-2 col-md-8 mx-auto">
+                        <a th:href="@{/admin/usuarios/lista}" class="btn btn-warning btn-lg">
+                            <i class="bi bi-people me-2"></i> Gestionar Usuarios
+                        </a>
+                        <a th:href="@{/admin/membresias/tipos/lista}" class="btn btn-info btn-lg">
+                            <i class="bi bi-card-checklist me-2"></i> Gestionar Membresías
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block layout:fragment="scripts">
+</th:block>
+</body>
+</html>
