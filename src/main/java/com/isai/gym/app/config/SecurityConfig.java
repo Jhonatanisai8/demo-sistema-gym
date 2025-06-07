@@ -12,36 +12,43 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
+    private final AuthSuccessHandler authSuccessHandler;
+
+    public SecurityConfig(AuthSuccessHandler authSuccessHandler) {
+        this.authSuccessHandler = authSuccessHandler;
+    }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(
-                                "/registro/**",  // Permitir acceso a la página de registro
-                                "/css/**",      // Permitir acceso a archivos CSS
-                                "/js/**",       // Permitir acceso a archivos JavaScript
-                                "/images/**",   // Permitir acceso a imágenes
-                                "/",            // Permitir acceso a la página de inicio
-                                "/login",       // Permitir acceso a la página de login
-                                "/error"        // Permitir acceso a la página de error
-                        ).permitAll() // Estas rutas son accesibles sin autenticación
-                        .requestMatchers("/admin/**").hasRole("ADMIN") // Solo usuarios con rol ADMIN
-                        .requestMatchers("/cliente/**").hasRole("CLIENTE") // Solo usuarios con rol CLIENTE
-                        .anyRequest().authenticated() // Cualquier otra solicitud requiere autenticación
+                                "/registro/**",
+                                "/css/**",
+                                "/js/**",
+                                "/images/**",
+                                "/uploads/**", // Asegúrate de permitir acceso a imágenes de perfil
+                                "/",
+                                "/login",
+                                "/error"
+                        ).permitAll()
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/cliente/**").hasRole("CLIENTE")
+                        .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
-                        .loginPage("/login") // Especifica tu propia página de login
-                        .defaultSuccessUrl("/dashboard", true) // URL a la que redirigir después de login exitoso
-                        .failureUrl("/login?error=true") // URL a la que redirigir si el login falla
-                        .permitAll() // Permitir que todos accedan al formulario de login
+                        .loginPage("/login")
+                        // Usa tu manejador de éxito personalizado aquí
+                        .successHandler(authSuccessHandler)
+                        .failureUrl("/login?error=true")
+                        .permitAll()
                 )
                 .logout(logout -> logout
-                        .logoutUrl("/logout") // URL para cerrar sesión
-                        .logoutSuccessUrl("/login?logout=true") // URL a la que redirigir después de cerrar sesión
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/login?logout=true")
                         .permitAll()
                 );
         return http.build();
-
     }
 
     @Bean
