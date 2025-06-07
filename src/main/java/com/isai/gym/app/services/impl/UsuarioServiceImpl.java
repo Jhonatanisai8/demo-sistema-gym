@@ -6,8 +6,13 @@ import com.isai.gym.app.enums.TipoUsuario;
 import com.isai.gym.app.repository.UsuarioRepository;
 import com.isai.gym.app.services.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
+import java.util.Optional;
 
 @Service
 public class UsuarioServiceImpl
@@ -53,5 +58,25 @@ public class UsuarioServiceImpl
         }
         // Los @PrePersist en la entidad Usuario manejarán fechaRegistro y activo
         return usuarioRepository.save(nuevoUsuario);
+    }
+
+    @Override
+    public Page<Usuario> obtenerUsuarios(Pageable pageable) {
+        return usuarioRepository.findAll(pageable);
+    }
+
+    @Override
+    public Page<Usuario> obtenerPorNombreOEmail(String searchTerm, Pageable pageable) {
+        return usuarioRepository.findByNombreCompletoContainingIgnoreCaseOrEmailContainingIgnoreCase(searchTerm, searchTerm, pageable);
+    }
+
+    @Override
+    public Optional<Usuario> obtenerPorId(Long id) {
+        return usuarioRepository.findById(id);
+    }
+
+    @Override
+    public void eliminarUsuario(Long id) {
+        usuarioRepository.deleteById(id);
     }
 }
