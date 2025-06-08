@@ -174,4 +174,29 @@ public class AdminEntrenadorController {
         return "redirect:/admin/entrenadores";
     }
 
+    @GetMapping(path = "/eliminar/{id}")
+    public String confirmarEliminarEntrenador(@PathVariable Long id,
+                                              Model model,
+                                              RedirectAttributes redirectAttributes) {
+        Optional<Entrenador> entrenadorOptional = entrenadorService.findById(id);
+        if (entrenadorOptional.isPresent()) {
+            model.addAttribute("entrenador", entrenadorOptional.get());
+            return "admin/entrenadores/confirmar-eliminar";
+        } else {
+            redirectAttributes.addFlashAttribute("errorMessage", "Entrenador no encontrado.");
+            return "redirect:/admin/entrenadores";
+        }
+    }
+
+    @PostMapping("/eliminar/{id}")
+    public String eliminarEntrenador(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            entrenadorService.eliminarPorID(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Entrenador eliminado exitosamente.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error al eliminar el entrenador: " + e.getMessage());
+        }
+        return "redirect:/admin/entrenadores";
+    }
+
 }

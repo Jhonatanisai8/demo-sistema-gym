@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/admin-layout}">
+<head>
+    <title>Confirmar Eliminación de Entrenador - Admin</title>
+</head>
+<body>
+
+<div layout:fragment="content">
+    <div class="container-fluid">
+        <h2 class="mt-4 mb-4">Confirmar Eliminación de Usuario</h2>
+
+        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> <span th:text="${errorMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <div class="card mb-4 shadow-sm">
+            <div class="card-body">
+                <p class="lead mb-4">¿Estás seguro de que deseas eliminar al Entrenador **<span
+                        th:text="${entrenador.nombre}"></span>** (<span th:text="${entrenador.nombre}"></span>)?
+                </p>
+                <p class="text-danger fw-bold">Esta acción es irreversible y eliminará todos los datos asociados al
+                    usuario.</p>
+
+                <div class="alert alert-warning my-3" role="alert">
+                    <i class="bi bi-exclamation-circle me-2"></i>
+                    Asegúrate de entender las implicaciones de eliminar este usuario.
+                </div>
+
+                <form th:action="@{/admin/usuarios/eliminar/{id}(id=${entrenador.id})}" method="post">
+                    <input type="hidden" name="_method" value="delete"/>
+                    <div class="d-flex justify-content-start mt-4">
+                        <button type="submit" class="btn btn-danger me-2">
+                            <i class="bi bi-trash"></i> Sí, Eliminar Usuario
+                        </button>
+                        <a th:href="@{/admin/entrenadores}" class="btn btn-secondary">
+                            <i class="bi bi-x-circle"></i> Cancelar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

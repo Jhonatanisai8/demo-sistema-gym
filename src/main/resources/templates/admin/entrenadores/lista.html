@@ -91,12 +91,10 @@
                            class="btn btn-sm btn-info me-2" title="Editar">
                             <i class="bi bi-pencil-square"></i>
                         </a>
-                        <button type="button" class="btn btn-sm btn-danger delete-entrenador-btn"
-                                th:data-id="${entrenador.id}"
-                                th:data-nombre="${entrenador.nombre}"
-                                title="Eliminar">
+                        <a th:href="@{/admin/entrenadores/eliminar/{id}(id=${entrenador.id})}"
+                           class="btn btn-sm btn-danger me-2" title="Eliminar">
                             <i class="bi bi-trash"></i>
-                        </button>
+                        </a>
                     </td>
                 </tr>
                 </tbody>
@@ -122,54 +120,9 @@
         </nav>
     </div>
 
-    <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="deleteConfirmationModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="deleteConfirmationModalLabel">Confirmar Eliminación</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    ¿Estás seguro de que deseas eliminar al entrenador "<strong id="entrenadorNombreEliminar"></strong>"?
-                    <p class="text-danger mt-2">Esta acción es irreversible y podría afectar a las asignaciones de
-                        clientes asociadas.</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <form th:action="@{/admin/entrenadores/eliminar}" method="post" id="deleteEntrenadorForm"
-                          class="d-inline">
-                        <input type="hidden" id="entrenadorIdToDelete" name="id" value="">
-                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                        <button type="submit" class="btn btn-danger">Eliminar</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
 
 </div>
 
-<th:block layout:fragment="scripts">
-    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            var deleteModal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
-            var deleteButtons = document.querySelectorAll('.delete-entrenador-btn');
-
-            deleteButtons.forEach(function (button) {
-                button.addEventListener('click', function () {
-                    var entrenadorId = this.getAttribute('data-id');
-                    var entrenadorNombre = this.getAttribute('data-nombre');
-
-                    document.getElementById('entrenadorIdToDelete').value = entrenadorId;
-                    document.getElementById('entrenadorNombreEliminar').textContent = entrenadorNombre;
-                    deleteModal.show();
-                });
-            });
-        });
-    </script>
-</th:block>
 
 </body>
 </html>
