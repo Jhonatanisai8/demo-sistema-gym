@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -89,6 +90,34 @@ public class AdminEntrenadorController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Error al crear el entrenador: " + e.getMessage());
             return "redirect:/admin/entrenadores/crear";
+        }
+    }
+
+    @GetMapping("/editar/{id}")
+    public String mostrarDetalleOFormularioEditar(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
+        Optional<Entrenador> entrenadorOptional = entrenadorService.findById(id);
+        if (entrenadorOptional.isPresent()) {
+            Entrenador entrenador = entrenadorOptional.get();
+            //  entidad a un DTO para el formulario
+            EntrenadorDTO entrenadorDTO = new EntrenadorDTO();
+            entrenadorDTO.setId(entrenador.getId());
+            entrenadorDTO.setNombre(entrenador.getNombre());
+            entrenadorDTO.setEspecialidad(entrenador.getEspecialidad());
+            entrenadorDTO.setTelefono(entrenador.getTelefono());
+            entrenadorDTO.setEmail(entrenador.getEmail());
+            entrenadorDTO.setFechaContratacion(entrenador.getFechaContratacion());
+            entrenadorDTO.setActivo(entrenador.getActivo());
+            entrenadorDTO.setTarifaPorSesion(entrenador.getTarifaPorSesion());
+            entrenadorDTO.setCertificaciones(entrenador.getCertificaciones());
+            entrenadorDTO.setHorarioDisponible(entrenador.getHorarioDisponible());
+            entrenadorDTO.setRutaImagenActual(entrenador.getRutaImagen());
+
+            model.addAttribute("entrenadorDTO", entrenadorDTO);
+            model.addAttribute("entrenador", entrenador);
+            return "admin/entrenadores/detalle";
+        } else {
+            redirectAttributes.addFlashAttribute("errorMessage", "Entrenador no encontrado.");
+            return "redirect:/admin/entrenadores";
         }
     }
 
