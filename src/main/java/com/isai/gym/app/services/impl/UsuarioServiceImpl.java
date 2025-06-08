@@ -138,7 +138,7 @@ public class UsuarioServiceImpl
             usuarioExistente.setRutaImagen(nuevaRutaImagen);
         } else if (usuarioDTO.getImagen() != null && usuarioDTO.getImagen().isEmpty() && usuarioExistente.getRutaImagen() != null && !usuarioExistente.getRutaImagen().isEmpty()) {
             almacenArchivo.eliminarArchivo(usuarioExistente.getRutaImagen());
-            usuarioExistente.setRutaImagen(null);
+            usuarioExistente.setRutaImagen(usuarioExistente.getRutaImagen());
         }
         return usuarioRepository.save(usuarioExistente);
     }
