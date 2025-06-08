@@ -174,4 +174,26 @@ public class AdminMembresiaClienteController {
             return "redirect:/admin/membresias/clientes/editar/" + id;
         }
     }
+
+    @GetMapping("/eliminar/{id}")
+    public String confirmarEliminarMembresiaCliente(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
+        Optional<MembresiaCliente> membresiaClienteBD = membresiaClienteServiceImpl.obtenerPorID(id);
+        if (membresiaClienteBD.isPresent()) {
+            model.addAttribute("membresiaClienteBD", membresiaClienteBD.get());
+            return "admin/membresias/clientes/confirmar-eliminar";
+        } else {
+            redirectAttributes.addFlashAttribute("errorMessage", "Membresia-Cliente no encontrada.");
+            return "redirect:/admin/membresias/clientes";
+        }
+    }
+
+    @PostMapping("/eliminar/{id}")
+    public String eliminarMembresiaCliente(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        if (membresiaClienteServiceImpl.eliminarPorID(id)) {
+            redirectAttributes.addFlashAttribute("successMessage", "Membresia-Cliente eliminada exitosamente.");
+        } else {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error al eliminar el tipo de membresía-cliente. Podría estar asociado a membresías de clientes.");
+        }
+        return "redirect:/admin/membresias/clientes";
+    }
 }
