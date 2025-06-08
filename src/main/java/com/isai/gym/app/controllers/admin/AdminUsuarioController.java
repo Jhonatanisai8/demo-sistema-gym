@@ -30,9 +30,12 @@ public class AdminUsuarioController {
     private final UsuarioServiceImpl usuarioService;
 
     @GetMapping(path = "/lista")
-    public String listarUsuarios(@RequestParam(name = "page", defaultValue = "0") int page, // Página actual (0-indexed)
-                                 @RequestParam(name = "size", defaultValue = "10") int size, // Tamaño de elementos por página
-                                 @RequestParam(name = "search", required = false) String searchTerm, // Término de búsqueda opcional
+    public String listarUsuarios(@RequestParam(name = "page", defaultValue = "0") int page,
+                                 // Página actual (0-indexed)
+                                 @RequestParam(name = "size", defaultValue = "10") int size,
+                                 // Tamaño de elementos por página
+                                 @RequestParam(name = "search", required = false) String searchTerm,
+                                 // Término de búsqueda opcional
                                  Model model) {
         Pageable pageable = PageRequest.of(Math.max(0, page), size);
         Page<Usuario> usuarioPage;
@@ -42,6 +45,7 @@ public class AdminUsuarioController {
             usuarioPage = usuarioService.obtenerUsuarios(pageable);
         }
         model.addAttribute("usuariosPage", usuarioPage);
+
         //generamos la lista con paginacion
         int totalPaginas = usuarioPage.getTotalPages();
         if (totalPaginas > 0) {
@@ -54,6 +58,7 @@ public class AdminUsuarioController {
         model.addAttribute("searchTerm", searchTerm);
         return "admin/usuarios/lista";
     }
+
 
     //metodo para ver los detalles
     @GetMapping("/detalle/{id}")
@@ -93,7 +98,8 @@ public class AdminUsuarioController {
             redirectAttributes.addFlashAttribute("errorMessage", "Por favor, corrige los errores del formulario.");
             redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.registroUsuarioDTO", result);
             redirectAttributes.addFlashAttribute("registroUsuarioDTO", registroUsuarioDTO);
-            model.addAttribute("roles", TipoUsuario.values()); // Vuelve a enviar los roles
+            model.addAttribute("roles", TipoUsuario.values());
+            // Vuelve a enviar los roles
             return "redirect:/admin/usuarios/nuevo";
         }
 
@@ -104,6 +110,7 @@ public class AdminUsuarioController {
             redirectAttributes.addFlashAttribute("successMessage", "Usuario creado exitosamente.");
             return "redirect:/admin/usuarios/lista";
         } catch (IllegalArgumentException e) {
+
             // capturamos las excepciones de unicidad lanzadas por el servicio
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
             redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.registroUsuarioDTO", result);
@@ -119,4 +126,77 @@ public class AdminUsuarioController {
         }
     }
 
+    @GetMapping("/editar/{id}")
+    public String mostrarFormularioEditarUsuario(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
+        Optional<Usuario> usuarioOptional = usuarioService.obtenerPorId(id);
+        if (usuarioOptional.isPresent()) {
+            Usuario usuario = usuarioOptional.get();
+            RegistroUsuarioDTO registroUsuarioDTO = new RegistroUsuarioDTO();
+            registroUsuarioDTO.setId(usuario.getId());
+            registroUsuarioDTO.setNombreUsuario(usuario.getNombreUsuario());
+            registroUsuarioDTO.setEmail(usuario.getEmail());
+            registroUsuarioDTO.setNombreCompleto(usuario.getNombreCompleto());
+            registroUsuarioDTO.setFechaNacimiento(usuario.getFechaNacimiento());
+            registroUsuarioDTO.setTelefono(usuario.getTelefono());
+            registroUsuarioDTO.setGenero(usuario.getGenero());
+            registroUsuarioDTO.setPeso(usuario.getPeso());
+            registroUsuarioDTO.setAltura(usuario.getAltura());
+            registroUsuarioDTO.setDireccion(usuario.getDireccion());
+            registroUsuarioDTO.setContactoEmergencia(usuario.getContactoEmergencia());
+            registroUsuarioDTO.setTelefonoEmergencia(usuario.getTelefonoEmergencia());
+            registroUsuarioDTO.setRol(usuario.getRol());
+
+            model.addAttribute("registroUsuarioDTO", registroUsuarioDTO);
+            model.addAttribute("usuario", usuario);
+            model.addAttribute("roles", TipoUsuario.values()); // Para el select de roles
+
+            return "admin/usuarios/editar";
+        } else {
+            redirectAttributes.addFlashAttribute("errorMessage", "Usuario no encontrado para editar.");
+            return "redirect:/admin/usuarios/lista";
+        }
+    }
+    @PostMapping("/editar/{id}")
+    public String actualizarUsuario(
+            @PathVariable Long id,
+            @Valid @ModelAttribute("registroUsuarioDTO") RegistroUsuarioDTO usuarioDTO,
+            BindingResult result,
+            RedirectAttributes redirectAttributes,
+            Model model) {
+        if (!usuarioDTO.getPassword().isEmpty() || !usuarioDTO.getConfirmPassword().isEmpty()) {
+            if (!usuarioDTO.getPassword().equals(usuarioDTO.getConfirmPassword())) {
+                result.rejectValue("confirmPassword", "passwords.mismatch", "Las contraseñas no coinciden.");
+            } else if (usuarioDTO.getPassword().length() < 6) {
+                result.rejectValue("password", "password.length", "La contraseña debe tener al menos 6 caracteres.");
+            }
+        }
+
+        if (result.hasErrors()) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Por favor, corrige los errores del formulario.");
+            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.registroUsuarioDTO", result);
+            redirectAttributes.addFlashAttribute("registroUsuarioDTO", usuarioDTO);
+            model.addAttribute("roles", TipoUsuario.values());
+            usuarioService.obtenerPorId(id).ifPresent(u -> model.addAttribute("usuario", u));
+            return "redirect:/admin/usuarios/editar/" + id;
+        }
+        try {
+            usuarioService.actualizarUsuario(id, usuarioDTO);
+            redirectAttributes.addFlashAttribute("successMessage", "Usuario actualizado exitosamente.");
+            return "redirect:/admin/usuarios/lista";
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.registroUsuarioDTO", result);
+            redirectAttributes.addFlashAttribute("registroUsuarioDTO", usuarioDTO);
+            model.addAttribute("roles", TipoUsuario.values());
+            usuarioService.obtenerPorId(id).ifPresent(u -> model.addAttribute("usuario", u));
+            return "redirect:/admin/usuarios/editar/" + id;
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error al actualizar el usuario: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.registroUsuarioDTO", result);
+            redirectAttributes.addFlashAttribute("registroUsuarioDTO", usuarioDTO);
+            model.addAttribute("roles", TipoUsuario.values());
+            usuarioService.obtenerPorId(id).ifPresent(u -> model.addAttribute("usuario", u));
+            return "redirect:/admin/usuarios/editar/" + id;
+        }
+    }
 }

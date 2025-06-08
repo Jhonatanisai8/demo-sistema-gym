@@ -17,4 +17,6 @@ public interface UsuarioService {
     Optional<Usuario> obtenerPorId(Long id);
 
     void eliminarUsuario(Long id);
+
+    Usuario actualizarUsuario(Long id, RegistroUsuarioDTO usuarioDTO);
 }

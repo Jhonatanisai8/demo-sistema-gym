@@ -10,7 +10,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import java.util.Optional;
 
@@ -78,5 +77,64 @@ public class UsuarioServiceImpl
     @Override
     public void eliminarUsuario(Long id) {
         usuarioRepository.deleteById(id);
+    }
+
+    @Override
+    public Usuario actualizarUsuario(Long id, RegistroUsuarioDTO usuarioDTO) {
+        Optional<Usuario> usuarioOptional = usuarioRepository.findById(id);
+        if (usuarioOptional.isEmpty()) {
+            throw new IllegalArgumentException("Usuario no encontrado.");
+        }
+        Usuario usuarioExistente = usuarioOptional.get();
+
+        // Validar unicidad si el nombre de usuario cambia
+        if (!usuarioDTO.getNombreUsuario().equals(usuarioExistente.getNombreUsuario())) {
+            if (usuarioRepository.findByNombreUsuario(usuarioDTO.getNombreUsuario()).isPresent()) {
+                throw new IllegalArgumentException("El nombre de usuario ya está en uso.");
+            }
+        }
+        // Validar unicidad si el email cambia
+        if (!usuarioDTO.getEmail().equals(usuarioExistente.getEmail())) {
+            if (usuarioRepository.findByEmail(usuarioDTO.getEmail()).isPresent()) {
+                throw new IllegalArgumentException("El email ya está registrado.");
+            }
+        }
+
+        // Actualizar campos
+        usuarioExistente.setNombreUsuario(usuarioDTO.getNombreUsuario());
+        usuarioExistente.setEmail(usuarioDTO.getEmail());
+
+        // Actualizar contraseña solo si se proporciona una nueva
+        if (usuarioDTO.getPassword() != null && !usuarioDTO.getPassword().isEmpty()) {
+            usuarioExistente.setContrasena(passwordEncoder.encode(usuarioDTO.getPassword()));
+        }
+
+        // El rol es asignado por el admin
+        if (usuarioDTO.getRol() != null) {
+            usuarioExistente.setRol(usuarioDTO.getRol());
+        }
+
+        usuarioExistente.setNombreCompleto(usuarioDTO.getNombreCompleto());
+        usuarioExistente.setFechaNacimiento(usuarioDTO.getFechaNacimiento());
+        usuarioExistente.setTelefono(usuarioDTO.getTelefono());
+        usuarioExistente.setGenero(usuarioDTO.getGenero());
+        usuarioExistente.setDireccion(usuarioDTO.getDireccion());
+        usuarioExistente.setContactoEmergencia(usuarioDTO.getContactoEmergencia());
+        usuarioExistente.setTelefonoEmergencia(usuarioDTO.getTelefonoEmergencia());
+        usuarioExistente.setPeso(usuarioDTO.getPeso());
+        usuarioExistente.setAltura(usuarioDTO.getAltura());
+
+        if (usuarioDTO.getImagen() != null && !usuarioDTO.getImagen().isEmpty()) {
+
+            if (usuarioExistente.getRutaImagen() != null && !usuarioExistente.getRutaImagen().isEmpty()) {
+                almacenArchivo.eliminarArchivo(usuarioExistente.getRutaImagen());
+            }
+            String nuevaRutaImagen = almacenArchivo.almacenarArchivo(usuarioDTO.getImagen());
+            usuarioExistente.setRutaImagen(nuevaRutaImagen);
+        } else if (usuarioDTO.getImagen() != null && usuarioDTO.getImagen().isEmpty() && usuarioExistente.getRutaImagen() != null && !usuarioExistente.getRutaImagen().isEmpty()) {
+            almacenArchivo.eliminarArchivo(usuarioExistente.getRutaImagen());
+            usuarioExistente.setRutaImagen(null);
+        }
+        return usuarioRepository.save(usuarioExistente);
     }
 }

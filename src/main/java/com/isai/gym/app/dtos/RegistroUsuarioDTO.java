@@ -4,6 +4,7 @@ import com.isai.gym.app.enums.TipoUsuario;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
@@ -12,6 +13,8 @@ import java.time.LocalDate;
 @Getter
 @Setter
 public class RegistroUsuarioDTO {
+
+    private Long id;
 
     @NotBlank(message = "El nombre de usuario no puede estar vacío")
     @Size(min = 4, max = 50, message = "El nombre de usuario debe tener entre 4 y 50 caracteres")
@@ -34,6 +37,7 @@ public class RegistroUsuarioDTO {
 
     @Past(message = "La fecha de nacimiento debe ser en el pasado")
     @NotNull(message = "La fecha de nacimiento no puede ser nula")
+    @DateTimeFormat(pattern = "yyyy-dd-MM")
     private LocalDate fechaNacimiento;
 
     @Size(max = 50, message = "El teléfono no puede exceder 50 caracteres")
