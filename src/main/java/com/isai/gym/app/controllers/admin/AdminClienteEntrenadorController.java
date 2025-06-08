@@ -132,4 +132,41 @@ public class AdminClienteEntrenadorController {
             return "redirect:/admin/entrenadores/asignaciones";
         }
     }
+
+    @PostMapping("/editar/{id}")
+    public String actualizarAsignacion(@PathVariable Long id,
+                                       @Valid @ModelAttribute("clienteEntrenadorDTO") ClienteEntrenadorDTO clienteEntrenadorDTO,
+                                       BindingResult bindingResult,
+                                       RedirectAttributes redirectAttributes,
+                                       Model model) {
+
+        if (!id.equals(clienteEntrenadorDTO.getId())) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error de seguridad: ID de asignación no coincide.");
+            return "redirect:/admin/entrenadores/asignaciones";
+        }
+
+        if (bindingResult.hasErrors()) {
+            loadFormDependencies(model);
+            return "admin/entrenadores/asignaciones/detalle";
+        }
+
+        try {
+            Optional<ClienteEntrenador> updatedAsignacion = clienteEntrenadorService.actualizar(id, clienteEntrenadorDTO);
+
+            if (updatedAsignacion.isPresent()) {
+                redirectAttributes.addFlashAttribute("successMessage", "Asignación actualizada exitosamente!");
+                return "redirect:/admin/entrenadores/asignaciones";
+            } else {
+                redirectAttributes.addFlashAttribute("errorMessage", "Asignación no encontrada para actualizar.");
+                return "redirect:/admin/entrenadores/asignaciones";
+            }
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("errorMessage", e.getMessage()); //conflicto de fechas
+            loadFormDependencies(model);
+            return "admin/entrenadores/asignaciones/detalle";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error al actualizar la asignación: " + e.getMessage());
+            return "redirect:/admin/entrenadores/asignaciones/editar/" + id;
+        }
+    }
 }
