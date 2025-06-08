@@ -156,6 +156,7 @@ public class AdminUsuarioController {
             return "redirect:/admin/usuarios/lista";
         }
     }
+
     @PostMapping("/editar/{id}")
     public String actualizarUsuario(
             @PathVariable Long id,
@@ -198,5 +199,28 @@ public class AdminUsuarioController {
             usuarioService.obtenerPorId(id).ifPresent(u -> model.addAttribute("usuario", u));
             return "redirect:/admin/usuarios/editar/" + id;
         }
+    }
+
+    @GetMapping("/eliminar/{id}")
+    public String confirmarEliminarUsuario(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
+        Optional<Usuario> usuarioOptional = usuarioService.obtenerPorId(id);
+        if (usuarioOptional.isPresent()) {
+            model.addAttribute("usuario", usuarioOptional.get());
+            return "admin/usuarios/confirmar-eliminar";
+        } else {
+            redirectAttributes.addFlashAttribute("errorMessage", "Usuario no encontrado para eliminar.");
+            return "redirect:/admin/usuarios/lista";
+        }
+    }
+
+    @PostMapping("/eliminar/{id}")
+    public String eliminarUsuario(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            usuarioService.eliminarUsuario(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Usuario eliminado exitosamente.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error al eliminar el usuario: " + e.getMessage());
+        }
+        return "redirect:/admin/usuarios/lista";
     }
 }

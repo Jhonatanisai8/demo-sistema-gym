@@ -76,6 +76,11 @@ public class UsuarioServiceImpl
 
     @Override
     public void eliminarUsuario(Long id) {
+        usuarioRepository.findById(id).ifPresent(usuario -> {
+            if (usuario.getRutaImagen() != null && !usuario.getRutaImagen().isEmpty()) {
+                almacenArchivo.eliminarArchivo(usuario.getRutaImagen());
+            }
+        });
         usuarioRepository.deleteById(id);
     }
 
