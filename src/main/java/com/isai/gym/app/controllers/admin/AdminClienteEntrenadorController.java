@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -109,4 +110,26 @@ public class AdminClienteEntrenadorController {
         }
     }
 
+    @GetMapping("/editar/{id}")
+    public String mostrarFormularioEditar(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
+        Optional<ClienteEntrenador> asignacionOptional = clienteEntrenadorService.obtenerPorID(id);
+        if (asignacionOptional.isPresent()) {
+            ClienteEntrenador asignacion = asignacionOptional.get();
+            // Mapea la entidad a un DTO para el formulario
+            ClienteEntrenadorDTO clienteEntrenadorDTO = new ClienteEntrenadorDTO();
+            clienteEntrenadorDTO.setId(asignacion.getId());
+            clienteEntrenadorDTO.setUsuarioId(asignacion.getUsuario().getId());
+            clienteEntrenadorDTO.setEntrenadorId(asignacion.getEntrenador().getId());
+            clienteEntrenadorDTO.setFechaInicio(asignacion.getFechaInicio());
+            clienteEntrenadorDTO.setFechaFin(asignacion.getFechaFin());
+            System.out.println(asignacion.getFechaFin());
+
+            model.addAttribute("clienteEntrenadorDTO", clienteEntrenadorDTO);
+            loadFormDependencies(model); // Carga usuarios y entrenadores
+            return "admin/entrenadores/asignaciones/detalle";
+        } else {
+            redirectAttributes.addFlashAttribute("errorMessage", "Asignación no encontrada.");
+            return "redirect:/admin/entrenadores/asignaciones";
+        }
+    }
 }

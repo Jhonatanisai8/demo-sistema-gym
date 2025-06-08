@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/admin-layout}">
+<head>
+    <title>Editar Asignación Cliente-Entrenador - Admin</title>
+</head>
+<body>
+
+<div layout:fragment="content">
+    <div class="container-fluid">
+        <h2 class="mt-4 mb-4">Editar Asignación Cliente-Entrenador</h2>
+
+        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> <span th:text="${errorMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <form th:action="@{/admin/entrenadores/asignaciones/editar/{id}(id=*{id})}" th:object="${clienteEntrenadorDTO}"
+              method="post">
+            <input type="hidden" th:field="*{id}"/>
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="usuarioId" class="form-label">Cliente:</label>
+                    <select class="form-select" id="usuarioId" th:field="*{usuarioId}"
+                            th:classappend="${#fields.hasErrors('usuarioId') ? 'is-invalid' : ''}" required>
+                        <option value="">-- Seleccione un cliente --</option>
+                        <option th:each="usuario : ${usuarios}"
+                                th:value="${usuario.id}"
+                                th:text="${usuario.nombreCompleto + ' (' + usuario.nombreUsuario + ')'}"
+                                th:selected="${usuario.id == clienteEntrenadorDTO.usuarioId}"></option>
+                    </select>
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('usuarioId')}"
+                         th:errors="*{usuarioId}"></div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="entrenadorId" class="form-label">Entrenador:</label>
+                    <select class="form-select" id="entrenadorId" th:field="*{entrenadorId}"
+                            th:classappend="${#fields.hasErrors('entrenadorId') ? 'is-invalid' : ''}" required>
+                        <option value="">-- Seleccione un entrenador --</option>
+                        <option th:each="entrenador : ${entrenadores}"
+                                th:value="${entrenador.id}"
+                                th:text="${entrenador.nombre + ' (' + entrenador.especialidad + ')'}"
+                                th:selected="${entrenador.id == clienteEntrenadorDTO.entrenadorId}"></option>
+                    </select>
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('entrenadorId')}"
+                         th:errors="*{entrenadorId}"></div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="fechaInicio" class="form-label">Fecha de Inicio:</label>
+                    <input type="date" class="form-control" id="fechaInicio" th:field="*{fechaInicio}"
+                           th:classappend="${#fields.hasErrors('fechaInicio') ? 'is-invalid' : ''}" required>
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('fechaInicio')}"
+                         th:errors="*{fechaInicio}"></div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="fechaFin" class="form-label">Fecha de Fin (opcional):</label>
+                    <input type="date" class="form-control" id="fechaFin" th:field="*{fechaFin}"
+                           th:classappend="${#fields.hasErrors('fechaFin') ? 'is-invalid' : ''}">
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('fechaFin')}" th:errors="*{fechaFin}"></div>
+                </div>
+            </div>
+
+            <hr>
+            <div class="d-flex justify-content-start">
+                <button type="submit" class="btn btn-primary me-2">
+                    <i class="bi bi-save"></i> Actualizar Asignación
+                </button>
+                <a th:href="@{/admin/entrenadores/asignaciones}" class="btn btn-secondary">
+                    <i class="bi bi-x-circle"></i> Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>

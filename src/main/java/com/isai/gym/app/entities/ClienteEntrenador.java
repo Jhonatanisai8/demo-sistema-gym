@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
@@ -27,10 +28,12 @@ public class ClienteEntrenador {
     @NotNull(message = "La fecha de inicio de la asignación no puede ser nula")
     @PastOrPresent(message = "La fecha de inicio no puede ser en el futuro")
     @Column(name = "fecha_inicio", nullable = false)
+    @DateTimeFormat(pattern = "yyyy-dd-MM")
     private LocalDate fechaInicio;
 
     @FutureOrPresent(message = "La fecha de fin no puede ser en el pasado")
     @Column(name = "fecha_fin")
+    @DateTimeFormat(pattern = "yyyy-dd-MM")
     private LocalDate fechaFin;
 
     @NotNull(message = "El usuario no puede ser nulo para la asignación")
