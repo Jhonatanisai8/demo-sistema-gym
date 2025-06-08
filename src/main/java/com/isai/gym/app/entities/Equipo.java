@@ -8,6 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 
@@ -47,14 +49,17 @@ public class Equipo {
 
     @PastOrPresent(message = "La fecha de adquisición no puede ser en el futuro")
     @Column(name = "fecha_adquisicion")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate fechaAdquisicion;
 
     @PastOrPresent(message = "La fecha del último mantenimiento no puede ser en el futuro")
     @Column(name = "fecha_ultimo_mantenimiento")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate fechaUltimoMantenimiento;
 
     @FutureOrPresent(message = "La próxima fecha de mantenimiento no puede ser en el pasado")
     @Column(name = "proxima_fecha_mantenimiento")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate proximaFechaMantenimiento;
 
     @Size(max = 100, message = "La ubicación no puede exceder 100 caracteres")
@@ -77,6 +82,11 @@ public class Equipo {
     @Size(max = 100, message = "El modelo no puede exceder 100 caracteres")
     @Column(name = "modelo")
     private String modelo;
+
+    private String rutaImagen;
+
+    @Transient
+    private MultipartFile foto;
 
     @PrePersist
     protected void onCreate() {
