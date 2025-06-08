@@ -1,5 +1,6 @@
 package com.isai.gym.app.controllers.admin;
 
+import com.isai.gym.app.dtos.MembresiaClienteDTO;
 import com.isai.gym.app.entities.MembresiaCliente;
 import com.isai.gym.app.enums.EstadoMembresia;
 import com.isai.gym.app.services.impl.MembresiaClienteServiceImpl;
@@ -77,4 +78,12 @@ public class AdminMembresiaClienteController {
         }
         return "admin/membresias/clientes/lista";
     }
+
+    @GetMapping("/crear")
+    public String mostrarFormularioCrear(Model model) {
+        model.addAttribute("membresiaClienteDTO", new MembresiaClienteDTO());
+        loadFormDependencias(model);
+        return "admin/membresias/clientes/crear";
+    }
+
 }
