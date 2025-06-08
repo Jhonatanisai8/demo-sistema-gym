@@ -9,11 +9,13 @@ import java.util.Optional;
 
 public interface MembresiaService {
 
-    Membresia guardarMembresia(Membresia membresia);
+    Membresia guardarMembresia(MembresiaDTO membresiaDTO);
 
     Optional<Membresia> actualizar(Long id, MembresiaDTO membresiaDTO);
 
     Optional<Membresia> obtenerMembresiaId(Long id);
+
+    Page<Membresia> obtenerMembresias(Pageable pageable);
 
     Page<Membresia> buscar(String keyword, Pageable pageable);
 
