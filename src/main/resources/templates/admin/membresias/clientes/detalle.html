@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/admin-layout}">
+<head>
+    <title>Editar Membresía de Cliente - Admin</title>
+</head>
+<body>
+
+<div layout:fragment="content">
+    <div class="container-fluid">
+        <h2 class="mt-4 mb-4">Editar Membresía de Cliente</h2>
+
+        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> <span th:text="${errorMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <form th:action="@{/admin/membresias/clientes/editar/{id}(id=*{id})}" th:object="${membresiaClienteDTO}"
+              method="post">
+            <input type="hidden" th:field="*{id}"/>
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="usuarioId" class="form-label">Cliente:</label>
+                    <select class="form-select" id="usuarioId" th:field="*{usuarioId}"
+                            th:classappend="${#fields.hasErrors('usuarioId') ? 'is-invalid' : ''}" required>
+                        <option value="">-- Seleccione un cliente --</option>
+                        <option th:each="usuario : ${usuarios}"
+                                th:value="${usuario.id}"
+                                th:text="${usuario.nombreCompleto + ' (' + usuario.nombreUsuario + ')'}"
+                                th:selected="${usuario.id == membresiaClienteDTO.usuarioId}"></option>
+                    </select>
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('usuarioId')}"
+                         th:errors="*{usuarioId}"></div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="membresiaId" class="form-label">Tipo de Membresía:</label>
+                    <select class="form-select" id="membresiaId" th:field="*{membresiaId}"
+                            th:classappend="${#fields.hasErrors('membresiaId') ? 'is-invalid' : ''}" required>
+                        <option value="">-- Seleccione un tipo de membresía --</option>
+                        <option th:each="tipo : ${tiposMembresia}"
+                                th:value="${tipo.id}"
+                                th:text="${tipo.nombre + ' ($' + #numbers.formatDecimal(tipo.precio, 1, 2) + ' / ' + tipo.duracionDias + ' días)'}"
+                                th:selected="${tipo.id == membresiaClienteDTO.membresiaId}"></option>
+                    </select>
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('membresiaId')}"
+                         th:errors="*{membresiaId}"></div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="fechaInicio" class="form-label">Fecha de Inicio:</label>
+                    <input type="date" class="form-control" id="fechaInicio" th:field="*{fechaInicio}"
+                           th:classappend="${#fields.hasErrors('fechaInicio') ? 'is-invalid' : ''}" required>
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('fechaInicio')}"
+                         th:errors="*{fechaInicio}"></div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="fechaFin" class="form-label">Fecha de Fin:</label>
+                    <input type="date" class="form-control" id="fechaFin" th:field="*{fechaFin}"
+                           th:classappend="${#fields.hasErrors('fechaFin') ? 'is-invalid' : ''}" required>
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('fechaFin')}"
+                         th:errors="*{fechaFin}"></div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="montoPagado" class="form-label">Monto Pagado:</label>
+                    <input type="number" step="0.01" class="form-control" id="montoPagado" th:field="*{montoPagado}"
+                           th:classappend="${#fields.hasErrors('montoPagado') ? 'is-invalid' : ''}" required>
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('montoPagado')}"
+                         th:errors="*{montoPagado}"></div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="metodoPago" class="form-label">Método de Pago:</label>
+                    <input type="text" class="form-control" id="metodoPago" th:field="*{metodoPago}"
+                           th:classappend="${#fields.hasErrors('metodoPago') ? 'is-invalid' : ''}" required>
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('metodoPago')}"
+                         th:errors="*{metodoPago}"></div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="estado" class="form-label">Estado:</label>
+                    <select class="form-select" id="estado" th:field="*{estado}"
+                            th:classappend="${#fields.hasErrors('estado') ? 'is-invalid' : ''}" required>
+                        <option value="">-- Seleccione un estado --</option>
+                        <option th:each="estado : ${estadosMembresia}"
+                                th:value="${estado}"
+                                th:text="${estado}"
+                                th:selected="${estado == membresiaClienteDTO.estado}"></option>
+                    </select>
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('estado')}" th:errors="*{estado}"></div>
+                </div>
+
+                <div class="col-md-6 mb-3 form-check d-flex align-items-end justify-content-start pb-2">
+                    <input type="checkbox" class="form-check-input" id="activa" th:field="*{activa}">
+                    <label class="form-check-label ms-2" for="activa">Activa</label>
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('activa')}" th:errors="*{activa}"></div>
+                </div>
+            </div>
+
+            <hr>
+            <div class="d-flex justify-content-start">
+                <button type="submit" class="btn btn-success me-2">
+                    <i class="bi bi-save"></i> Actualizar Membresía
+                </button>
+                <a th:href="@{/admin/membresias/clientes}" class="btn btn-secondary">
+                    <i class="bi bi-x-circle"></i> Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>
