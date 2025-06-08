@@ -6,6 +6,7 @@ import com.isai.gym.app.enums.EstadoMembresia;
 import com.isai.gym.app.services.impl.MembresiaClienteServiceImpl;
 import com.isai.gym.app.services.impl.MembresiaServiceImpl;
 import com.isai.gym.app.services.impl.UsuarioServiceImpl;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -14,9 +15,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -86,4 +87,27 @@ public class AdminMembresiaClienteController {
         return "admin/membresias/clientes/crear";
     }
 
+    @PostMapping("/crear")
+    public String crearMembresiaCliente(@Valid @ModelAttribute("membresiaClienteDTO") MembresiaClienteDTO membresiaClienteDTO,
+                                        BindingResult bindingResult,
+                                        RedirectAttributes redirectAttributes,
+                                        Model model) {
+        if (bindingResult.hasErrors()) {
+            loadFormDependencias(model);
+            return "admin/membresias/clientes/crear";
+        }
+
+        try {
+            membresiaClienteServiceImpl.guardar(membresiaClienteDTO);
+            redirectAttributes.addFlashAttribute("successMessage", "Membresía de cliente creada exitosamente!");
+            return "redirect:/admin/membresias/clientes";
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            loadFormDependencias(model);
+            return "admin/membresias/clientes/crear";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error al crear la membresía de cliente: " + e.getMessage());
+            return "redirect:/admin/membresias/clientes/crear";
+        }
+    }
 }
