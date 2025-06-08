@@ -9,7 +9,7 @@
 
 <div layout:fragment="content">
     <div class="container-fluid">
-        <h2 class="mt-4 mb-4">Confirmar Eliminación de Usuario</h2>
+        <h2 class="mt-4 mb-4">Confirmar Eliminación de Entrenador</h2>
 
         <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
             <i class="bi bi-exclamation-triangle-fill me-2"></i> <span th:text="${errorMessage}"></span>
@@ -21,6 +21,9 @@
                 <p class="lead mb-4">¿Estás seguro de que deseas eliminar al Entrenador **<span
                         th:text="${entrenador.nombre}"></span>** (<span th:text="${entrenador.nombre}"></span>)?
                 </p>
+                <p class="lead mb-4">Tiene Esta cantidad de clientes Relacionados: <span
+                        th:text="${cantidadClientesAsociados}"></span>
+                </p>
                 <p class="text-danger fw-bold">Esta acción es irreversible y eliminará todos los datos asociados al
                     usuario.</p>
 
@@ -29,7 +32,7 @@
                     Asegúrate de entender las implicaciones de eliminar este usuario.
                 </div>
 
-                <form th:action="@{/admin/usuarios/eliminar/{id}(id=${entrenador.id})}" method="post">
+                <form th:action="@{/admin/entrenadores/eliminar/{id}(id=${entrenador.id})}" method="post">
                     <input type="hidden" name="_method" value="delete"/>
                     <div class="d-flex justify-content-start mt-4">
                         <button type="submit" class="btn btn-danger me-2">

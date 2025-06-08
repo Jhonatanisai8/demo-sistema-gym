@@ -2,6 +2,8 @@ package com.isai.gym.app.controllers.admin;
 
 import com.isai.gym.app.dtos.EntrenadorDTO;
 import com.isai.gym.app.entities.Entrenador;
+import com.isai.gym.app.repository.ClienteEntrenadorRepository;
+import com.isai.gym.app.services.impl.ClienteEntrenadorServiceImpl;
 import com.isai.gym.app.services.impl.EntrenadorServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +27,8 @@ import java.util.stream.IntStream;
 @RequestMapping("/admin/entrenadores")
 public class AdminEntrenadorController {
     private final EntrenadorServiceImpl entrenadorService;
+    private final ClienteEntrenadorServiceImpl clienteEntrenadorService;
+
 
     @GetMapping({"", "/"})
     public String listarEntrenadores(Model model,
@@ -178,9 +182,11 @@ public class AdminEntrenadorController {
     public String confirmarEliminarEntrenador(@PathVariable Long id,
                                               Model model,
                                               RedirectAttributes redirectAttributes) {
+        Integer cantidadClientesAsociados = clienteEntrenadorService.obtenerClienteEntrenadorID(id).size();
         Optional<Entrenador> entrenadorOptional = entrenadorService.findById(id);
         if (entrenadorOptional.isPresent()) {
             model.addAttribute("entrenador", entrenadorOptional.get());
+            model.addAttribute("cantidadClientesAsociados", cantidadClientesAsociados);
             return "admin/entrenadores/confirmar-eliminar";
         } else {
             redirectAttributes.addFlashAttribute("errorMessage", "Entrenador no encontrado.");
@@ -191,8 +197,14 @@ public class AdminEntrenadorController {
     @PostMapping("/eliminar/{id}")
     public String eliminarEntrenador(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
-            entrenadorService.eliminarPorID(id);
-            redirectAttributes.addFlashAttribute("successMessage", "Entrenador eliminado exitosamente.");
+            Integer cantidadClientesAsociados = clienteEntrenadorService.obtenerClienteEntrenadorID(id).size();
+            if (cantidadClientesAsociados > 0) {
+                redirectAttributes.addFlashAttribute("errorMessage", "No se peude eliminar el entrenador. Tiene clientes asociados: " + cantidadClientesAsociados);
+                return "redirect:/admin/entrenadores";
+            } else {
+                entrenadorService.eliminarPorID(id);
+                redirectAttributes.addFlashAttribute("successMessage", "Entrenador eliminado exitosamente.");
+            }
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Error al eliminar el entrenador: " + e.getMessage());
         }

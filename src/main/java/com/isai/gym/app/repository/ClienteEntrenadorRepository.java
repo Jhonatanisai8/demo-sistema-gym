@@ -39,4 +39,6 @@ public interface ClienteEntrenadorRepository
             @Param("entrenadorId") Long entrenadorId,
             @Param("fechaInicio") LocalDate fechaInicio,
             @Param("fechaFin") LocalDate fechaFin);
+
+
 }
