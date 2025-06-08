@@ -169,4 +169,29 @@ public class AdminClienteEntrenadorController {
             return "redirect:/admin/entrenadores/asignaciones/editar/" + id;
         }
     }
+
+    @GetMapping("/eliminar/{id}")
+    public String confirmarElimarAsignacion(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
+        Optional<ClienteEntrenador> asignacionBD = clienteEntrenadorService.obtenerPorID(id);
+        if (asignacionBD.isPresent()) {
+            model.addAttribute("asignacionBD", asignacionBD.get());
+            return "admin/entrenadores/asignaciones/confirmar-eliminar";
+        } else {
+            redirectAttributes.addFlashAttribute("errorMessage", "Usuario no encontrado para eliminar.");
+            return "redirect:/admin/entrenadores/asignaciones";
+        }
+    }
+
+    @PostMapping("/eliminar/{id}")
+    public String eliminarUsuario(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            clienteEntrenadorService.eliminarPorID(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Asignacion eliminada exitosamente.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error al eliminar la asignacion: " + e.getMessage());
+        }
+        return "redirect:/admin/entrenadores/asignaciones";
+    }
+
+
 }

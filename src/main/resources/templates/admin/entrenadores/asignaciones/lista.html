@@ -60,13 +60,10 @@
                            class="btn btn-sm btn-info me-2" title="Editar">
                             <i class="bi bi-pencil-square"></i>
                         </a>
-                        <button type="button" class="btn btn-sm btn-danger delete-asignacion-btn"
-                                th:data-id="${asignacion.id}"
-                                th:data-cliente-nombre="${asignacion.usuario.nombreCompleto}"
-                                th:data-entrenador-nombre="${asignacion.entrenador.nombre}"
-                                title="Eliminar">
+                        <a th:href="@{/admin/entrenadores/asignaciones/eliminar/{id}(id=${asignacion.id})}"
+                           class="btn btn-sm btn-danger" title="Eliminar">
                             <i class="bi bi-trash"></i>
-                        </button>
+                        </a>
                     </td>
                 </tr>
                 </tbody>
