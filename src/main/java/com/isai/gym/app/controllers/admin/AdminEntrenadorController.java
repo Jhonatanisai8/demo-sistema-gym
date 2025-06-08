@@ -160,5 +160,18 @@ public class AdminEntrenadorController {
         }
     }
 
+    @PostMapping("/toggleActivo/{id}")
+    public String toggleActivo(@PathVariable Long id,
+                               @RequestParam("activo") boolean activo,
+                               RedirectAttributes redirectAttributes) {
+        Optional<Entrenador> entrenadorOptional = entrenadorService.toggleActivo(id, activo);
+        if (entrenadorOptional.isPresent()) {
+            String mensaje = entrenadorOptional.get().getActivo() ? "activado" : "desactivado";
+            redirectAttributes.addFlashAttribute("successMessage", "Entrenador '" + entrenadorOptional.get().getNombre() + "' " + mensaje + " exitosamente.");
+        } else {
+            redirectAttributes.addFlashAttribute("errorMessage", "Entrenador no encontrado.");
+        }
+        return "redirect:/admin/entrenadores";
+    }
 
 }
