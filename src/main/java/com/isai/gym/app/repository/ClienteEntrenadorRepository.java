@@ -11,7 +11,7 @@ import java.time.LocalDate;
 import java.util.*;
 
 @Repository
-public interface ClienteEntradorRespository
+public interface ClienteEntrenadorRepository
         extends JpaRepository<ClienteEntrenador, Long> {
     // Buscar asignaciones por el ID del usuario
     List<ClienteEntrenador> findByUsuarioId(Long usuarioId);
