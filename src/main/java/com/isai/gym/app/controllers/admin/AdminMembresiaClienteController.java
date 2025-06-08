@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -108,6 +109,32 @@ public class AdminMembresiaClienteController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Error al crear la membresía de cliente: " + e.getMessage());
             return "redirect:/admin/membresias/clientes/crear";
+        }
+    }
+
+    @GetMapping("/editar/{id}")
+    public String mostrarFormularioEditar(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
+        Optional<MembresiaCliente> membresiaClienteOptional = membresiaClienteServiceImpl.obtenerPorID(id);
+        if (membresiaClienteOptional.isPresent()) {
+            MembresiaCliente membresiaCliente = membresiaClienteOptional.get();
+            // Mapea la entidad a un DTO para el formulario
+            MembresiaClienteDTO membresiaClienteDTO = new MembresiaClienteDTO();
+            membresiaClienteDTO.setId(membresiaCliente.getId());
+            membresiaClienteDTO.setUsuarioId(membresiaCliente.getUsuario().getId());
+            membresiaClienteDTO.setMembresiaId(membresiaCliente.getMembresia().getId());
+            membresiaClienteDTO.setFechaInicio(membresiaCliente.getFechaInicio());
+            membresiaClienteDTO.setFechaFin(membresiaCliente.getFechaFin());
+            membresiaClienteDTO.setActiva(membresiaCliente.getActiva());
+            membresiaClienteDTO.setEstado(membresiaCliente.getEstado());
+            membresiaClienteDTO.setMontoPagado(membresiaCliente.getMontoPagado());
+            membresiaClienteDTO.setMetodoPago(membresiaCliente.getMetodoPago());
+
+            model.addAttribute("membresiaClienteDTO", membresiaClienteDTO);
+            loadFormDependencias(model); // cargamos usuarios y tipos de membresía
+            return "admin/membresias/clientes/detalle";
+        } else {
+            redirectAttributes.addFlashAttribute("errorMessage", "Membresía de cliente no encontrada.");
+            return "redirect:/admin/membresias/clientes";
         }
     }
 }
