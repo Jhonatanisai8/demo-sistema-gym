@@ -1,6 +1,9 @@
 package com.isai.gym.app.controllers.admin;
 
+import com.isai.gym.app.dtos.EquipoDTO;
 import com.isai.gym.app.entities.Equipo;
+import com.isai.gym.app.enums.EstadoEquipo;
+import com.isai.gym.app.enums.TipoEquipo;
 import com.isai.gym.app.services.impl.EquipoServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -51,5 +54,13 @@ public class EquipoAdminController {
         model.addAttribute("titulo", "Lista de Equipos del GYM");
         model.addAttribute("searchTerm", searchTerm);
         return "admin/equipos/lista";
+    }
+
+    @GetMapping(path = "/crear")
+    public String mostrarFormularioCrear(Model model) {
+        model.addAttribute("equipoDTO", new EquipoDTO());
+        model.addAttribute("TipoEquipo", TipoEquipo.values());
+        model.addAttribute("EstadoEquipo", EstadoEquipo.values());
+        return "admin/equipos/crear";
     }
 }
