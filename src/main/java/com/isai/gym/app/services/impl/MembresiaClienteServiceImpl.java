@@ -89,7 +89,7 @@ public class MembresiaClienteServiceImpl implements MembresiaClienteService {
     @Transactional(readOnly = true)
     public Page<MembresiaCliente> buscar(String keyword, Pageable pageable) {
         if (keyword == null || keyword.trim().isEmpty()) {
-            return membresiaClienteRepository.findAll(pageable);
+            return membresiaClienteRepository.searchByUsuarioNombreOrMembresiaNombre(keyword, pageable);
         }
         return membresiaClienteRepository.findAll(pageable);
     }
