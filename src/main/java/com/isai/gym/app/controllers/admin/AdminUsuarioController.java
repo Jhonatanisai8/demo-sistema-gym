@@ -71,5 +71,12 @@ public class AdminUsuarioController {
         }
     }
 
+    @GetMapping("/nuevo")
+    public String mostrarFormularioNuevoUsuario(Model model) {
+        model.addAttribute("registroUsuarioDTO", new RegistroUsuarioDTO());
+        model.addAttribute("roles", TipoUsuario.values());
+        return "admin/usuarios/nuevo";
+    }
+
 
 }
