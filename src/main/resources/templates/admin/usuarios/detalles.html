@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/admin-layout}">
+<head>
+    <title>Detalles del Usuario - Admin</title>
+</head>
+<body>
+
+<div layout:fragment="content">
+    <div class="container-fluid">
+        <h2 class="mt-4 mb-4">Detalles del Usuario: <span th:text="${usuario.nombreCompleto}"></span></h2>
+
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i> <span th:text="${successMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> <span th:text="${errorMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <div class="card mb-4 shadow-sm">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-4 text-center">
+                        <div class="mb-4">
+                            <img th:src="@{/assest/{filename}(filename=${usuario.rutaImagen})}"
+                                 alt="Foto de perfil del usuario"
+                                 class="img-fluid rounded-circle border border-2 border-secondary shadow-sm"
+                                 style="width: 180px; height: 180px; object-fit: cover;">
+                        </div>
+                        <h4 class="mb-1" th:text="${usuario.nombreUsuario}"></h4>
+                        <p class="text-muted mb-2" th:text="${usuario.rol}"></p>
+                        <p class="mb-0">Estado:
+                            <span th:classappend="${usuario.activo ? 'badge bg-success' : 'badge bg-danger'}"
+                                  th:text="${usuario.activo ? 'Activo' : 'Inactivo'}"></span>
+                        </p>
+                    </div>
+                    <div class="col-md-8">
+                        <h5 class="mb-3 pb-2 border-bottom">Información Personal</h5>
+                        <div class="row mb-2">
+                            <div class="col-sm-4 text-dark fw-semibold">Nombre Completo:</div>
+                            <div class="col-sm-8" th:text="${usuario.nombreCompleto}"></div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-4 text-dark fw-semibold">Email:</div>
+                            <div class="col-sm-8" th:text="${usuario.email}"></div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-4 text-dark fw-semibold">Fecha de Nacimiento:</div>
+                            <div class="col-sm-8"
+                                 th:text="${usuario.fechaNacimiento != null ? #temporals.format(usuario.fechaNacimiento, 'dd/MM/yyyy') : 'N/A'}"></div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-4 text-dark fw-semibold">Teléfono:</div>
+                            <div class="col-sm-8" th:text="${usuario.telefono ?: 'N/A'}"></div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-4 text-dark fw-semibold">Género:</div>
+                            <div class="col-sm-8" th:text="${usuario.genero ?: 'N/A'}"></div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-4 text-dark fw-semibold">Peso:</div>
+                            <div class="col-sm-8"
+                                 th:text="${usuario.peso != null ? #numbers.formatDecimal(usuario.peso, 1, 1) + ' kg' : 'N/A'}"></div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-4 text-dark fw-semibold">Altura:</div>
+                            <div class="col-sm-8"
+                                 th:text="${usuario.altura != null ? #numbers.formatDecimal(usuario.altura, 1, 2) + ' m' : 'N/A'}"></div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-4 text-dark fw-semibold">Dirección:</div>
+                            <div class="col-sm-8" th:text="${usuario.direccion ?: 'N/A'}"></div>
+                        </div>
+
+                        <h5 class="mt-4 mb-3 pb-2 border-bottom">Contacto de Emergencia</h5>
+                        <div class="row mb-2">
+                            <div class="col-sm-4 text-dark fw-semibold">Nombre:</div>
+                            <div class="col-sm-8" th:text="${usuario.contactoEmergencia ?: 'N/A'}"></div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-4 text-dark fw-semibold">Teléfono:</div>
+                            <div class="col-sm-8" th:text="${usuario.telefonoEmergencia ?: 'N/A'}"></div>
+                        </div>
+
+                        <h5 class="mt-4 mb-3 pb-2 border-bottom">Información del Sistema</h5>
+                        <div class="row mb-2">
+                            <div class="col-sm-4 text-dark fw-semibold">ID de Usuario:</div>
+                            <div class="col-sm-8" th:text="${usuario.id}"></div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-4 text-dark fw-semibold">Fecha de Registro:</div>
+                            <div class="col-sm-8"
+                                 th:text="${usuario.fechaRegistro != null ? #temporals.format(usuario.fechaRegistro, 'dd/MM/yyyy HH:mm') : 'N/A'}"></div>
+                        </div>
+
+                        <div class="mt-4 d-flex justify-content-end">
+                            <a th:href="@{/admin/usuarios/editar/{id}(id=${usuario.id})}" class="btn btn-primary me-2">
+                                <i class="bi bi-pencil-square"></i> Editar Usuario
+                            </a>
+                            <button type="button" class="btn btn-danger me-2"
+                                    data-bs-toggle="modal" data-bs-target="#confirmDeleteModal"
+                                    th:attr="data-userid=${usuario.id}">
+                                <i class="bi bi-trash"></i> Eliminar Usuario
+                            </button>
+                            <a th:href="@{/admin/usuarios/lista}" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> Volver a la lista
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmDeleteModalLabel">Confirmar Eliminación</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    ¿Estás seguro de que deseas eliminar este usuario? Esta acción no se puede deshacer.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <form th:action="@{/admin/usuarios/eliminar/{id}(id=${usuario.id})}" method="post"
+                          id="deleteUserForm">
+                        <button type="submit" class="btn btn-danger">Eliminar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<th:block layout:fragment="scripts">
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function () {
+            const confirmDeleteModal = document.getElementById('confirmDeleteModal');
+            if (confirmDeleteModal) {
+                confirmDeleteModal.addEventListener('show.bs.modal', function (event) {
+                    const button = event.relatedTarget;
+                    const userId = button.getAttribute('data-userid');
+                    const deleteForm = confirmDeleteModal.querySelector('#deleteUserForm');
+                    deleteForm.action = /*[[@{/admin/usuarios/eliminar/}]]*/ '' + userId;
+                });
+            }
+        });
+    </script>
+</th:block>
+
+</body>
+</html>
