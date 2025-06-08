@@ -1,5 +1,6 @@
 package com.isai.gym.app.dtos;
 
+import com.isai.gym.app.enums.TipoUsuario;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -50,6 +51,7 @@ public class RegistroUsuarioDTO {
     @Size(max = 50, message = "El teléfono de emergencia no puede exceder 50 caracteres")
     private String telefonoEmergencia;
 
+    private TipoUsuario rol;
     private String rutaImagen;
 
     private MultipartFile imagen;
