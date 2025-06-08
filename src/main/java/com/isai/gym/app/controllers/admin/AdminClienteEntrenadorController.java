@@ -5,6 +5,7 @@ import com.isai.gym.app.entities.ClienteEntrenador;
 import com.isai.gym.app.services.impl.ClienteEntrenadorServiceImpl;
 import com.isai.gym.app.services.impl.EntrenadorServiceImpl;
 import com.isai.gym.app.services.impl.UsuarioServiceImpl;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -13,9 +14,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -82,6 +83,30 @@ public class AdminClienteEntrenadorController {
         model.addAttribute("clienteEntrenadorDTO", new ClienteEntrenadorDTO());
         loadFormDependencies(model); // cargamos los usuarios y entrenadores
         return "admin/entrenadores/asignaciones/crear";
+    }
+
+    @PostMapping("/crear")
+    public String crearAsignacion(@Valid @ModelAttribute("clienteEntrenadorDTO") ClienteEntrenadorDTO clienteEntrenadorDTO,
+                                  BindingResult bindingResult,
+                                  RedirectAttributes redirectAttributes,
+                                  Model model) {
+        if (bindingResult.hasErrors()) {
+            loadFormDependencies(model);
+            return "admin/entrenadores/asignaciones/crear";
+        }
+
+        try {
+            clienteEntrenadorService.guardar(clienteEntrenadorDTO);
+            redirectAttributes.addFlashAttribute("successMessage", "Asignación creada exitosamente!");
+            return "redirect:/admin/entrenadores/asignaciones";
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("errorMessage", e.getMessage()); // mostramos  el mensaje de conflicto de fechas
+            loadFormDependencies(model);
+            return "admin/entrenadores/asignaciones/crear";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error al crear la asignación: " + e.getMessage());
+            return "redirect:/admin/entrenadores/asignaciones/crear";
+        }
     }
 
 }
