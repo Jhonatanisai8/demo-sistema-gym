@@ -2,6 +2,7 @@ package com.isai.gym.app.services.impl;
 
 import com.isai.gym.app.dtos.EntrenadorDTO;
 import com.isai.gym.app.entities.Entrenador;
+import com.isai.gym.app.exceptions.WarehouseException;
 import com.isai.gym.app.repository.EntrenadorRepository;
 import com.isai.gym.app.services.EntrenadorService;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +21,7 @@ public class EntrenadorServiceImpl
 
     private final EntrenadorRepository entrenadorRepository;
 
-    private final AlmacenArchivoImpl almacenArchivo;
+    private final AlmacenArchivoImpl almacenServicio;
 
 
     @Override
@@ -34,9 +35,14 @@ public class EntrenadorServiceImpl
         }
         Entrenador entrenador = new Entrenador();
         mapDtoToEntity(entrenadorDTO, entrenador);
+
         if (entrenadorDTO.getFotoNueva() != null && !entrenadorDTO.getFotoNueva().isEmpty()) {
-            String rutaImagen = almacenArchivo.almacenarArchivo(entrenadorDTO.getFotoNueva());
-            entrenador.setRutaImagen(rutaImagen);
+            try {
+                String nombreArchivoUnico = almacenServicio.almacenarArchivo(entrenadorDTO.getFotoNueva());
+                entrenador.setRutaImagen(nombreArchivoUnico);
+            } catch (WarehouseException e) {
+                throw new RuntimeException("Error al almacenar la imagen del entrenador: " + e.getMessage(), e);
+            }
         }
         return entrenadorRepository.save(entrenador);
     }
@@ -44,27 +50,39 @@ public class EntrenadorServiceImpl
     @Override
     @Transactional
     public Optional<Entrenador> actualizar(Long id, EntrenadorDTO entrenadorDTO) {
-        return entrenadorRepository.findById(id)
-                .map(entrenadorExistente -> {
-                    if (existeNombre(entrenadorDTO.getNombre(), id)) {
-                        throw new IllegalArgumentException("Nombre ya existe");
+        return entrenadorRepository.findById(id).map(entrenadorExistente -> {
+            if (existeNombre(entrenadorDTO.getNombre(), id)) {
+                throw new IllegalArgumentException("Ya existe un entrenador con ese nombre.");
+            }
+            if (entrenadorDTO.getEmail() != null && !entrenadorDTO.getEmail().isEmpty() && existeEmail(entrenadorDTO.getEmail(), id)) {
+                throw new IllegalArgumentException("Ya existe un entrenador con ese email.");
+            }
+            mapDtoToEntity(entrenadorDTO, entrenadorExistente);
+            // Si hay una nueva imagen, guarda la nueva y elimina la antigua si existe
+            if (entrenadorDTO.getFotoNueva() != null && !entrenadorDTO.getFotoNueva().isEmpty()) {
+                try {
+                    // Eliminar imagen antigua si existe
+                    if (entrenadorExistente.getRutaImagen() != null && !entrenadorExistente.getRutaImagen().isEmpty()) {
+                        almacenServicio.eliminarArchivo(entrenadorExistente.getRutaImagen());
                     }
-                    if (entrenadorDTO.getEmail() != null && !entrenadorDTO.getEmail().isEmpty() && existeEmail(entrenadorDTO.getEmail(), id)) {
-                        throw new IllegalArgumentException("Ya existe un entrenador con ese email.");
+                    String nuevaRutaImagen = almacenServicio.almacenarArchivo(entrenadorDTO.getFotoNueva());
+                    entrenadorExistente.setRutaImagen(nuevaRutaImagen);
+                } catch (WarehouseException e) {
+                    throw new RuntimeException("Error al actualizar la imagen del entrenador: " + e.getMessage(), e);
+                }
+            } else if (entrenadorDTO.getRutaImagenActual() == null || entrenadorDTO.getRutaImagenActual().isEmpty()) {
+                // Si no se subió nueva imagen y la ruta actual en el DTO se marcó como vacía (borrar imagen)
+                if (entrenadorExistente.getRutaImagen() != null && !entrenadorExistente.getRutaImagen().isEmpty()) {
+                    try {
+                        almacenServicio.eliminarArchivo(entrenadorExistente.getRutaImagen());
+                        entrenadorExistente.setRutaImagen(null); // O cadena vacía
+                    } catch (WarehouseException e) {
+                        throw new RuntimeException("Error al eliminar la imagen antigua del entrenador: " + e.getMessage(), e);
                     }
-                    mapDtoToEntity(entrenadorDTO, entrenadorExistente);
-                    if (entrenadorDTO.getFotoNueva() != null && !entrenadorDTO.getFotoNueva().isEmpty()) {
-                        if (entrenadorExistente.getRutaImagen() != null && !entrenadorExistente.getRutaImagen().isEmpty()) {
-                            almacenArchivo.eliminarArchivo(entrenadorExistente.getRutaImagen());
-                        }
-                        String nuevaRutaImagen = almacenArchivo.almacenarArchivo(entrenadorDTO.getFotoNueva());
-                        entrenadorExistente.setRutaImagen(nuevaRutaImagen);
-                    } else if (entrenadorDTO.getFotoNueva() != null && entrenadorDTO.getFotoNueva().isEmpty() && entrenadorExistente.getRutaImagen() != null && !entrenadorExistente.getRutaImagen().isEmpty()) {
-                        almacenArchivo.eliminarArchivo(entrenadorExistente.getRutaImagen());
-                        entrenadorExistente.setRutaImagen(entrenadorExistente.getRutaImagen());
-                    }
-                    return entrenadorRepository.save(entrenadorExistente);
-                });
+                }
+            }
+            return entrenadorRepository.save(entrenadorExistente);
+        });
     }
 
     @Override
@@ -99,9 +117,12 @@ public class EntrenadorServiceImpl
         Optional<Entrenador> entrenadorOptional = entrenadorRepository.findById(id);
         if (entrenadorOptional.isPresent()) {
             Entrenador entrenador = entrenadorOptional.get();
-            // Antes de eliminar el entrenador, eliminar su imagen si existe
             if (entrenador.getRutaImagen() != null && !entrenador.getRutaImagen().isEmpty()) {
-                almacenArchivo.eliminarArchivo(entrenador.getRutaImagen());
+                try {
+                    almacenServicio.eliminarArchivo(entrenador.getRutaImagen());
+                } catch (WarehouseException e) {
+                    System.err.println("Advertencia: No se pudo eliminar la imagen del entrenador al borrarlo: " + e.getMessage());
+                }
             }
             try {
                 entrenadorRepository.deleteById(id);
