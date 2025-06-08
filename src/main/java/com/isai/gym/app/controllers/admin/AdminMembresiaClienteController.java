@@ -137,4 +137,41 @@ public class AdminMembresiaClienteController {
             return "redirect:/admin/membresias/clientes";
         }
     }
+
+    @PostMapping("/editar/{id}")
+    public String actualizarMembresiaCliente(@PathVariable Long id,
+                                             @Valid @ModelAttribute("membresiaClienteDTO") MembresiaClienteDTO membresiaClienteDTO,
+                                             BindingResult bindingResult,
+                                             RedirectAttributes redirectAttributes,
+                                             Model model) {
+
+        if (!id.equals(membresiaClienteDTO.getId())) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error de seguridad: ID de membresía de cliente no coincide.");
+            return "redirect:/admin/membresias/clientes";
+        }
+
+        if (bindingResult.hasErrors()) {
+            loadFormDependencias(model);
+            return "admin/membresias/clientes/detalle";
+        }
+
+        try {
+            Optional<MembresiaCliente> updatedMembresia = membresiaClienteServiceImpl.actualizar(id, membresiaClienteDTO);
+
+            if (updatedMembresia.isPresent()) {
+                redirectAttributes.addFlashAttribute("successMessage", "Membresía de cliente actualizada exitosamente!");
+                return "redirect:/admin/membresias/clientes";
+            } else {
+                redirectAttributes.addFlashAttribute("errorMessage", "Membresía de cliente no encontrada para actualizar.");
+                return "redirect:/admin/membresias/clientes";
+            }
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            loadFormDependencias(model);
+            return "admin/membresias/clientes/detalle";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error al actualizar la membresía de cliente: " + e.getMessage());
+            return "redirect:/admin/membresias/clientes/editar/" + id;
+        }
+    }
 }

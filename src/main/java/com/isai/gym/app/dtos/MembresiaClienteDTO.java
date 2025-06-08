@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -26,8 +27,10 @@ public class MembresiaClienteDTO {
 
     @NotNull(message = "La fecha de inicio no puede ser nula")
 
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate fechaInicio;
 
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @NotNull(message = "La fecha de fin no puede ser nula")
     @FutureOrPresent(message = "La fecha de fin no puede ser en el pasado")
     private LocalDate fechaFin;
