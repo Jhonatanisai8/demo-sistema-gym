@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/admin-layout}">
+<head>
+    <title>Gestión de Asignaciones de Clientes - Admin</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+<body>
+
+<div layout:fragment="content">
+    <div class="container-fluid">
+        <h2 class="mt-4 mb-4">Gestión de Asignaciones Cliente-Entrenador</h2>
+
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i> <span th:text="${successMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> <span th:text="${errorMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <div class="d-flex justify-content-between mb-3">
+            <a th:href="@{/admin/entrenadores/asignaciones/crear}" class="btn btn-primary">
+                <i class="bi bi-plus-circle me-2"></i> Asignar Cliente a Entrenador
+            </a>
+            <form th:action="@{/admin/entrenadores/asignaciones}" method="get" class="d-flex">
+                <input type="search" name="keyword" class="form-control me-2"
+                       placeholder="Buscar por cliente/entrenador" th:value="${keyword}">
+                <button class="btn btn-outline-secondary" type="submit"><i class="bi bi-search"></i> Buscar</button>
+            </form>
+        </div>
+
+        <div th:if="${asignaciones.isEmpty()}" class="alert alert-info" role="alert">
+            No se encontraron asignaciones.
+        </div>
+
+        <div th:unless="${asignaciones.isEmpty()}" class="table-responsive">
+            <table class="table table-hover table-striped">
+                <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Cliente</th>
+                    <th>Entrenador</th>
+                    <th>Fecha Inicio</th>
+                    <th>Fecha Fin</th>
+                    <th>Acciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="asignacion : ${asignaciones}">
+                    <td th:text="${asignacion.id}"></td>
+                    <td th:text="${asignacion.usuario.nombreCompleto}"></td>
+                    <td th:text="${asignacion.entrenador.nombre}"></td>
+                    <td th:text="${#temporals.format(asignacion.fechaInicio, 'dd-MM-yyyy')}"></td>
+                    <td th:text="${asignacion.fechaFin != null ? #temporals.format(asignacion.fechaFin, 'dd-MM-yyyy') : 'Indefinido'}"></td>
+                    <td>
+                        <a th:href="@{/admin/entrenadores/asignaciones/editar/{id}(id=${asignacion.id})}"
+                           class="btn btn-sm btn-info me-2" title="Editar">
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
+                        <button type="button" class="btn btn-sm btn-danger delete-asignacion-btn"
+                                th:data-id="${asignacion.id}"
+                                th:data-cliente-nombre="${asignacion.usuario.nombreCompleto}"
+                                th:data-entrenador-nombre="${asignacion.entrenador.nombre}"
+                                title="Eliminar">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <nav th:if="${totalPages > 1}" aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+                <li class="page-item" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
+                    <a class="page-link"
+                       th:href="@{/admin/entrenadores/asignaciones(page=${currentPage - 1}, size=${pageSize}, sort=${sortBy} + ',' + ${sortDirection}, keyword=${keyword})}">Anterior</a>
+                </li>
+                <li class="page-item" th:each="i : ${pageNumbers}" th:classappend="${i == currentPage ? 'active' : ''}">
+                    <a class="page-link"
+                       th:href="@{/admin/entrenadores/asignaciones(page=${i}, size=${pageSize}, sort=${sortBy} + ',' + ${sortDirection}, keyword=${keyword})}"
+                       th:text="${i + 1}">1</a>
+                </li>
+                <li class="page-item" th:classappend="${currentPage == totalPages - 1 ? 'disabled' : ''}">
+                    <a class="page-link"
+                       th:href="@{/admin/entrenadores/asignaciones(page=${currentPage + 1}, size=${pageSize}, sort=${sortBy} + ',' + ${sortDirection}, keyword=${keyword})}">Siguiente</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+</div>
+
+
+</body>
+</html>

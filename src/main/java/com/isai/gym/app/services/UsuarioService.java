@@ -5,6 +5,7 @@ import com.isai.gym.app.entities.Usuario;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface UsuarioService {
@@ -13,6 +14,8 @@ public interface UsuarioService {
     Page<Usuario> obtenerUsuarios(Pageable pageable);
 
     Page<Usuario> obtenerPorNombreOEmail(String searchTerm, Pageable pageable);
+
+    List<Usuario> obtenerUsuarios();
 
     Optional<Usuario> obtenerPorId(Long id);
 

@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -141,5 +142,10 @@ public class UsuarioServiceImpl
             usuarioExistente.setRutaImagen(usuarioExistente.getRutaImagen());
         }
         return usuarioRepository.save(usuarioExistente);
+    }
+
+    @Override
+    public List<Usuario> obtenerUsuarios() {
+        return usuarioRepository.findAll();
     }
 }
