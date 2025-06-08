@@ -1,5 +1,6 @@
 package com.isai.gym.app.controllers.admin;
 
+import com.isai.gym.app.dtos.EntrenadorDTO;
 import com.isai.gym.app.entities.Entrenador;
 import com.isai.gym.app.services.impl.EntrenadorServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -60,6 +61,12 @@ public class AdminEntrenadorController {
         }
 
         return "admin/entrenadores/lista";
+    }
+
+    @GetMapping("/crear")
+    public String mostrarFormularioCrear(Model model) {
+        model.addAttribute("entrenadorDTO", new EntrenadorDTO());
+        return "admin/entrenadores/crear";
     }
 
 }

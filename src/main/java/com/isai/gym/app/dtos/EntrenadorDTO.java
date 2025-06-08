@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
@@ -33,6 +34,7 @@ public class EntrenadorDTO {
     private String email;
 
     @PastOrPresent(message = "La fecha de contratación no puede ser en el futuro")
+    @DateTimeFormat(pattern = "yyyy-dd-MM")
     private LocalDate fechaContratacion;
 
     @NotNull(message = "El estado activo no puede ser nulo")
