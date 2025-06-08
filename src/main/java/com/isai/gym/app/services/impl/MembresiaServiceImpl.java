@@ -82,7 +82,6 @@ public class MembresiaServiceImpl
                 membresiaRepository.deleteById(id);
                 return true;
             } catch (Exception e) {
-                // Loguea la excepción o maneja de forma más específica
                 System.err.println("Error al eliminar el tipo de membresía con ID " + id + ": " + e.getMessage());
                 return false;
             }

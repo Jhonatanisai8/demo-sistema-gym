@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -24,6 +25,7 @@ import java.util.stream.IntStream;
 @Controller
 @RequestMapping(path = "/admin/membresias/tipos")
 @RequiredArgsConstructor
+@PreAuthorize("hasRole('ADMIN')")
 public class AdminTipoMembresiaController {
 
     private final MembresiaServiceImpl membresiaService;
@@ -121,5 +123,72 @@ public class AdminTipoMembresiaController {
         }
     }
 
+    @PostMapping("/editar/{id}")
+    public String actualizarMembresia(@PathVariable Long id,
+                                      @Valid @ModelAttribute("membresiaDTO") MembresiaDTO membresiaDTO,
+                                      BindingResult bindingResult,
+                                      RedirectAttributes redirectAttributes,
+                                      Model model) {
+        if (!id.equals(membresiaDTO.getId())) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error de seguridad: ID de membresía no coincide.");
+            return "redirect:/admin/membresias/tipos";
+        }
+        if (bindingResult.hasErrors()) {
+            return "admin/membresias/tipos/detalle";
+        }
+        try {
+            Optional<Membresia> updatedMembresia = membresiaService.actualizar(id, membresiaDTO);
 
+            if (updatedMembresia.isPresent()) {
+                redirectAttributes.addFlashAttribute("successMessage", "Tipo de membresía actualizado exitosamente!");
+                return "redirect:/admin/membresias/tipos";
+            } else {
+                redirectAttributes.addFlashAttribute("errorMessage", "Tipo de membresía no encontrado para actualizar.");
+                return "redirect:/admin/membresias/tipos";
+            }
+        } catch (IllegalArgumentException e) {
+            bindingResult.rejectValue("nombre", "error.membresiaDTO", e.getMessage());
+            return "admin/membresias/tipos/detalle";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error al actualizar el tipo de membresía: " + e.getMessage());
+            return "redirect:/admin/membresias/tipos/editar/" + id;
+        }
+    }
+
+    @GetMapping("/eliminar/{id}")
+    public String confirmarEliminarUsuario(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
+        Optional<Membresia> membresiaBD = membresiaService.obtenerMembresiaId(id);
+        if (membresiaBD.isPresent()) {
+            model.addAttribute("membresiaDTO", membresiaBD.get());
+            return "admin/membresias/tipos/confirmar-eliminar";
+        } else {
+            redirectAttributes.addFlashAttribute("errorMessage", "Membresia no encontrada.");
+            return "redirect:/admin/membresias/tipos";
+        }
+    }
+
+    @PostMapping("/eliminar/{id}")
+    public String eliminarMembresia(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        if (membresiaService.eliminar(id)) {
+            redirectAttributes.addFlashAttribute("successMessage", "Membresia eliminada exitosamente.");
+
+        } else {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error al eliminar el tipo de membresía. Podría estar asociado a membresías de clientes.");
+        }
+        return "redirect:/admin/membresias/tipos";
+    }
+
+    @PostMapping("/toggleActiva/{id}")
+    public String toggleActiva(@PathVariable Long id,
+                               @RequestParam("activa") boolean activa, // Recibe el nuevo estado desde el formulario
+                               RedirectAttributes redirectAttributes) {
+        Optional<Membresia> membresiaOptional = membresiaService.cambiarEstado(id, activa);
+        if (membresiaOptional.isPresent()) {
+            String mensaje = membresiaOptional.get().getActiva() ? "activado" : "desactivado";
+            redirectAttributes.addFlashAttribute("successMessage", "Tipo de membresía '" + membresiaOptional.get().getNombre() + "' " + mensaje + " exitosamente.");
+        } else {
+            redirectAttributes.addFlashAttribute("errorMessage", "Tipo de membresía no encontrado.");
+        }
+        return "redirect:/admin/membresias/tipos";
+    }
 }

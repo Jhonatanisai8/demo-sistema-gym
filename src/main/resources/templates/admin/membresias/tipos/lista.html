@@ -90,12 +90,10 @@
                            class="btn btn-sm btn-info me-2" title="Editar">
                             <i class="bi bi-pencil-square"></i>
                         </a>
-                        <button type="button" class="btn btn-sm btn-danger delete-membresia-btn"
-                                th:data-id="${membresia.id}"
-                                th:data-nombre="${membresia.nombre}"
-                                title="Eliminar">
+                        <a th:href="@{/admin/membresias/tipos/eliminar/{id}(id=${membresia.id})}"
+                           class="btn btn-sm btn-danger" title="Eliminar">
                             <i class="bi bi-trash"></i>
-                        </button>
+                        </a>
                     </td>
                 </tr>
                 </tbody>
@@ -121,54 +119,8 @@
         </nav>
     </div>
 
-    <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="deleteConfirmationModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="deleteConfirmationModalLabel">Confirmar Eliminación</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    ¿Estás seguro de que deseas eliminar el tipo de membresía "<strong
-                        id="membresiaNombreEliminar"></strong>"?
-                    <p class="text-danger mt-2">Esta acción es irreversible y podría afectar a las membresías de
-                        clientes asociadas.</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <form th:action="@{/admin/membresias/tipos/eliminar}" method="post" id="deleteMembresiaForm"
-                          class="d-inline">
-                        <input type="hidden" id="membresiaIdToDelete" name="id" value="">
-                        <button type="submit" class="btn btn-danger">Eliminar</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
 
 </div>
-
-<th:block layout:fragment="scripts">
-    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            var deleteModal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
-            var deleteButtons = document.querySelectorAll('.delete-membresia-btn');
-
-            deleteButtons.forEach(function (button) {
-                button.addEventListener('click', function () {
-                    var membresiaId = this.getAttribute('data-id');
-                    var membresiaNombre = this.getAttribute('data-nombre');
-
-                    document.getElementById('membresiaIdToDelete').value = membresiaId;
-                    document.getElementById('membresiaNombreEliminar').textContent = membresiaNombre;
-                    deleteModal.show();
-                });
-            });
-        });
-    </script>
-</th:block>
 
 </body>
 </html>
