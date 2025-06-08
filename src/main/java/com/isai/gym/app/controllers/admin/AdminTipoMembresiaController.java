@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -94,6 +95,29 @@ public class AdminTipoMembresiaController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Error al crear el tipo de membresía: " + e.getMessage());
             return "redirect:/admin/membresias/tipos/crear";
+        }
+    }
+
+    @GetMapping("/editar/{id}")
+    public String mostrarFormularioEditar(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
+        Optional<Membresia> membresiaOptional = membresiaService.obtenerMembresiaId(id);
+        if (membresiaOptional.isPresent()) {
+            Membresia membresia = membresiaOptional.get();
+            MembresiaDTO membresiaDTO = new MembresiaDTO();
+            membresiaDTO.setId(membresia.getId());
+            membresiaDTO.setNombre(membresia.getNombre());
+            membresiaDTO.setDescripcion(membresia.getDescripcion());
+            membresiaDTO.setPrecio(membresia.getPrecio());
+            membresiaDTO.setDuracionDias(membresia.getDuracionDias());
+            membresiaDTO.setActiva(membresia.getActiva());
+            membresiaDTO.setBeneficios(membresia.getBeneficios());
+            membresiaDTO.setLimiteAccesosDia(membresia.getLimiteAccesosDia());
+
+            model.addAttribute("membresiaDTO", membresiaDTO);
+            return "admin/membresias/tipos/detalle";
+        } else {
+            redirectAttributes.addFlashAttribute("errorMessage", "Tipo de membresía no encontrado.");
+            return "redirect:/admin/membresias/tipos";
         }
     }
 
