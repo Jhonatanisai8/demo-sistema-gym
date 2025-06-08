@@ -121,5 +121,44 @@ public class AdminEntrenadorController {
         }
     }
 
+    @PostMapping("/editar/{id}")
+    public String actualizarEntrenador(@PathVariable Long id,
+                                       @Valid @ModelAttribute("entrenadorDTO") EntrenadorDTO entrenadorDTO,
+                                       BindingResult bindingResult,
+                                       RedirectAttributes redirectAttributes,
+                                       Model model) {
+        if (!id.equals(entrenadorDTO.getId())) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error de seguridad: ID de entrenador no coincide.");
+            return "redirect:/admin/entrenadores";
+        }
+
+        if (bindingResult.hasErrors()) {
+            // si hay errores, repoblar el modelo con la entidad actual para la imagen.
+            Optional<Entrenador> originalEntrenador = entrenadorService.findById(id);
+            originalEntrenador.ifPresent(entrenador -> model.addAttribute("entrenador", entrenador));
+            return "admin/entrenadores/detalle";
+        }
+
+        try {
+            Optional<Entrenador> updatedEntrenador = entrenadorService.actualizar(id, entrenadorDTO);
+
+            if (updatedEntrenador.isPresent()) {
+                redirectAttributes.addFlashAttribute("successMessage", "Entrenador actualizado exitosamente!");
+                return "redirect:/admin/entrenadores";
+            } else {
+                redirectAttributes.addFlashAttribute("errorMessage", "Entrenador no encontrado para actualizar.");
+                return "redirect:/admin/entrenadores";
+            }
+        } catch (IllegalArgumentException e) {
+            bindingResult.rejectValue("nombre", "error.entrenadorDTO", e.getMessage());
+            Optional<Entrenador> originalEntrenador = entrenadorService.findById(id); // recargar para mostrar la imagen actual
+            originalEntrenador.ifPresent(entrenador -> model.addAttribute("entrenador", entrenador));
+            return "admin/entrenadores/detalle";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error al actualizar el entrenador: " + e.getMessage());
+            return "redirect:/admin/entrenadores/editar/" + id;
+        }
+    }
+
 
 }
