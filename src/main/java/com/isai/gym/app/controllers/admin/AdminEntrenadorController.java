@@ -3,6 +3,7 @@ package com.isai.gym.app.controllers.admin;
 import com.isai.gym.app.dtos.EntrenadorDTO;
 import com.isai.gym.app.entities.Entrenador;
 import com.isai.gym.app.services.impl.EntrenadorServiceImpl;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -10,9 +11,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -68,5 +69,28 @@ public class AdminEntrenadorController {
         model.addAttribute("entrenadorDTO", new EntrenadorDTO());
         return "admin/entrenadores/crear";
     }
+
+    @PostMapping("/crear")
+    public String crearEntrenador(@Valid @ModelAttribute("entrenadorDTO") EntrenadorDTO entrenadorDTO,
+                                  BindingResult bindingResult,
+                                  RedirectAttributes redirectAttributes,
+                                  Model model) {
+        if (bindingResult.hasErrors()) {
+            return "admin/entrenadores/crear";
+        }
+
+        try {
+            entrenadorService.guardar(entrenadorDTO);
+            redirectAttributes.addFlashAttribute("successMessage", "Entrenador creado exitosamente!");
+            return "redirect:/admin/entrenadores";
+        } catch (IllegalArgumentException e) {
+            bindingResult.rejectValue("nombre", "error.entrenadorDTO", e.getMessage()); // O el campo específico que causó el error
+            return "admin/entrenadores/crear";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error al crear el entrenador: " + e.getMessage());
+            return "redirect:/admin/entrenadores/crear";
+        }
+    }
+
 
 }
