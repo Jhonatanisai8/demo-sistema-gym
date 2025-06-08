@@ -196,4 +196,18 @@ public class AdminMembresiaClienteController {
         }
         return "redirect:/admin/membresias/clientes";
     }
+
+    @PostMapping("/toggleActiva/{id}")
+    public String toggleActiva(@PathVariable Long id,
+                               @RequestParam("activa") boolean activa,
+                               RedirectAttributes redirectAttributes) {
+        Optional<MembresiaCliente> membresiaClienteOptional = membresiaClienteServiceImpl.toggleActiva(id, activa);
+        if (membresiaClienteOptional.isPresent()) {
+            String mensaje = membresiaClienteOptional.get().getActiva() ? "activado" : "desactivado";
+            redirectAttributes.addFlashAttribute("successMessage", "Membresía de cliente " + mensaje + " exitosamente.");
+        } else {
+            redirectAttributes.addFlashAttribute("errorMessage", "Membresía de cliente no encontrada.");
+        }
+        return "redirect:/admin/membresias/clientes";
+    }
 }
