@@ -16,12 +16,9 @@ public interface PagoRepository extends JpaRepository<Pago, Long> {
 
     Page<Pago> findByUsuario(Usuario usuario, Pageable pageable);
 
-
     Page<Pago> findByFechaPagoBetween(LocalDateTime startDate, LocalDateTime endDate, Pageable pageable);
 
-
     Page<Pago> findByMetodoPagoContainingIgnoreCase(String metodoPago, Pageable pageable);
-
 
     @Query("SELECT p FROM Pago p WHERE " +
             "(:keyword IS NULL OR :keyword = '' OR " +
@@ -29,10 +26,7 @@ public interface PagoRepository extends JpaRepository<Pago, Long> {
             "LOWER(p.metodoPago) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
             "LOWER(p.estado) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
             "LOWER(p.observaciones) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
-            "LOWER(p.usuario.nombre) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
-            "LOWER(p.usuario.apellido) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+            "LOWER(p.usuario.nombreCompleto) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
             "CAST(p.referenciaId AS string) LIKE CONCAT('%', :keyword, '%'))")
     Page<Pago> buscarPagosPorKeyword(@Param("keyword") String keyword, Pageable pageable);
-
-
 }
