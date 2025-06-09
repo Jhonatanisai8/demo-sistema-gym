@@ -1,5 +1,10 @@
 package com.isai.gym.app.enums;
 
 public enum CategoriaProducto {
-    SUPLEMENTOS, BEBIDAS, ACCESORIOS, ROPA
+    SUPLEMENTOS,
+    BEBIDAS,
+    ROPA,
+    ACCESORIOS,
+    EQUIPAMIENTO,
+    OTROS
 }
