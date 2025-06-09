@@ -1,7 +1,6 @@
 package com.isai.gym.app.controllers.admin;
 
 import com.isai.gym.app.dtos.EquipoDTO;
-import com.isai.gym.app.dtos.RegistroUsuarioDTO;
 import com.isai.gym.app.entities.Equipo;
 import com.isai.gym.app.enums.EstadoEquipo;
 import com.isai.gym.app.enums.TipoEquipo;
@@ -152,5 +151,31 @@ public class AdminEquipoController {
             model.addAttribute("errorMessage", "Ocurrió un error inesperado al actualizar el equipo: " + e.getMessage());
             return "admin/equipos/editar";
         }
+    }
+
+    @GetMapping(path = "/eliminar/{id}")
+    public String confirmarEliminarEquipo(@PathVariable Long id,
+                                          Model model,
+                                          RedirectAttributes redirectAttributes) {
+        Optional<Equipo> equipo = equipoService.obtenerPorId(id);
+        if (equipo.isPresent()) {
+            model.addAttribute("equipo", equipo.get());
+            return "admin/equipos/confirmar-eliminar";
+        } else {
+            redirectAttributes.addFlashAttribute("errorMessage", "Equipo no encontrado.");
+            return "redirect:/admin/equipos";
+        }
+    }
+
+
+    @PostMapping(path = "/eliminar/{id}")
+    public String eliminarEquipo(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            equipoService.eliminarPorId(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Equipo eliminado exitosamente.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error al eliminar el Equipo: " + e.getMessage());
+        }
+        return "redirect:/admin/equipos";
     }
 }
