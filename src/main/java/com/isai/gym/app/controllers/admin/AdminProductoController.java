@@ -1,6 +1,7 @@
 package com.isai.gym.app.controllers.admin;
 
 import com.isai.gym.app.dtos.ProductoDTO;
+import com.isai.gym.app.enums.CategoriaProducto;
 import com.isai.gym.app.services.impl.ProductoServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -56,6 +58,13 @@ public class AdminProductoController {
         }
 
         return "admin/productos/listar";
+    }
+
+    @GetMapping("/nuevo")
+    public String mostrarFormularioNuevoProducto(Model model) {
+        model.addAttribute("producto", new ProductoDTO());
+        model.addAttribute("categorias", Arrays.asList(CategoriaProducto.values()));
+        return "admin/productos/crear";
     }
 
 }

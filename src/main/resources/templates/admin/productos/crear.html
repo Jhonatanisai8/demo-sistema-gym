@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/admin-layout}">
+<head>
+    <title>Registrar un producto - Admin</title>
+</head>
+<body>
+
+<div layout:fragment="content">
+    <div class="container-fluid mt-4">
+        <div class="card">
+            <div class="card-header">
+                <h2 th:text="${producto.id == null ? 'Nuevo Producto' : 'Editar Producto'}"></h2>
+            </div>
+            <div class="card-body">
+                <form th:action="${producto.id == null ? '/admin/productos/guardar' : '/admin/productos/actualizar/' + producto.id}"
+                      th:object="${producto}" method="post" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="nombre">Nombre:</label>
+                        <input type="text" id="nombre" th:field="*{nombre}" class="form-control"
+                               th:classappend="${#fields.hasErrors('nombre') ? 'is-invalid' : ''}" required>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('nombre')}"
+                             th:errors="*{nombre}"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="descripcion">Descripción:</label>
+                        <textarea id="descripcion" th:field="*{descripcion}" class="form-control"
+                                  th:classappend="${#fields.hasErrors('descripcion') ? 'is-invalid' : ''}"></textarea>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('descripcion')}"
+                             th:errors="*{descripcion}"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="precio">Precio:</label>
+                            <input type="number" id="precio" th:field="*{precio}" class="form-control" step="0.01"
+                                   min="0.01" th:classappend="${#fields.hasErrors('precio') ? 'is-invalid' : ''}"
+                                   required>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('precio')}"
+                                 th:errors="*{precio}"></div>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="stock">Stock:</label>
+                            <input type="number" id="stock" th:field="*{stock}" class="form-control" min="0"
+                                   th:classappend="${#fields.hasErrors('stock') ? 'is-invalid' : ''}" required>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('stock')}"
+                                 th:errors="*{stock}"></div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="categoria">Categoría:</label>
+                            <select id="categoria" th:field="*{categoria}" class="form-control"
+                                    th:classappend="${#fields.hasErrors('categoria') ? 'is-invalid' : ''}" required>
+                                <option value="">Seleccione una categoría</option>
+                                <option th:each="cat : ${categorias}" th:value="${cat}" th:text="${cat}"></option>
+                            </select>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('categoria')}"
+                                 th:errors="*{categoria}"></div>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="codigoBarras">Código de Barras:</label>
+                            <input type="text" id="codigoBarras" th:field="*{codigoBarras}" class="form-control"
+                                   th:classappend="${#fields.hasErrors('codigoBarras') ? 'is-invalid' : ''}">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('codigoBarras')}"
+                                 th:errors="*{codigoBarras}"></div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="stockMinimo">Stock Mínimo:</label>
+                            <input type="number" id="stockMinimo" th:field="*{stockMinimo}" class="form-control" min="0"
+                                   th:classappend="${#fields.hasErrors('stockMinimo') ? 'is-invalid' : ''}">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('stockMinimo')}"
+                                 th:errors="*{stockMinimo}"></div>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="proveedor">Proveedor:</label>
+                            <input type="text" id="proveedor" th:field="*{proveedor}" class="form-control"
+                                   th:classappend="${#fields.hasErrors('proveedor') ? 'is-invalid' : ''}">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('proveedor')}"
+                                 th:errors="*{proveedor}"></div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="fechaVencimiento">Fecha de Vencimiento:</label>
+                        <input type="date" id="fechaVencimiento" th:field="*{fechaVencimiento}" class="form-control"
+                               th:classappend="${#fields.hasErrors('fechaVencimiento') ? 'is-invalid' : ''}">
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('fechaVencimiento')}"
+                             th:errors="*{fechaVencimiento}"></div>
+                    </div>
+                    <div class="form-group form-check">
+                        <input type="checkbox" id="activo" th:field="*{activo}" class="form-check-input">
+                        <label class="form-check-label" for="activo">Activo para Venta</label>
+                    </div>
+                    <div class="form-group">
+                        <label for="fileImagen">Imagen del Producto:</label>
+                        <input type="file" id="fileImagen" name="fileImagen" class="form-control-file">
+                        <small class="form-text text-muted">Deja vacío para mantener la imagen actual o no añadir
+                            una.</small>
+                        <input type="hidden" th:field="*{rutaImagen}"/>
+                        <div th:if="${producto.rutaImagen != null and !producto.rutaImagen.isEmpty()}" class="mt-2">
+                            <p>Imagen actual:</p>
+                            <img th:src="@{'/uploads/productos/' + ${producto.rutaImagen}}" alt="Imagen actual"
+                                 style="max-width: 150px; height: auto;">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Guardar Producto</button>
+                    <a th:href="@{/admin/productos}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i>
+                        Cancelar</a>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>
