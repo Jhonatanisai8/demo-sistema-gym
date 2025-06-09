@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/admin-layout}">
+<head>
+    <title>Gestión de Productos - Admin</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+<body>
+
+<div layout:fragment="content">
+    <div class="container-fluid mt-4">
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h2 class="mb-0">Lista de Productos</h2>
+                    <a th:href="@{/admin/productos/nuevo}" class="btn btn-primary btn-sm-custom">
+                        <i class="fas fa-plus"></i> Añadir Nuevo Producto
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                <form th:action="@{/admin/productos}" method="get" class="form-inline mb-3">
+                    <div class="form-group mr-2">
+                        <input type="text" name="keyword" class="form-control" th:value="${keyword}"
+                               placeholder="Buscar por nombre, descripción, categoría, código de barras, proveedor">
+                    </div>
+                    <button type="submit" class="btn btn-info btn-sm-custom mr-2"><i class="fas fa-search"></i> Buscar
+                    </button>
+                    <a th:href="@{/admin/productos}" class="btn btn-secondary btn-sm-custom"><i class="fas fa-redo"></i>
+                        Limpiar</a>
+                </form>
+
+                <div th:if="${productosPage.isEmpty()}">
+                    <p class="alert alert-warning">No se encontraron productos.</p>
+                </div>
+
+                <div th:unless="${productosPage.isEmpty()}">
+                    <table class="table table-bordered table-striped table-hover">
+                        <thead class="thead-dark">
+                        <tr>
+                            <th>
+                                <a th:href="@{/admin/productos(page=${productosPage.number}, size=${productosPage.size}, sortBy='id', sortDir=${sortBy == 'id' && sortDir == 'asc' ? 'desc' : 'asc'}, keyword=${keyword})}">ID
+                                    <i th:class="${sortBy == 'id' ? (sortDir == 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down') : 'fas fa-sort'}"></i></a>
+                            </th>
+                            <th>Imagen</th>
+                            <th>
+                                <a th:href="@{/admin/productos(page=${productosPage.number}, size=${productosPage.size}, sortBy='nombre', sortDir=${sortBy == 'nombre' && sortDir == 'asc' ? 'desc' : 'asc'}, keyword=${keyword})}">Nombre
+                                    <i th:class="${sortBy == 'nombre' ? (sortDir == 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down') : 'fas fa-sort'}"></i></a>
+                            </th>
+                            <th>Descripción</th>
+                            <th>Precio</th>
+                            <th>Stock</th>
+                            <th>Categoría</th>
+                            <th>Código Barras</th>
+                            <th>Activo</th>
+                            <th>Acciones</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="producto : ${productosPage.content}">
+                            <td th:text="${producto.id}"></td>
+                            <td>
+                                <img th:if="${producto.rutaImagen != null and !producto.rutaImagen.isEmpty()}"
+                                     th:src="@{'/uploads/productos/' + ${producto.rutaImagen}}"
+                                     alt="Imagen del producto" style="width: 50px; height: 50px; object-fit: cover;">
+                                <img th:unless="${producto.rutaImagen != null and !producto.rutaImagen.isEmpty()}"
+                                     th:src="@{'/images/no-image.png'}"
+                                     alt="No hay imagen" style="width: 50px; height: 50px; object-fit: cover;">
+                            </td>
+                            <td th:text="${producto.nombre}"></td>
+                            <td th:text="${producto.descripcion}"></td>
+                            <td th:text="${#numbers.formatDecimal(producto.precio, 1, 'POINT', 2, 'COMMA')}"></td>
+                            <td th:text="${producto.stock}"></td>
+                            <td th:text="${producto.categoria}"></td>
+                            <td th:text="${producto.codigoBarras}"></td>
+                            <td>
+                                <span th:if="${producto.activo}" class="badge badge-success">Sí</span>
+                                <span th:unless="${producto.activo}" class="badge badge-danger">No</span>
+                            </td>
+                            <td>
+                                <a th:href="@{/admin/productos/editar/{id}(id=${producto.id})}"
+                                   class="btn btn-warning btn-sm-custom">
+                                    <i class="fas fa-edit"></i> Editar
+                                </a>
+                                <a th:href="@{/admin/productos/eliminar/{id}(id=${producto.id})}"
+                                   class="btn btn-danger btn-sm-custom"
+                                   onclick="return confirm('¿Estás seguro de que quieres eliminar este producto? Esto es irreversible.');">
+                                    <i class="fas fa-trash-alt"></i> Eliminar
+                                </a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item" th:classappend="${productosPage.first ? 'disabled' : ''}">
+                                <a class="page-link"
+                                   th:href="@{/admin/productos(page=${productosPage.number - 1}, size=${productosPage.size}, sortBy=${sortBy}, sortDir=${sortDir}, keyword=${keyword})}"
+                                   tabindex="-1">Anterior</a>
+                            </li>
+                            <li class="page-item" th:each="i : ${pageNumbers}"
+                                th:classappend="${i == productosPage.number + 1 ? 'active' : ''}">
+                                <a class="page-link"
+                                   th:href="@{/admin/productos(page=${i - 1}, size=${productosPage.size}, sortBy=${sortBy}, sortDir=${sortDir}, keyword=${keyword})}"
+                                   th:text="${i}">1</a>
+                            </li>
+                            <li class="page-item" th:classappend="${productosPage.last ? 'disabled' : ''}">
+                                <a class="page-link"
+                                   th:href="@{/admin/productos(page=${productosPage.number + 1}, size=${productosPage.size}, sortBy=${sortBy}, sortDir=${sortDir}, keyword=${keyword})}">Siguiente</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+
+</body>
+</html>
