@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/admin-layout}">
+<head>
+    <title>Historial de Pagos</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        .table-hover tbody tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: #007bff;
+            border-color: #007bff;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+<div layout:fragment="content">
+    <div class="container-fluid">
+        <h2 class="mt-4 mb-4 text-primary">
+            <i class="bi bi-wallet-fill me-2"></i> Historial de Pagos
+        </h2>
+
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i> <span th:text="${successMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> <span th:text="${errorMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <a th:href="@{/admin/pagos/registrar}" class="btn btn-primary">
+                <i class="bi bi-plus-circle me-2"></i> Registrar Nuevo Pago
+            </a>
+
+            <form th:action="@{/admin/pagos/historial}" method="get" class="d-flex">
+                <input type="search" name="keyword" class="form-control me-2" th:value="${keyword}"
+                       placeholder="Buscar por usuario, concepto, método, estado..." aria-label="Buscar pagos">
+                <button class="btn btn-outline-success" type="submit">
+                    <i class="bi bi-search"></i> Buscar
+                </button>
+                <a th:href="@{/admin/pagos/historial}" class="btn btn-outline-secondary ms-2" title="Limpiar búsqueda">
+                    <i class="bi bi-x-circle"></i>
+                </a>
+            </form>
+        </div>
+
+        <div th:if="${pagosPage.empty}" class="alert alert-info mt-3" role="alert">
+            <i class="bi bi-info-circle-fill me-2"></i> No hay pagos registrados.
+        </div>
+
+        <div th:unless="${pagosPage.empty}">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover shadow-sm">
+                    <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Usuario</th>
+                        <th>Concepto</th>
+                        <th>Monto</th>
+                        <th>Método</th>
+                        <th>Fecha Pago</th>
+                        <th>Ref. ID</th>
+                        <th>Estado</th>
+                        <th>Observaciones</th>
+                        <th>Registrado el</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="pago : ${pagosPage.content}">
+                        <td th:text="${pago.id}"></td>
+                        <td th:text="${pago.nombreUsuario}"></td>
+                        <td th:text="${pago.concepto}"></td>
+                        <td th:text="${#numbers.formatCurrency(pago.monto)}"></td>
+                        <td th:text="${pago.metodoPago}"></td>
+                        <td th:text="${#temporals.format(pago.fechaPago, 'dd-MM-yyyy HH:mm')}"></td>
+                        <td th:text="${pago.referenciaId ?: 'N/A'}"></td>
+                        <td th:text="${pago.estado}"></td>
+                        <td th:text="${pago.observaciones ?: 'N/A'}"></td>
+                        <td th:text="${pago.fechaRegistro}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <nav aria-label="Page navigation" th:if="${pagosPage.totalPages > 0}">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item" th:classappend="${pagosPage.first ? 'disabled' : ''}">
+                        <a class="page-link"
+                           th:href="@{/admin/pagos/historial(page=${pagosPage.number - 1}, size=${pagosPage.size}, keyword=${keyword})}"
+                           tabindex="-1" aria-disabled="true">Anterior</a>
+                    </li>
+                    <li class="page-item" th:each="i : ${pageNumbers}"
+                        th:classappend="${i - 1 == pagosPage.number ? 'active' : ''}">
+                        <a class="page-link"
+                           th:href="@{/admin/pagos/historial(page=${i - 1}, size=${pagosPage.size}, keyword=${keyword})}"
+                           th:text="${i}">1</a>
+                    </li>
+                    <li class="page-item" th:classappend="${pagosPage.last ? 'disabled' : ''}">
+                        <a class="page-link"
+                           th:href="@{/admin/pagos/historial(page=${pagosPage.number + 1}, size=${pagosPage.size}, keyword=${keyword})}">Siguiente</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<th:block layout:fragment="scripts">
+</th:block>
+
+</body>
+</html>
