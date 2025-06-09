@@ -91,6 +91,11 @@
             <artifactId>thymeleaf-spring-data-dialect</artifactId>
             <version>3.6.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.thymeleaf.extras</groupId>
+            <artifactId>thymeleaf-extras-java8time</artifactId>
+            <version>3.0.4.RELEASE</version>
+        </dependency>
     </dependencies>
 
     <build>

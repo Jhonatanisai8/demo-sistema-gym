@@ -5,6 +5,7 @@ import com.isai.gym.app.entities.Usuario;
 import com.isai.gym.app.services.impl.PagoServiceImpl;
 import com.isai.gym.app.services.impl.UsuarioServiceImpl;
 import jakarta.validation.Valid;
+import org.springframework.validation.FieldError; // Necesitas esta importación
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -69,11 +70,29 @@ public class AdminPagoController {
                                 RedirectAttributes redirectAttributes,
                                 Model model) {
         if (result.hasErrors()) {
+            // --- INICIO: LOGGING ADICIONAL PARA DEPURACIÓN ---
+            System.out.println("--------------------------------------------------");
+            System.out.println("ERRORES DE VALIDACIÓN ENCONTRADOS EN BindingResult:");
+            result.getAllErrors().forEach(error -> {
+                System.out.println("  - Objeto: " + error.getObjectName());
+                System.out.println("    Código de error: " + error.getCode());
+                System.out.println("    Mensaje por defecto: " + error.getDefaultMessage());
+                if (error instanceof FieldError) {
+                    FieldError fieldError = (FieldError) error;
+                    System.out.println("    Campo afectado: " + fieldError.getField());
+                    System.out.println("    Valor rechazado: " + fieldError.getRejectedValue());
+                }
+                System.out.println("--------------------------------------------------");
+            });
+            System.out.println("FIN DE ERRORES DE VALIDACIÓN.");
+            System.out.println("--------------------------------------------------");
+            // --- FIN: LOGGING ADICIONAL PARA DEPURACIÓN ---
+
             model.addAttribute("errorMessage", "Por favor, corrige los errores en el formulario.");
             // Recargar listas de opciones y usuarios para que la vista se muestre correctamente con los errores
             model.addAttribute("metodosPago", Arrays.asList("EFECTIVO", "TARJETA_CREDITO", "TARJETA_DEBITO", "TRANSFERENCIA_BANCARIA", "PAYPAL", "OTRO"));
             model.addAttribute("estadosPago", Arrays.asList("PENDIENTE", "COMPLETADO", "REEMBOLSADO", "CANCELADO"));
-            List<Usuario> usuarios = usuarioService.obtenerUsuarios();
+            List<Usuario> usuarios = usuarioService.obtenerUsuarios(); // ASUMO que 'usuarioService' está correctamente inyectado
             model.addAttribute("usuarios", usuarios);
 
             if (pagoDTO.getUsuarioId() != null) {
@@ -87,17 +106,15 @@ public class AdminPagoController {
         try {
             pagoService.registrarPago(pagoDTO);
             redirectAttributes.addFlashAttribute("successMessage", "Pago registrado exitosamente.");
-            return "redirect:/admin/pagos/historial"; // Redirigir al historial después del éxito
+            return "redirect:/admin/pagos/historial";
         } catch (IllegalArgumentException e) {
-            result.rejectValue("usuarioId", "error.pagoDTO", e.getMessage()); // Asocia el error al campo usuarioId
-            model.addAttribute("errorMessage", e.getMessage());
-            // Recargar para la vista si hay errores
+            // ... (resto del catch)
+            model.addAttribute("errorMessage", e.getMessage()); // Asegúrate que este errorMessage se muestre en la vista
+            // Recargar listas para el formulario
             model.addAttribute("metodosPago", Arrays.asList("EFECTIVO", "TARJETA_CREDITO", "TARJETA_DEBITO", "TRANSFERENCIA_BANCARIA", "PAYPAL", "OTRO"));
             model.addAttribute("estadosPago", Arrays.asList("PENDIENTE", "COMPLETADO", "REEMBOLSADO", "CANCELADO"));
             List<Usuario> usuarios = usuarioService.obtenerUsuarios();
             model.addAttribute("usuarios", usuarios);
-
-            // Asegurarse de que el nombre del usuario seleccionado se mantenga si hay errores
             if (pagoDTO.getUsuarioId() != null) {
                 usuarioService.obtenerPorId(pagoDTO.getUsuarioId()).ifPresent(usuario ->
                         pagoDTO.setNombreUsuario(usuario.getNombreCompleto())
@@ -105,14 +122,13 @@ public class AdminPagoController {
             }
             return "admin/pagos/registrar";
         } catch (Exception e) {
-            model.addAttribute("errorMessage", "Ocurrió un error inesperado al registrar el pago: " + e.getMessage());
-            // Recargar para la vista si hay errores
+            // ... (resto del catch)
+            model.addAttribute("errorMessage", "Ocurrió un error inesperado al registrar el pago: " + e.getMessage()); // Asegúrate que este errorMessage se muestre en la vista
+            // Recargar listas para el formulario
             model.addAttribute("metodosPago", Arrays.asList("EFECTIVO", "TARJETA_CREDITO", "TARJETA_DEBITO", "TRANSFERENCIA_BANCARIA", "PAYPAL", "OTRO"));
             model.addAttribute("estadosPago", Arrays.asList("PENDIENTE", "COMPLETADO", "REEMBOLSADO", "CANCELADO"));
             List<Usuario> usuarios = usuarioService.obtenerUsuarios();
             model.addAttribute("usuarios", usuarios);
-
-            // Asegurarse de que el nombre del usuario seleccionado se mantenga si hay errores
             if (pagoDTO.getUsuarioId() != null) {
                 usuarioService.obtenerPorId(pagoDTO.getUsuarioId()).ifPresent(usuario ->
                         pagoDTO.setNombreUsuario(usuario.getNombreCompleto())
@@ -121,5 +137,4 @@ public class AdminPagoController {
             return "admin/pagos/registrar";
         }
     }
-
 }

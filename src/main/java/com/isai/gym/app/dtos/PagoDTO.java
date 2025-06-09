@@ -19,7 +19,6 @@ public class PagoDTO {
     @NotNull(message = "El usuario es obligatorio")
     private Long usuarioId;
 
-    @NotBlank(message = "El nombre del usuario no puede estar vacío")
     private String nombreUsuario;
 
     @NotBlank(message = "El concepto de pago no puede estar vacío")
