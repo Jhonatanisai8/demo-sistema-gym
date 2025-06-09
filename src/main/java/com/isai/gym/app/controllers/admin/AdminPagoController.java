@@ -4,6 +4,7 @@ import com.isai.gym.app.dtos.PagoDTO;
 import com.isai.gym.app.entities.Usuario;
 import com.isai.gym.app.services.impl.PagoServiceImpl;
 import com.isai.gym.app.services.impl.UsuarioServiceImpl;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -11,9 +12,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -60,6 +61,65 @@ public class AdminPagoController {
         List<Usuario> usuarios = usuarioService.obtenerUsuarios();
         model.addAttribute("usuarios", usuarios);
         return "admin/pagos/registrar";
+    }
+
+    @PostMapping("/registrar")
+    public String registrarPago(@Valid @ModelAttribute("pagoDTO") PagoDTO pagoDTO,
+                                BindingResult result,
+                                RedirectAttributes redirectAttributes,
+                                Model model) {
+        if (result.hasErrors()) {
+            model.addAttribute("errorMessage", "Por favor, corrige los errores en el formulario.");
+            // Recargar listas de opciones y usuarios para que la vista se muestre correctamente con los errores
+            model.addAttribute("metodosPago", Arrays.asList("EFECTIVO", "TARJETA_CREDITO", "TARJETA_DEBITO", "TRANSFERENCIA_BANCARIA", "PAYPAL", "OTRO"));
+            model.addAttribute("estadosPago", Arrays.asList("PENDIENTE", "COMPLETADO", "REEMBOLSADO", "CANCELADO"));
+            List<Usuario> usuarios = usuarioService.obtenerUsuarios();
+            model.addAttribute("usuarios", usuarios);
+
+            if (pagoDTO.getUsuarioId() != null) {
+                usuarioService.obtenerPorId(pagoDTO.getUsuarioId()).ifPresent(usuario ->
+                        pagoDTO.setNombreUsuario(usuario.getNombreCompleto())
+                );
+            }
+            return "admin/pagos/registrar";
+        }
+
+        try {
+            pagoService.registrarPago(pagoDTO);
+            redirectAttributes.addFlashAttribute("successMessage", "Pago registrado exitosamente.");
+            return "redirect:/admin/pagos/historial"; // Redirigir al historial después del éxito
+        } catch (IllegalArgumentException e) {
+            result.rejectValue("usuarioId", "error.pagoDTO", e.getMessage()); // Asocia el error al campo usuarioId
+            model.addAttribute("errorMessage", e.getMessage());
+            // Recargar para la vista si hay errores
+            model.addAttribute("metodosPago", Arrays.asList("EFECTIVO", "TARJETA_CREDITO", "TARJETA_DEBITO", "TRANSFERENCIA_BANCARIA", "PAYPAL", "OTRO"));
+            model.addAttribute("estadosPago", Arrays.asList("PENDIENTE", "COMPLETADO", "REEMBOLSADO", "CANCELADO"));
+            List<Usuario> usuarios = usuarioService.obtenerUsuarios();
+            model.addAttribute("usuarios", usuarios);
+
+            // Asegurarse de que el nombre del usuario seleccionado se mantenga si hay errores
+            if (pagoDTO.getUsuarioId() != null) {
+                usuarioService.obtenerPorId(pagoDTO.getUsuarioId()).ifPresent(usuario ->
+                        pagoDTO.setNombreUsuario(usuario.getNombreCompleto())
+                );
+            }
+            return "admin/pagos/registrar";
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", "Ocurrió un error inesperado al registrar el pago: " + e.getMessage());
+            // Recargar para la vista si hay errores
+            model.addAttribute("metodosPago", Arrays.asList("EFECTIVO", "TARJETA_CREDITO", "TARJETA_DEBITO", "TRANSFERENCIA_BANCARIA", "PAYPAL", "OTRO"));
+            model.addAttribute("estadosPago", Arrays.asList("PENDIENTE", "COMPLETADO", "REEMBOLSADO", "CANCELADO"));
+            List<Usuario> usuarios = usuarioService.obtenerUsuarios();
+            model.addAttribute("usuarios", usuarios);
+
+            // Asegurarse de que el nombre del usuario seleccionado se mantenga si hay errores
+            if (pagoDTO.getUsuarioId() != null) {
+                usuarioService.obtenerPorId(pagoDTO.getUsuarioId()).ifPresent(usuario ->
+                        pagoDTO.setNombreUsuario(usuario.getNombreCompleto())
+                );
+            }
+            return "admin/pagos/registrar";
+        }
     }
 
 }
