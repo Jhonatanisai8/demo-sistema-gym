@@ -123,4 +123,32 @@ public class AdminProductoController {
         }
     }
 
+    @PostMapping("/editar/{id}")
+    public String actualizarProducto(@PathVariable Long id,
+                                     @Valid @ModelAttribute("producto") ProductoDTO productoDTO,
+                                     BindingResult result,
+                                     @RequestParam("fileImagen") MultipartFile fileImagen,
+                                     RedirectAttributes redirectAttributes,
+                                     Model model) {
+        if (result.hasErrors()) {
+            model.addAttribute("categorias", Arrays.asList(CategoriaProducto.values()));
+            return "admin/productos/editar";
+        }
+
+        try {
+            productoService.actualizarProducto(id, productoDTO, fileImagen);
+            redirectAttributes.addFlashAttribute("successMessage", "Producto actualizado exitosamente!");
+            return "redirect:/admin/productos/lista";
+        } catch (IllegalArgumentException e) {
+            result.rejectValue("nombre", "error.producto", e.getMessage());
+            result.rejectValue("codigoBarras", "error.producto", e.getMessage());
+            model.addAttribute("categorias", Arrays.asList(CategoriaProducto.values()));
+            return "admin/productos/editar";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error al actualizar el producto: " + e.getMessage());
+            model.addAttribute("categorias", Arrays.asList(CategoriaProducto.values()));
+            return "admin/productos/editar";
+        }
+    }
+
 }

@@ -14,7 +14,7 @@
                 <h2 class="mb-0" th:text="${producto.id == null ? 'Nuevo Producto' : 'Editar Producto'}"></h2>
             </div>
             <div class="card-body">
-                <form th:action="${producto.id == null ? '/admin/productos/guardar' : '/admin/productos/actualizar/' + producto.id}"
+                <form th:action="@{/admin/productos/editar/{id}(id=${producto.id})}"
                       th:object="${producto}" method="post" enctype="multipart/form-data">
                     <div class="row justify-content-center mb-4">
                         <div class="col-md-4 text-center">
