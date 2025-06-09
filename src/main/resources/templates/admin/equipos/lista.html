@@ -65,21 +65,20 @@
                                 </td>
                                 <td th:text="${equipo.nombre}"></td>
                                 <td th:text="${equipo.cantidadDisponible}"></td>
-                                <td th:text="${equipo.enMantenimiento}"></td>
                                 <td>
-                                    <span th:classappend="${equipo.activo ? 'badge bg-success' : 'badge bg-danger'}"
-                                          th:text="${equipo.activo ? 'Activo' : 'Inactivo'}"></span>
+                                    <span th:classappend="${equipo.enMantenimiento ? 'badge bg-success' : 'badge bg-danger'}"
+                                          th:text="${equipo.enMantenimiento ? 'En Mantenimiento' : 'No-Mantenimiento'}"></span>
                                 </td>
-                                <td th:text="${equipo.tipo != null ? equipo.tipo.name() : 'N/A'}"></td>
-                                <td th:text="${equipo.estado != null ? equipo.estado.name() : 'N/A'}"></td>
+                                <td th:text="${equipo.tipo.displayName}"></td>
+                                <td th:text="${equipo.estado.displayName}"></td>
                                 <td>
-                                    <a th:href="@{/admin/usuarios/detalle/} + ${usuario.id}"
+                                    <a th:href="@{/admin/equipos/detalle/} + ${equipo.id}"
                                        class="btn btn-sm btn-info me-1" title="Ver Detalle"><i
                                             class="bi bi-eye"></i></a>
-                                    <a th:href="@{/admin/usuarios/editar/} + ${usuario.id}"
+                                    <a th:href="@{/admin/equipos/editar/} + ${equipo.id}"
                                        class="btn btn-sm btn-warning me-1" title="Editar"><i
                                             class="bi bi-pencil"></i></a>
-                                    <a th:href="@{/admin/usuarios/eliminar/} + ${usuario.id}"
+                                    <a th:href="@{/admin/equipos/eliminar/} + ${equipo.id}"
                                        class="btn btn-sm btn-danger" title="Eliminar"
                                        onclick="return confirm('¿Estás seguro de que quieres eliminar a ' + ${usuario.nombreCompleto} + '?');">
                                         <i class="bi bi-trash"></i>
@@ -90,24 +89,24 @@
                         </table>
                     </div>
 
-                    <nav aria-label="Page navigation" th:if="${usuariosPage.totalPages > 1}">
+                    <nav aria-label="Page navigation" th:if="${equiposPage.totalPages > 1}">
                         <ul class="pagination justify-content-center">
-                            <li class="page-item" th:classappend="${usuariosPage.first ? 'disabled' : ''}">
+                            <li class="page-item" th:classappend="${equiposPage.first ? 'disabled' : ''}">
                                 <a class="page-link"
-                                   th:href="@{/admin/usuarios/lista(page=${usuariosPage.number - 1}, size=${usuariosPage.size}, search=${searchTerm})}"
+                                   th:href="@{/admin/usuarios/lista(page=${equiposPage.number - 1}, size=${equiposPage.size}, search=${searchTerm})}"
                                    aria-label="Previous">
                                     <span aria-hidden="true">&laquo;</span>
                                 </a>
                             </li>
                             <li class="page-item" th:each="i : ${pageNumbers}"
-                                th:classappend="${i == usuariosPage.number + 1 ? 'active' : ''}">
+                                th:classappend="${i == equiposPage.number + 1 ? 'active' : ''}">
                                 <a class="page-link"
-                                   th:href="@{/admin/usuarios/lista(page=${i - 1}, size=${usuariosPage.size}, search=${searchTerm})}"
+                                   th:href="@{/admin/usuarios/lista(page=${i - 1}, size=${equiposPage.size}, search=${searchTerm})}"
                                    th:text="${i}"></a>
                             </li>
-                            <li class="page-item" th:classappend="${usuariosPage.last ? 'disabled' : ''}">
+                            <li class="page-item" th:classappend="${equiposPage.last ? 'disabled' : ''}">
                                 <a class="page-link"
-                                   th:href="@{/admin/usuarios/lista(page=${usuariosPage.number + 1}, size=${usuariosPage.size}, search=${searchTerm})}"
+                                   th:href="@{/admin/usuarios/lista(page=${equiposPage.number + 1}, size=${equiposPage.size}, search=${searchTerm})}"
                                    aria-label="Next">
                                     <span aria-hidden="true">&raquo;</span>
                                 </a>
@@ -116,8 +115,8 @@
                     </nav>
 
                     <div class="text-center mt-3 small text-muted">
-                        Mostrando página [[${usuariosPage.number + 1}]] de [[${usuariosPage.totalPages}]].
-                        Total de usuarios: [[${usuariosPage.totalElements}]].
+                        Mostrando página [[${equiposPage.number + 1}]] de [[${equiposPage.totalPages}]].
+                        Total de Equipos: [[${equiposPage.totalElements}]].
                     </div>
                 </div>
             </div>

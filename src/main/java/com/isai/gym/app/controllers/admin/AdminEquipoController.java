@@ -5,6 +5,7 @@ import com.isai.gym.app.entities.Equipo;
 import com.isai.gym.app.enums.EstadoEquipo;
 import com.isai.gym.app.enums.TipoEquipo;
 import com.isai.gym.app.services.impl.EquipoServiceImpl;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -12,9 +13,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 import java.util.stream.IntStream;
@@ -23,7 +24,7 @@ import java.util.stream.IntStream;
 @Controller
 @PreAuthorize("hasRole('ADMIN')")
 @RequiredArgsConstructor
-public class EquipoAdminController {
+public class AdminEquipoController {
     private final EquipoServiceImpl equipoService;
 
     @GetMapping(path = {"", "/lista"})
@@ -62,5 +63,25 @@ public class EquipoAdminController {
         model.addAttribute("TipoEquipo", TipoEquipo.values());
         model.addAttribute("EstadoEquipo", EstadoEquipo.values());
         return "admin/equipos/crear";
+    }
+
+    @PostMapping("/crear")
+    public String crearEquipo(@Valid @ModelAttribute("equipoDTO") EquipoDTO equipoDTO,
+                              BindingResult bindingResult,
+                              RedirectAttributes redirectAttributes) {
+        if (bindingResult.hasErrors()) {
+            return "admin/equipos/crear";
+        }
+        try {
+            equipoService.guardarEquipo(equipoDTO);
+            redirectAttributes.addFlashAttribute("successMessage", "Equipo registrado exitosamente!");
+            return "redirect:/admin/equipos";
+        } catch (IllegalArgumentException e) {
+            bindingResult.rejectValue("numeroSerie", "error.equipoDTO", e.getMessage());
+            return "admin/equipos/crear";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error al registrar el equipo: " + e.getMessage());
+            return "redirect:/admin/equipos/crear";
+        }
     }
 }
