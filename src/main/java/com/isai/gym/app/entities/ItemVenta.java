@@ -40,4 +40,7 @@ public class ItemVenta {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "producto_id", nullable = false)
     private Producto producto;
+
+    private BigDecimal subtotal;
+
 }
