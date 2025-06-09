@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/admin-layout}">
+<head>
+    <title>Detalle/Editar Producto - Admin</title>
+</head>
+<body>
+
+<div layout:fragment="content">
+    <div class="container mt-4">
+        <div class="card shadow-lg">
+            <div class="card-header bg-primary text-white">
+                <h2 class="mb-0" th:text="${producto.id == null ? 'Nuevo Producto' : 'Editar Producto'}"></h2>
+            </div>
+            <div class="card-body">
+                <form th:action="${producto.id == null ? '/admin/productos/guardar' : '/admin/productos/actualizar/' + producto.id}"
+                      th:object="${producto}" method="post" enctype="multipart/form-data">
+                    <div class="row justify-content-center mb-4">
+                        <div class="col-md-4 text-center">
+                            <div class="mb-3">
+                                <img th:if="${producto.rutaImagen != null and !producto.rutaImagen.isEmpty()}"
+                                     th:src="@{/assest/{filename}(filename=${producto.rutaImagen})}"
+                                     alt="Foto del producto"
+                                     class="img-fluid rounded-circle border border-2 border-secondary shadow-sm"
+                                     style="width: 180px; height: 180px; object-fit: cover;">
+                                <img th:unless="${producto.rutaImagen != null and !producto.rutaImagen.isEmpty()}"
+                                     th:src="@{/images/default_avatar.png}"
+                                     alt="Sin foto"
+                                     class="img-fluid rounded-circle border border-2 border-secondary shadow-sm"
+                                     style="width: 180px; height: 180px; object-fit: cover;">
+                            </div>
+                            <h4 class="fw-bold" th:text="${producto.nombre}"></h4>
+                            <p class="text-muted" th:text="${producto.descripcion}"></p>
+                            <p>Estado:
+                                <span th:classappend="${producto.activo ? 'badge bg-success' : 'badge bg-danger'}"
+                                      th:text="${producto.activo ? 'Activo' : 'Inactivo'}"></span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="nombre" class="form-label">Nombre:</label>
+                            <input type="text" id="nombre" th:field="*{nombre}" class="form-control"
+                                   th:classappend="${#fields.hasErrors('nombre') ? 'is-invalid' : ''}" required>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('nombre')}"
+                                 th:errors="*{nombre}"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="codigoBarras" class="form-label">Código de Barras:</label>
+                            <input type="text" id="codigoBarras" th:field="*{codigoBarras}" class="form-control"
+                                   th:classappend="${#fields.hasErrors('codigoBarras') ? 'is-invalid' : ''}">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('codigoBarras')}"
+                                 th:errors="*{codigoBarras}"></div>
+                        </div>
+                        <div class="col-12">
+                            <label for="descripcion" class="form-label">Descripción:</label>
+                            <textarea id="descripcion" th:field="*{descripcion}" class="form-control"
+                                      th:classappend="${#fields.hasErrors('descripcion') ? 'is-invalid' : ''}"></textarea>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('descripcion')}"
+                                 th:errors="*{descripcion}"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="precio" class="form-label">Precio:</label>
+                            <input type="number" id="precio" th:field="*{precio}" class="form-control" step="0.01"
+                                   min="0.01"
+                                   th:classappend="${#fields.hasErrors('precio') ? 'is-invalid' : ''}" required>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('precio')}"
+                                 th:errors="*{precio}"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="stock" class="form-label">Stock:</label>
+                            <input type="number" id="stock" th:field="*{stock}" class="form-control" min="0"
+                                   th:classappend="${#fields.hasErrors('stock') ? 'is-invalid' : ''}" required>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('stock')}"
+                                 th:errors="*{stock}"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="categoria" class="form-label">Categoría:</label>
+                            <select id="categoria" th:field="*{categoria}" class="form-select"
+                                    th:classappend="${#fields.hasErrors('categoria') ? 'is-invalid' : ''}" required>
+                                <option value="">Seleccione una categoría</option>
+                                <option th:each="cat : ${categorias}" th:value="${cat}" th:text="${cat}"></option>
+                            </select>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('categoria')}"
+                                 th:errors="*{categoria}"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="stockMinimo" class="form-label">Stock Mínimo:</label>
+                            <input type="number" id="stockMinimo" th:field="*{stockMinimo}" class="form-control" min="0"
+                                   th:classappend="${#fields.hasErrors('stockMinimo') ? 'is-invalid' : ''}">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('stockMinimo')}"
+                                 th:errors="*{stockMinimo}"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="proveedor" class="form-label">Proveedor:</label>
+                            <input type="text" id="proveedor" th:field="*{proveedor}" class="form-control"
+                                   th:classappend="${#fields.hasErrors('proveedor') ? 'is-invalid' : ''}">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('proveedor')}"
+                                 th:errors="*{proveedor}"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="fechaVencimiento" class="form-label">Fecha de Vencimiento:</label>
+                            <input type="date" id="fechaVencimiento" th:field="*{fechaVencimiento}" class="form-control"
+                                   th:classappend="${#fields.hasErrors('fechaVencimiento') ? 'is-invalid' : ''}">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('fechaVencimiento')}"
+                                 th:errors="*{fechaVencimiento}"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="fileImagen" class="form-label">Imagen del Producto:</label>
+                            <input type="file" id="fileImagen" name="fileImagen" class="form-control">
+                            <small class="form-text text-muted">Deja vacío para mantener la imagen actual o no añadir
+                                una.</small>
+                            <input type="hidden" th:field="*{rutaImagen}"/>
+                        </div>
+                        <div class="col-md-6 d-flex align-items-end">
+                            <div class="form-check">
+                                <input type="checkbox" id="activo" th:field="*{activo}" class="form-check-input">
+                                <label class="form-check-label" for="activo">Activo para Venta</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 d-flex justify-content-end gap-2">
+                        <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Guardar Producto
+                        </button>
+                        <a th:href="@{/admin/productos/lista}" class="btn btn-secondary"><i
+                                class="fas fa-arrow-left"></i> Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

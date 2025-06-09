@@ -110,4 +110,17 @@ public class AdminProductoController {
         }
     }
 
+    @GetMapping("/editar/{id}")
+    public String mostrarFormularioEditarProducto(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
+        try {
+            ProductoDTO productoDTO = productoService.obtenerProductoPorId(id);
+            model.addAttribute("producto", productoDTO);
+            model.addAttribute("categorias", Arrays.asList(CategoriaProducto.values()));
+            return "admin/productos/editar";
+        } catch (jakarta.persistence.EntityNotFoundException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Producto no encontrado.");
+            return "redirect:/admin/productos";
+        }
+    }
+
 }
