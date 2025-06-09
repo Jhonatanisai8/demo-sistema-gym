@@ -62,11 +62,13 @@
                             <td th:text="${producto.id}"></td>
                             <td>
                                 <img th:if="${producto.rutaImagen != null and !producto.rutaImagen.isEmpty()}"
-                                     th:src="@{'/uploads/productos/' + ${producto.rutaImagen}}"
-                                     alt="Imagen del producto" style="width: 50px; height: 50px; object-fit: cover;">
+                                     th:src="@{/assest/{filename}(filename=${producto.rutaImagen})}"
+                                     alt="Foto" class="rounded-circle"
+                                     style="width: 50px; height: 50px; object-fit: cover;">
                                 <img th:unless="${producto.rutaImagen != null and !producto.rutaImagen.isEmpty()}"
-                                     th:src="@{'/images/no-image.png'}"
-                                     alt="No hay imagen" style="width: 50px; height: 50px; object-fit: cover;">
+                                     th:src="@{/images/default_avatar.png}"
+                                     alt="Sin foto" class="rounded-circle"
+                                     style="width: 50px; height: 50px; object-fit: cover;">
                             </td>
                             <td th:text="${producto.nombre}"></td>
                             <td th:text="${producto.descripcion}"></td>
@@ -97,18 +99,18 @@
                         <ul class="pagination justify-content-center">
                             <li class="page-item" th:classappend="${productosPage.first ? 'disabled' : ''}">
                                 <a class="page-link"
-                                   th:href="@{/admin/productos(page=${productosPage.number - 1}, size=${productosPage.size}, sortBy=${sortBy}, sortDir=${sortDir}, keyword=${keyword})}"
+                                   th:href="@{/admin/productos/lista(page=${productosPage.number - 1}, size=${productosPage.size}, sortBy=${sortBy}, sortDir=${sortDir}, keyword=${keyword})}"
                                    tabindex="-1">Anterior</a>
                             </li>
                             <li class="page-item" th:each="i : ${pageNumbers}"
                                 th:classappend="${i == productosPage.number + 1 ? 'active' : ''}">
                                 <a class="page-link"
-                                   th:href="@{/admin/productos(page=${i - 1}, size=${productosPage.size}, sortBy=${sortBy}, sortDir=${sortDir}, keyword=${keyword})}"
+                                   th:href="@{/admin/productos/lista(page=${i - 1}, size=${productosPage.size}, sortBy=${sortBy}, sortDir=${sortDir}, keyword=${keyword})}"
                                    th:text="${i}">1</a>
                             </li>
                             <li class="page-item" th:classappend="${productosPage.last ? 'disabled' : ''}">
                                 <a class="page-link"
-                                   th:href="@{/admin/productos(page=${productosPage.number + 1}, size=${productosPage.size}, sortBy=${sortBy}, sortDir=${sortDir}, keyword=${keyword})}">Siguiente</a>
+                                   th:href="@{/admin/productos/lista(page=${productosPage.number + 1}, size=${productosPage.size}, sortBy=${sortBy}, sortDir=${sortDir}, keyword=${keyword})}">Siguiente</a>
                             </li>
                         </ul>
                     </nav>
@@ -117,7 +119,7 @@
         </div>
     </div>
 
-
+|
 </div>
 
 

@@ -3,6 +3,7 @@ package com.isai.gym.app.controllers.admin;
 import com.isai.gym.app.dtos.ProductoDTO;
 import com.isai.gym.app.enums.CategoriaProducto;
 import com.isai.gym.app.services.impl.ProductoServiceImpl;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -10,9 +11,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Arrays;
 import java.util.List;
@@ -29,7 +31,7 @@ public class AdminProductoController {
 
     @GetMapping({"/lista", "/"})
     public String listarProductos(@RequestParam(defaultValue = "0") int page,
-                                  @RequestParam(defaultValue = "10") int size,
+                                  @RequestParam(defaultValue = "5") int size,
                                   @RequestParam(defaultValue = "nombre") String sortBy,
                                   @RequestParam(defaultValue = "asc") String sortDir,
                                   @RequestParam(required = false) String keyword,
@@ -65,6 +67,47 @@ public class AdminProductoController {
         model.addAttribute("producto", new ProductoDTO());
         model.addAttribute("categorias", Arrays.asList(CategoriaProducto.values()));
         return "admin/productos/crear";
+    }
+
+    @PostMapping("/guardar")
+    public String guardarProducto(@Valid @ModelAttribute("producto") ProductoDTO productoDTO,
+                                  BindingResult result,
+                                  @RequestParam("fileImagen") MultipartFile fileImagen,
+                                  RedirectAttributes redirectAttributes,
+                                  Model model) {
+        if (result.hasErrors()) {
+            model.addAttribute("categorias", Arrays.asList(CategoriaProducto.values()));
+            model.addAttribute("pageTitle", "Crear Nuevo Producto");
+            model.addAttribute("pageHeader", "<i class='bi bi-plus-circle me-2'></i>Crear Nuevo Producto");
+            return "admin/productos/crear";
+        }
+
+        try {
+            if (productoDTO.getActivo() == null) {
+                productoDTO.setActivo(true);
+            }
+            productoService.crearProducto(productoDTO, fileImagen);
+            redirectAttributes.addFlashAttribute("successMessage", "Producto guardado exitosamente!");
+            return "redirect:/admin/productos/lista";
+        } catch (IllegalArgumentException e) {
+            if (e.getMessage().contains("nombre")) {
+                result.rejectValue("nombre", "error.producto", e.getMessage());
+            } else if (e.getMessage().contains("código de barras")) {
+                result.rejectValue("codigoBarras", "error.producto", e.getMessage());
+            } else {
+                result.reject("globalError", e.getMessage());
+            }
+            model.addAttribute("categorias", Arrays.asList(CategoriaProducto.values()));
+            model.addAttribute("pageTitle", "Crear Nuevo Producto");
+            model.addAttribute("pageHeader", "<i class='bi bi-plus-circle me-2'></i>Crear Nuevo Producto");
+            return "admin/productos/crear";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error al guardar el producto: " + e.getMessage());
+            model.addAttribute("categorias", Arrays.asList(CategoriaProducto.values()));
+            model.addAttribute("pageTitle", "Crear Nuevo Producto");
+            model.addAttribute("pageHeader", "<i class='bi bi-plus-circle me-2'></i>Crear Nuevo Producto");
+            return "admin/productos/crear";
+        }
     }
 
 }
