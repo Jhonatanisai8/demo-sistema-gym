@@ -1,6 +1,5 @@
 package com.isai.gym.app.dtos;
 
-
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -35,9 +34,7 @@ public class PagoDTO {
     @NotNull(message = "La fecha de pago es obligatoria")
     @PastOrPresent(message = "La fecha de pago no puede ser futura")
 
-
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
-
     private LocalDateTime fechaPago;
 
     @NotBlank(message = "El método de pago no puede estar vacío")
