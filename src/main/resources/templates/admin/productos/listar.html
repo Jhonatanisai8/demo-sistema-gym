@@ -20,14 +20,15 @@
                 </div>
             </div>
             <div class="card-body">
-                <form th:action="@{/admin/productos}" method="get" class="form-inline mb-3">
+                <form th:action="@{/admin/productos/lista}" method="get" class="form-inline mb-3">
                     <div class="form-group mr-2">
                         <input type="text" name="keyword" class="form-control" th:value="${keyword}"
                                placeholder="Buscar por nombre, descripción, categoría, código de barras, proveedor">
                     </div>
                     <button type="submit" class="btn btn-info btn-sm-custom mr-2"><i class="fas fa-search"></i> Buscar
                     </button>
-                    <a th:href="@{/admin/productos}" class="btn btn-secondary btn-sm-custom"><i class="fas fa-redo"></i>
+                    <a th:href="@{/admin/productos/lista}" class="btn btn-secondary btn-sm-custom"><i
+                            class="fas fa-redo"></i>
                         Limpiar</a>
                 </form>
 
@@ -85,10 +86,9 @@
                                    class="btn btn-warning btn-sm-custom">
                                     <i class="fas fa-edit"></i> Editar
                                 </a>
-                                <a th:href="@{/admin/productos/eliminar/{id}(id=${producto.id})}"
-                                   class="btn btn-danger btn-sm-custom"
-                                   onclick="return confirm('¿Estás seguro de que quieres eliminar este producto? Esto es irreversible.');">
-                                    <i class="fas fa-trash-alt"></i> Eliminar
+                                <a th:href="@{/admin/productos/eliminar/} + ${producto.id}"
+                                   class="btn btn-sm btn-danger" title="Eliminar">
+                                    <i class="bi bi-trash"></i>
                                 </a>
                             </td>
                         </tr>
@@ -119,7 +119,7 @@
         </div>
     </div>
 
-|
+    |
 </div>
 
 

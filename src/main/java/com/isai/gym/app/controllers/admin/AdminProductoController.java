@@ -151,4 +151,30 @@ public class AdminProductoController {
         }
     }
 
+    @GetMapping("/eliminar/{id}")
+    public String eliminarProducto(@PathVariable Long id,
+                                   Model model,
+                                   RedirectAttributes redirectAttributes) {
+        ProductoDTO productoDTO = productoService.obtenerProductoPorId(id);
+        if (productoDTO.getActivo() != null) {
+            model.addAttribute("producto", productoDTO);
+            return "admin/productos/confirmar-eliminar";
+        } else {
+            redirectAttributes.addFlashAttribute("errorMessage", "Producto no encontrado.");
+            return "redirect:/admin/productos/lista";
+        }
+    }
+
+    @PostMapping("/eliminar/{id}")
+    public String eliminarProducto(
+            @PathVariable Long id,
+            RedirectAttributes redirectAttributes) {
+        try {
+            productoService.eliminarProducto(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Producto eliminado exitosamente!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error al eliminar el producto: " + e.getMessage());
+        }
+        return "redirect:/admin/productos/lista";
+    }
 }
