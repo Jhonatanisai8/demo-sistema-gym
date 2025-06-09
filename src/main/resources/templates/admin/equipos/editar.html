@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/admin-layout}">
+<head>
+    <title th:text="${equipoDTO.id != null ? 'Modificar Equipo' : 'Registrar Nuevo Equipo'}"></title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        /* Estilos opcionales para mejorar la visualización de la imagen actual */
+        .image-preview {
+            max-width: 150px;
+            height: 150px;
+            object-fit: cover;
+            border: 2px solid #ddd;
+            padding: 5px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+
+<div layout:fragment="content">
+    <div class="container-fluid">
+        <h2 class="mt-4 mb-4 text-primary">
+            <i class="bi bi-gear me-2"></i>
+            <span th:text="${equipoDTO.id != null ? 'Modificar Equipo Existente' : 'Registrar Nuevo Equipo'}"></span>
+        </h2>
+
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i> <span th:text="${successMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> <span th:text="${errorMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+
+        <form th:action="${equipoDTO.id != null ? '/admin/equipos/guardar' : '/admin/equipos/guardar'}"
+              th:object="${equipoDTO}" method="post" enctype="multipart/form-data">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+            <input type="hidden" th:field="*{id}" th:if="${equipoDTO.id != null}"/>
+
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-info-circle me-2"></i> Información General del Equipo</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="nombre" class="form-label">Nombre del Equipo: <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="nombre" th:field="*{nombre}"
+                                   th:classappend="${#fields.hasErrors('nombre') ? 'is-invalid' : ''}" required
+                                   placeholder="Ej: Cinta de Correr Pro, Mancuernas Ajustables">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('nombre')}"
+                                 th:errors="*{nombre}"></div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="cantidadDisponible" class="form-label">Cantidad Disponible: <span
+                                    class="text-danger">*</span></label>
+                            <input type="number" class="form-control" id="cantidadDisponible"
+                                   th:field="*{cantidadDisponible}" min="0" step="1"
+                                   th:classappend="${#fields.hasErrors('cantidadDisponible') ? 'is-invalid' : ''}"
+                                   required placeholder="Ej: 5">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('cantidadDisponible')}"
+                                 th:errors="*{cantidadDisponible}"></div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="descripcion" class="form-label">Descripción Detallada:</label>
+                        <textarea class="form-control" id="descripcion" rows="3" th:field="*{descripcion}"
+                                  th:classappend="${#fields.hasErrors('descripcion') ? 'is-invalid' : ''}"
+                                  placeholder="Proporciona una descripción completa del equipo, sus funciones y características."></textarea>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('descripcion')}"
+                             th:errors="*{descripcion}"></div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="tipo" class="form-label">Tipo de Equipo: <span
+                                    class="text-danger">*</span></label>
+                            <select class="form-select" id="tipo" th:field="*{tipo}"
+                                    th:classappend="${#fields.hasErrors('tipo') ? 'is-invalid' : ''}" required>
+                                <option value="">-- Seleccione un tipo --</option>
+                                <option th:each="tipoEnum : ${T(com.isai.gym.app.enums.TipoEquipo).values()}"
+                                        th:value="${tipoEnum}"
+                                        th:text="${tipoEnum.displayName}"></option>
+                            </select>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('tipo')}"
+                                 th:errors="*{tipo}"></div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="estado" class="form-label">Estado Actual del Equipo: <span
+                                    class="text-danger">*</span></label>
+                            <select class="form-select" id="estado" th:field="*{estado}"
+                                    th:classappend="${#fields.hasErrors('estado') ? 'is-invalid' : ''}" required>
+                                <option value="">-- Seleccione un estado --</option>
+                                <option th:each="estadoEnum : ${T(com.isai.gym.app.enums.EstadoEquipo).values()}"
+                                        th:value="${estadoEnum}"
+                                        th:text="${estadoEnum.displayName}"></option>
+                            </select>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('estado')}"
+                                 th:errors="*{estado}"></div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="enMantenimiento"
+                               th:field="*{enMantenimiento}">
+                        <label class="form-check-label" for="enMantenimiento">¿El equipo se encuentra actualmente en
+                            mantenimiento?</label>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('enMantenimiento')}"
+                             th:errors="*{enMantenimiento}"></div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="ubicacion" class="form-label">Ubicación en el Gimnasio: <span
+                                class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="ubicacion" th:field="*{ubicacion}"
+                               th:classappend="${#fields.hasErrors('ubicacion') ? 'is-invalid' : ''}" required
+                               placeholder="Ej: Sala de Cardio, Área de Pesas Libres, Salón de Spinning">
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('ubicacion')}"
+                             th:errors="*{ubicacion}"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="bi bi-calendar-check me-2"></i> Historial y Planificación de
+                        Mantenimiento</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="fechaAdquisicion" class="form-label">Fecha de Adquisición:</label>
+                            <input type="date" class="form-control" id="fechaAdquisicion" th:field="*{fechaAdquisicion}"
+                                   th:classappend="${#fields.hasErrors('fechaAdquisicion') ? 'is-invalid' : ''}">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('fechaAdquisicion')}"
+                                 th:errors="*{fechaAdquisicion}"></div>
+                            <div class="form-text text-muted">Fecha en que el equipo fue comprado/adquirido.</div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="fechaUltimoMantenimiento" class="form-label">Fecha del Último
+                                Mantenimiento:</label>
+                            <input type="date" class="form-control" id="fechaUltimoMantenimiento"
+                                   th:field="*{fechaUltimoMantenimiento}"
+                                   th:classappend="${#fields.hasErrors('fechaUltimoMantenimiento') ? 'is-invalid' : ''}">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('fechaUltimoMantenimiento')}"
+                                 th:errors="*{fechaUltimoMantenimiento}"></div>
+                            <div class="form-text text-muted">Última fecha registrada de servicio o mantenimiento.</div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="proximaFechaMantenimiento" class="form-label">Próxima Fecha de
+                                Mantenimiento:</label>
+                            <input type="date" class="form-control" id="proximaFechaMantenimiento"
+                                   th:field="*{proximaFechaMantenimiento}"
+                                   th:classappend="${#fields.hasErrors('proximaFechaMantenimiento') ? 'is-invalid' : ''}">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('proximaFechaMantenimiento')}"
+                                 th:errors="*{proximaFechaMantenimiento}"></div>
+                            <div class="form-text text-muted">Fecha programada para el siguiente mantenimiento.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0"><i class="bi bi-tag-fill me-2"></i> Identificación y Especificaciones</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="marca" class="form-label">Marca: <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="marca" th:field="*{marca}"
+                                   th:classappend="${#fields.hasErrors('marca') ? 'is-invalid' : ''}" required
+                                   placeholder="Ej: Technogym, Life Fitness">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('marca')}"
+                                 th:errors="*{marca}"></div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="modelo" class="form-label">Modelo:</label>
+                            <input type="text" class="form-control" id="modelo" th:field="*{modelo}"
+                                   th:classappend="${#fields.hasErrors('modelo') ? 'is-invalid' : ''}"
+                                   placeholder="Ej: Run 600, Smith Machine">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('modelo')}"
+                                 th:errors="*{modelo}"></div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="numeroSerie" class="form-label">Número de Serie: <span
+                                    class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="numeroSerie" th:field="*{numeroSerie}"
+                                   th:classappend="${#fields.hasErrors('numeroSerie') ? 'is-invalid' : ''}" required
+                                   placeholder="Ej: SN12345ABC">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('numeroSerie')}"
+                                 th:errors="*{numeroSerie}"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0"><i class="bi bi-image me-2"></i> Foto del Equipo</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="foto" class="form-label">Seleccionar Nueva Foto:</label>
+                        <input type="file" class="form-control" id="foto" name="foto" accept="image/*"
+                               th:classappend="${#fields.hasErrors('foto') ? 'is-invalid' : ''}">
+                        <div class="form-text text-muted">Archivos permitidos: JPG, PNG, GIF. Tamaño máximo: 5MB.</div>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('foto')}" th:errors="*{foto}"></div>
+                    </div>
+
+                    <div class="mt-3 text-center">
+                        <p class="mb-2 text-muted">Imagen actual del equipo:</p>
+                        <img id="currentImagePreview"
+                             th:src="${equipoDTO.rutaImagen != null and !equipoDTO.rutaImagen.isEmpty() ? '/assest/' + equipoDTO.rutaImagen : '/images/default_equipment.png'}"
+                             alt="Imagen del Equipo"
+                             class="image-preview">
+                        <div class="form-text text-muted mt-2">
+                            <span th:if="${equipoDTO.rutaImagen != null and !equipoDTO.rutaImagen.isEmpty()}">
+                                Nombre del archivo actual: <strong th:text="${equipoDTO.rutaImagen}"></strong>
+                            </span>
+                            <span th:unless="${equipoDTO.rutaImagen != null and !equipoDTO.rutaImagen.isEmpty()}">
+                                No hay imagen cargada.
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="my-4">
+            <div class="d-flex justify-content-start gap-2 mb-5">
+                <button type="submit" class="btn btn-success">
+                    <i class="bi bi-save me-1"></i> <span
+                        th:text="${equipoDTO.id != null ? 'Actualizar Equipo' : 'Registrar Equipo'}"></span>
+                </button>
+                <a th:href="@{/admin/equipos}" class="btn btn-secondary">
+                    <i class="bi bi-x-circle me-1"></i> Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+</body>
+</html>

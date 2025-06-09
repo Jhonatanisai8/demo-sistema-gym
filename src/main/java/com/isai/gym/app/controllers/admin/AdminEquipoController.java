@@ -100,4 +100,17 @@ public class AdminEquipoController {
         }
     }
 
+    @GetMapping(path = "/editar/{id}")
+    public String mostrarFormularioEditar(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
+        Optional<Equipo> equipo = equipoService.obtenerPorId(id);
+        if (equipo.isPresent()) {
+            model.addAttribute("equipoDTO", equipo.get());
+            return "admin/equipos/editar";
+        } else {
+            redirectAttributes.addFlashAttribute("errorMessage", "Equipo no encontrado.");
+            return "redirect:/admin/equipos";
+        }
+    }
+
+
 }
