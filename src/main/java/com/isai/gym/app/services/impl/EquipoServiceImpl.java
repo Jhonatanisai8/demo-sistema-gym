@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Optional;
 
@@ -56,6 +57,7 @@ public class EquipoServiceImpl
         equipo.setEstado(equipoDTO.getEstado());
         equipo.setNumeroSerie(equipoDTO.getNumeroSerie());
         equipo.setMarca(equipoDTO.getMarca());
+        equipo.setModelo(equipoDTO.getModelo());
     }
 
     @Override
@@ -64,32 +66,19 @@ public class EquipoServiceImpl
     }
 
     @Override
-    public Optional<Equipo> actualizarEquipo(Long id, EquipoDTO equipo) {
+    public Optional<Equipo> actualizarEquipo(Long id, EquipoDTO equipoDTO) {
         return equipoRepository.findById(id).map(equipoExistente -> {
-            if (existeEquipoNombre(equipo.getNombre(), id)) {
-                throw new IllegalArgumentException("Ya existe un entrenador con ese nombre.");
-            }
-            mapDTOToEntidad(equipo, equipoExistente);
-            if (equipo.getFoto() != null &&
-                    !equipo.getFoto().isEmpty()) {
+            mapDTOToEntidad(equipoDTO, equipoExistente);
+            MultipartFile fotoNueva = equipoDTO.getFoto();
+            if (fotoNueva != null && !fotoNueva.isEmpty()) {
                 try {
-                    //eliminamos la imagen
-                    if (equipoExistente.getRutaImagen() != null &&
-                            !equipoExistente.getRutaImagen().isEmpty()) {
+                    if (equipoExistente.getRutaImagen() != null && !equipoExistente.getRutaImagen().isEmpty()) {
                         almacenArchivo.eliminarArchivo(equipoExistente.getRutaImagen());
                     }
-                    String nuevaRuta = almacenArchivo.almacenarArchivo(equipo.getFoto());
+                    String nuevaRuta = almacenArchivo.almacenarArchivo(fotoNueva);
                     equipoExistente.setRutaImagen(nuevaRuta);
                 } catch (WarehouseException e) {
-                    throw new RuntimeException("Error al eliminar la imagen del equipo: " + e.getMessage(), e);
-                }
-            } else if (equipoExistente.getFoto() == null
-                    && !equipoExistente.getFoto().isEmpty()) {
-                try {
-                    almacenArchivo.eliminarArchivo(equipoExistente.getRutaImagen());
-                    equipoExistente.setRutaImagen(null);
-                } catch (WarehouseException e) {
-                    throw new RuntimeException("Error al eliminar la imagen del equipo: " + e.getMessage(), e);
+                    throw new RuntimeException("Error al almacenar/actualizar la imagen del equipo: " + e.getMessage(), e);
                 }
             }
             return equipoRepository.save(equipoExistente);

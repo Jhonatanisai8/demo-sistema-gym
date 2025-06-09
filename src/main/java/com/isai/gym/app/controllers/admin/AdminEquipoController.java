@@ -1,6 +1,7 @@
 package com.isai.gym.app.controllers.admin;
 
 import com.isai.gym.app.dtos.EquipoDTO;
+import com.isai.gym.app.dtos.RegistroUsuarioDTO;
 import com.isai.gym.app.entities.Equipo;
 import com.isai.gym.app.enums.EstadoEquipo;
 import com.isai.gym.app.enums.TipoEquipo;
@@ -112,5 +113,44 @@ public class AdminEquipoController {
         }
     }
 
+    @PostMapping("/editar/{id}")
+    public String actualizarEquipo(@PathVariable Long id,
+                                   @Valid @ModelAttribute("equipoDTO") EquipoDTO equipoDTO,
+                                   BindingResult result,
+                                   RedirectAttributes redirectAttributes,
+                                   Model model) {
 
+        if (!id.equals(equipoDTO.getId())) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Conflicto de ID: El ID en la URL no coincide con el ID del equipo.");
+            return "redirect:/admin/equipos";
+        }
+
+        if (equipoDTO.getId() == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "ID del equipo no proporcionado para la actualización.");
+            return "redirect:/admin/equipos";
+        }
+
+        if (result.hasErrors()) {
+            model.addAttribute("errorMessage", "Por favor, corrige los errores en el formulario.");
+            return "admin/equipos/editar";
+        }
+
+        try {
+
+            Optional<Equipo> updatedEquipo = equipoService.actualizarEquipo(id, equipoDTO);
+            if (updatedEquipo.isPresent()) {
+                redirectAttributes.addFlashAttribute("successMessage", "Equipo actualizado exitosamente.");
+            } else {
+                redirectAttributes.addFlashAttribute("errorMessage", "Error al actualizar el equipo: Equipo no encontrado.");
+            }
+            return "redirect:/admin/equipos";
+        } catch (IllegalArgumentException e) {
+            result.rejectValue("nombre", "error.equipoDTO", e.getMessage());
+            model.addAttribute("errorMessage", e.getMessage());
+            return "admin/equipos/editar";
+        } catch (RuntimeException e) {
+            model.addAttribute("errorMessage", "Ocurrió un error inesperado al actualizar el equipo: " + e.getMessage());
+            return "admin/equipos/editar";
+        }
+    }
 }
