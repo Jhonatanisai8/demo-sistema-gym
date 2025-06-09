@@ -38,7 +38,7 @@ public class Pago {
     @Column(name = "monto", nullable = false)
     private BigDecimal monto;
 
-    @NotNull(message = "La fecha de pago no puede ser nula")
+    @NotNull(message = "La fecha de pago no puede ser nulo")
     @PastOrPresent(message = "La fecha de pago no puede ser en el futuro")
     @Column(name = "fecha_pago", nullable = false)
     private LocalDateTime fechaPago;
@@ -49,7 +49,7 @@ public class Pago {
     private String metodoPago;
 
     @Column(name = "referencia_id")
-    private Long referenciaId; // ID de la entidad a la que se refiere el pago (MembresiaCliente.id, Venta.id)
+    private Long referenciaId;
 
     @NotBlank(message = "El estado del pago no puede estar vacío")
     @Size(max = 50, message = "El estado no puede exceder 50 caracteres")
@@ -59,10 +59,16 @@ public class Pago {
     @Column(name = "observaciones", columnDefinition = "TEXT")
     private String observaciones;
 
+    @Column(name = "fecha_registro", nullable = false, updatable = false) // No se actualiza después de la creación
+    private LocalDateTime fechaRegistro;
+
     @PrePersist
     protected void onCreate() {
         if (fechaPago == null) {
             fechaPago = LocalDateTime.now();
+        }
+        if (fechaRegistro == null) {
+            fechaRegistro = LocalDateTime.now();
         }
     }
 }
