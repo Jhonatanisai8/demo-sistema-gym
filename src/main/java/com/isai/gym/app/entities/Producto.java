@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -72,6 +73,12 @@ public class Producto {
     @FutureOrPresent(message = "La fecha de vencimiento no puede ser en el pasado")
     @Column(name = "fecha_vencimiento")
     private LocalDate fechaVencimiento;
+
+
+    private String rutaImagen;
+
+    @Transient
+    private MultipartFile foto;
 
     // --- Relaciones ---
     @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
