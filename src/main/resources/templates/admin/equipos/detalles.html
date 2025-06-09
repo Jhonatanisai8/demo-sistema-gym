@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/admin-layout}">
+<head>
+    <title>Detalles del Equipo</title>
+    <th:block layout:fragment="styles">
+    </th:block>
+</head>
+<body>
+
+<div layout:fragment="content">
+    <div class="container mt-4 mb-5">
+        <h2 class="mb-4 text-primary"><i class="bi bi-info-circle me-2"></i>Detalles del Equipo: <span
+                th:text="${equipo.nombre}"></span></h2>
+
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i> <span th:text="${successMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> <span th:text="${errorMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <div class="card shadow-lg p-4">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 text-center border-end">
+                        <div class="mb-4">
+                            <img th:if="${equipo.rutaImagen != null and !equipo.rutaImagen.isEmpty()}"
+                                 th:src="@{/assest/{filename}(filename=${equipo.rutaImagen})}"
+                                 alt="Foto del equipo"
+                                 class="img-fluid rounded-circle border border-3 border-primary shadow-sm"
+                                 style="width: 200px; height: 200px; object-fit: cover;">
+                            <img th:unless="${equipo.rutaImagen != null and !equipo.rutaImagen.isEmpty()}"
+                                 th:src="@{/images/default_equipment.png}"
+                                 alt="Sin foto"
+                                 class="img-fluid rounded-circle border border-3 border-secondary shadow-sm"
+                                 style="width: 200px; height: 200px; object-fit: cover;">
+                        </div>
+                        <h4 class="mb-1 text-primary" th:text="${equipo.nombre}"></h4>
+                        <p class="text-muted mb-2">Modelo: <span th:text="${equipo.modelo}"></span></p>
+
+                        <div class="mb-2">
+                            <span class="fw-semibold">Estado General: </span>
+                            <span th:classappend="${equipo.estado != null && equipo.estado.name() == 'OPERATIVO' ? 'badge bg-success' : 'badge bg-warning text-dark'}"
+                                  th:text="${equipo.estado != null ? equipo.estado.displayName : 'Desconocido'}"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <span class="fw-semibold">Mantenimiento: </span>
+                            <span th:classappend="${equipo.enMantenimiento ? 'badge bg-danger' : 'badge bg-success'}"
+                                  th:text="${equipo.enMantenimiento ? 'En Mantenimiento' : 'Listo para Usar'}"></span>
+                        </div>
+
+                        <hr class="my-3">
+                        <a th:href="@{/admin/equipos/editar/} + ${equipo.id}" class="btn btn-warning btn-sm me-2 mb-2">
+                            <i class="bi bi-pencil-square me-1"></i> Editar Equipo
+                        </a>
+                        <button type="button" class="btn btn-danger btn-sm mb-2"
+                                data-bs-toggle="modal" data-bs-target="#confirmDeleteModal"
+                                th:attr="data-equipoid=${equipo.id}, data-equiponame=${equipo.nombre}">
+                            <i class="bi bi-trash me-1"></i> Eliminar Equipo
+                        </button>
+                    </div>
+
+                    <div class="col-md-8 ps-md-4">
+                        <h5 class="mb-3 pb-2 border-bottom text-secondary">Información Técnica Detallada</h5>
+                        <div class="row mb-2">
+                            <div class="col-sm-4 text-dark fw-semibold">ID del Equipo:</div>
+                            <div class="col-sm-8" th:text="${equipo.id}"></div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-4 text-dark fw-semibold">Nombre:</div>
+                            <div class="col-sm-8" th:text="${equipo.nombre}"></div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-4 text-dark fw-semibold">Descripción:</div>
+                            <div class="col-sm-8" th:text="${equipo.descripcion}"></div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-4 text-dark fw-semibold">Marca:</div>
+                            <div class="col-sm-8" th:text="${equipo.marca}"></div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-4 text-dark fw-semibold">Modelo:</div>
+                            <div class="col-sm-8" th:text="${equipo.modelo}"></div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-4 text-dark fw-semibold">Número de Serie:</div>
+                            <div class="col-sm-8" th:text="${equipo.numeroSerie ?: 'N/A'}"></div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-4 text-dark fw-semibold">Cantidad Disponible:</div>
+                            <div class="col-sm-8" th:text="${equipo.cantidadDisponible}"></div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-4 text-dark fw-semibold">Tipo de Equipo:</div>
+                            <div class="col-sm-8"
+                                 th:text="${equipo.tipo != null ? equipo.tipo.displayName : 'N/A'}"></div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-4 text-dark fw-semibold">Ubicación:</div>
+                            <div class="col-sm-8" th:text="${equipo.ubicacion ?: 'N/A'}"></div>
+                        </div>
+
+                        <h5 class="mt-4 mb-3 pb-2 border-bottom text-secondary">Fechas Clave</h5>
+                        <div class="row mb-2">
+                            <div class="col-sm-4 text-dark fw-semibold">Fecha de Adquisición:</div>
+                            <div class="col-sm-8"
+                                 th:text="${equipo.fechaAdquisicion != null ? #temporals.format(equipo.fechaAdquisicion, 'dd/MM/yyyy') : 'N/A'}"></div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-4 text-dark fw-semibold">Último Mantenimiento:</div>
+                            <div class="col-sm-8"
+                                 th:text="${equipo.fechaUltimoMantenimiento != null ? #temporals.format(equipo.fechaUltimoMantenimiento, 'dd/MM/yyyy') : 'N/A'}"></div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-4 text-dark fw-semibold">Próximo Mantenimiento:</div>
+                            <div class="col-sm-8"
+                                 th:text="${equipo.proximaFechaMantenimiento != null ? #temporals.format(equipo.proximaFechaMantenimiento, 'dd/MM/yyyy') : 'N/A'}"></div>
+                        </div>
+
+                        <div class="mt-4 d-flex justify-content-end">
+                            <a th:href="@{/admin/equipos}" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left me-1"></i> Volver a la Lista
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

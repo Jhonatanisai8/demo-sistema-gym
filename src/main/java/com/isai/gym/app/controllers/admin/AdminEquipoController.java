@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.IntStream;
 
 @RequestMapping(path = "/admin/equipos")
@@ -84,4 +85,19 @@ public class AdminEquipoController {
             return "redirect:/admin/equipos/crear";
         }
     }
+
+    @GetMapping(path = "/detalle/{id}")
+    public String verDetallesEquipo(@PathVariable Long id,
+                                    Model model,
+                                    RedirectAttributes redirectAttributes) {
+        Optional<Equipo> equipoBD = equipoService.obtenerPorId(id);
+        if (equipoBD.isPresent()) {
+            model.addAttribute("equipo", equipoBD.get());
+            return "admin/equipos/detalles";
+        } else {
+            redirectAttributes.addFlashAttribute("errorMessage", "Equipo no encontrado.");
+            return "redirect:/admin/equipos";
+        }
+    }
+
 }

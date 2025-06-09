@@ -93,7 +93,7 @@
                         <ul class="pagination justify-content-center">
                             <li class="page-item" th:classappend="${equiposPage.first ? 'disabled' : ''}">
                                 <a class="page-link"
-                                   th:href="@{/admin/usuarios/lista(page=${equiposPage.number - 1}, size=${equiposPage.size}, search=${searchTerm})}"
+                                   th:href="@{/admin/equipos/lista(page=${equiposPage.number - 1}, size=${equiposPage.size}, search=${searchTerm})}"
                                    aria-label="Previous">
                                     <span aria-hidden="true">&laquo;</span>
                                 </a>
@@ -101,12 +101,12 @@
                             <li class="page-item" th:each="i : ${pageNumbers}"
                                 th:classappend="${i == equiposPage.number + 1 ? 'active' : ''}">
                                 <a class="page-link"
-                                   th:href="@{/admin/usuarios/lista(page=${i - 1}, size=${equiposPage.size}, search=${searchTerm})}"
+                                   th:href="@{/admin/equipos/lista(page=${i - 1}, size=${equiposPage.size}, search=${searchTerm})}"
                                    th:text="${i}"></a>
                             </li>
                             <li class="page-item" th:classappend="${equiposPage.last ? 'disabled' : ''}">
                                 <a class="page-link"
-                                   th:href="@{/admin/usuarios/lista(page=${equiposPage.number + 1}, size=${equiposPage.size}, search=${searchTerm})}"
+                                   th:href="@{/admin/equipos/lista(page=${equiposPage.number + 1}, size=${equiposPage.size}, search=${searchTerm})}"
                                    aria-label="Next">
                                     <span aria-hidden="true">&raquo;</span>
                                 </a>
