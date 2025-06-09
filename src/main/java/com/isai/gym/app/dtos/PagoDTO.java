@@ -33,7 +33,6 @@ public class PagoDTO {
 
     @NotNull(message = "La fecha de pago es obligatoria")
     @PastOrPresent(message = "La fecha de pago no puede ser futura")
-
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime fechaPago;
 
@@ -49,7 +48,6 @@ public class PagoDTO {
 
     @Size(max = 1000, message = "Las observaciones no pueden exceder 1000 caracteres")
     private String observaciones;
-
 
     private String fechaRegistro;
 }
