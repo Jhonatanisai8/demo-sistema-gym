@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{client/layouts/client-layout}">
+<head>
+    <title layout:title-template="Confirmar Compra - %s">Confirmar Compra de Membresía</title>
+    <th:block layout:fragment="styles"></th:block>
+</head>
+<body>
+<th:block layout:fragment="header">
+    <h1 class="h3"><i class="bi bi-credit-card-fill me-2"></i>Confirmar Compra</h1>
+</th:block>
+
+<th:block layout:fragment="content">
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i> <span th:text="${errorMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <h4 class="mb-4 text-primary">Estás a punto de comprar:</h4>
+
+    <div class="card shadow-lg mb-4 border-0">
+        <div class="card-header bg-success text-white py-3">
+            <h5 class="mb-0 fs-5"><i class="bi bi-tag-fill me-2"></i>Detalles de la Membresía</h5>
+        </div>
+        <div class="card-body p-4">
+            <div th:if="${tipoMembresia != null}">
+                <div class="row align-items-center mb-4">
+                    <div class="col-md-8">
+                        <h3 class="card-title text-success" th:text="${tipoMembresia.nombre}">Nombre de Membresía</h3>
+                        <p class="card-text lead text-muted" th:text="${tipoMembresia.descripcion}">Descripción de la
+                            membresía.</p>
+                        <hr class="my-3">
+                        <ul class="list-unstyled mb-0">
+                            <li class="mb-2"><i class="bi bi-cash-coin me-2 text-success"></i><span class="fs-4 fw-bold"
+                                                                                                    th:text="${#numbers.formatCurrency(tipoMembresia.precio)}"></span>
+                            </li>
+                            <li class="mb-2"><i class="bi bi-hourglass-split me-2 text-info"></i>Duración: <span
+                                    class="fw-bold" th:text="${tipoMembresia.duracionEnDias + ' días'}"
+                                    th:if="${tipoMembresia.duracionEnDias > 0}"></span></li>
+                            <li class="mb-2"><i class="bi bi-list-check me-2 text-primary"></i>Características:
+                                <ul class="list-unstyled ms-4 mt-2">
+                                    <li th:each="caracteristica : ${tipoMembresia.caracteristicas?.split(',')}">
+                                        <i class="bi bi-check-lg text-success me-1"></i><span
+                                            th:text="${caracteristica.trim()}"></span>
+                                    </li>
+                                    <li class="text-muted fst-italic"
+                                        th:if="${tipoMembresia.caracteristicas == null or tipoMembresia.caracteristicas.isEmpty()}">
+                                        No se especifican características adicionales.
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-4 text-center mt-3 mt-md-0">
+                        <i class="bi bi-award-fill text-warning" style="font-size: 8rem;"></i></div>
+                </div>
+            </div>
+            <div th:unless="${tipoMembresia != null}" class="alert alert-warning">
+                <i class="bi bi-exclamation-triangle me-2"></i>No se ha seleccionado una membresía válida para
+                confirmar.
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-lg mb-4 border-0" th:if="${tipoMembresia != null}">
+        <div class="card-header bg-info text-white py-3">
+            <h5 class="mb-0 fs-5"><i class="bi bi-credit-card me-2"></i>Método de Pago</h5>
+        </div>
+        <div class="card-body p-4">
+            <form th:action="@{/cliente/membresias/realizar-compra}" method="post">
+                <input type="hidden" name="idTipoMembresia" th:value="${tipoMembresia.id}">
+
+                <div class="mb-3">
+                    <label for="metodoPago" class="form-label fw-bold">Selecciona tu método de pago:</label>
+                    <select class="form-select" id="metodoPago" name="metodoPago" required>
+                        <option value="">Selecciona uno...</option>
+                        <option value="Tarjeta de Crédito">Tarjeta de Crédito / Débito</option>
+                        <option value="PayPal">PayPal</option>
+                        <option value="Transferencia Bancaria">Transferencia Bancaria</option>
+                        <option value="Efectivo (en gimnasio)">Pagar en Gimnasio (Efectivo)</option>
+                    </select>
+                </div>
+                <div class="form-check mb-4">
+                    <input class="form-check-input" type="checkbox" id="aceptoTerminos" required>
+                    <label class="form-check-label" for="aceptoTerminos">
+                        Acepto los <a href="#" class="text-primary text-decoration-none">Términos y Condiciones</a>
+                    </label>
+                </div>
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-success btn-lg rounded-pill"><i
+                            class="bi bi-credit-card-fill me-2"></i>Confirmar y Pagar
+                    </button>
+                    <a th:href="@{/cliente/membresias/comprar}" class="btn btn-outline-secondary btn-lg rounded-pill"><i
+                            class="bi bi-arrow-left-circle me-2"></i>Cancelar y Volver</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="mt-4 text-center">
+        <a th:href="@{/cliente/membresias}" class="btn btn-outline-secondary"><i class="bi bi-award-fill me-2"></i>Volver
+            a Mis Membresías</a>
+    </div>
+</th:block>
+
+<th:block layout:fragment="scripts"></th:block>
+</body>
+</html>
