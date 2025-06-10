@@ -31,7 +31,7 @@ public class AdminEquipoController {
     @GetMapping(path = {"", "/lista"})
     public String listarEquipos(@RequestParam(name = "page", defaultValue = "0") int page,
                                 // Página actual (0-indexed)
-                                @RequestParam(name = "size", defaultValue = "10") int size,
+                                @RequestParam(name = "size", defaultValue = "5") int size,
                                 // Tamaño de elementos por página
                                 @RequestParam(name = "search", required = false) String searchTerm,
                                 // Término de búsqueda opcional
