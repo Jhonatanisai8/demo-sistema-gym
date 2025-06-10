@@ -90,13 +90,6 @@
                     <p class="fw-bold" th:text="${#temporals.format(usuario.fechaRegistro, 'dd-MM-yyyy HH:mm')}"></p>
                 </div>
             </div>
-            <hr class="my-4">
-            <div class="d-flex justify-content-center justify-content-md-start gap-3"><a
-                    th:href="@{/cliente/perfil/editar}" class="btn btn-warning px-4 py-2 rounded-pill"><i
-                    class="bi bi-pencil-square me-2"></i>Editar Perfil</a>
-                <a th:href="@{/cliente/perfil/cambiar-contrasena}" class="btn btn-info px-4 py-2 rounded-pill"><i
-                        class="bi bi-key me-2"></i>Cambiar Contraseña</a>
-            </div>
         </div>
     </div>
     <div class="mt-3 text-center text-md-start"><a th:href="@{/cliente/dashboard}" class="btn btn-outline-secondary"><i
