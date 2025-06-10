@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -147,5 +148,10 @@ public class UsuarioServiceImpl
     @Override
     public List<Usuario> obtenerUsuarios() {
         return usuarioRepository.findAll();
+    }
+
+    @Transactional(readOnly = true)
+    public Usuario obtenerPorNombre(String nombreUsuario) {
+        return usuarioRepository.findByNombreUsuario(nombreUsuario).orElse(null);
     }
 }
