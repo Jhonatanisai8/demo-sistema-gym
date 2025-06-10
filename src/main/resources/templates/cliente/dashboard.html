@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/client-layout}">
+<head>
+    <title layout:title-template="Dashboard - %s">Dashboard</title>
+    <th:block layout:fragment="styles"></th:block>
+</head>
+<body>
+<th:block layout:fragment="header">
+    <h1 class="h3"><i class="bi bi-speedometer2 me-2"></i>Mi Dashboard</h1>
+</th:block>
+
+<th:block layout:fragment="content">
+    <div class="card">
+        <div class="card-header">
+            Resumen General
+        </div>
+        <div class="card-body">
+            <p>Aquí se mostrarán las membresías activas, últimos accesos, etc.</p>
+        </div>
+    </div>
+</th:block>
+
+<th:block layout:fragment="scripts"></th:block>
+</body>
+</html>
