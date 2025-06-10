@@ -37,7 +37,7 @@ public class RegistroUsuarioDTO {
 
     @Past(message = "La fecha de nacimiento debe ser en el pasado")
     @NotNull(message = "La fecha de nacimiento no puede ser nula")
-    @DateTimeFormat(pattern = "yyyy-dd-MM")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate fechaNacimiento;
 
     @Size(max = 50, message = "El teléfono no puede exceder 50 caracteres")

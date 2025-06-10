@@ -5,6 +5,7 @@ import com.isai.gym.app.enums.TipoUsuario;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -56,6 +57,7 @@ public class Usuario
 
     @Past(message = "La fecha de nacimiento debe ser en el pasado")
     @Column(name = "fecha_nacimiento")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate fechaNacimiento;
 
     @Size(max = 50, message = "El teléfono no puede exceder 50 caracteres")
@@ -72,7 +74,7 @@ public class Usuario
 
     @Size(max = 50, message = "El género no puede exceder 50 caracteres")
     @Column(name = "genero")
-    private String genero; // Podría ser un Enum 'Genero' si lo necesitas
+    private String genero;
 
     @Column(name = "direccion", columnDefinition = "TEXT")
     private String direccion;

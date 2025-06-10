@@ -1,101 +1,220 @@
 <!DOCTYPE html>
-<html lang="es"
-      xmlns:th="http://www.thymeleaf.org"
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/client-layout}">
 <head>
-    <title layout:title-template="Editar Perfil - %s">Editar Perfil</title>
-    <th:block layout:fragment="styles"></th:block>
+    <title>Editar Usuario - Cliente</title>
 </head>
 <body>
-<th:block layout:fragment="header">
-    <h1 class="h3"><i class="bi bi-pencil-square me-2"></i>Editar Mi Perfil</h1>
-</th:block>
 
-<th:block layout:fragment="content">
-    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
-        <i class="bi bi-check-circle-fill me-2"></i> <span th:text="${successMessage}"></span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
-        <i class="bi bi-exclamation-triangle-fill me-2"></i> <span th:text="${errorMessage}"></span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-    <div th:if="${#fields.hasAnyErrors()}" class="alert alert-warning" role="alert">
-        <i class="bi bi-exclamation-circle-fill me-2"></i> Por favor, corrige los errores en el formulario.
-    </div>
+<div layout:fragment="content">
+    <div class="container-fluid">
+        <h2 class="mt-4 mb-4">Editar Usuario: <span th:text="${usuario.nombreCompleto}"></span></h2>
 
-    <form th:action="@{/cliente/perfil/editar}" th:object="${usuario}" method="post">
-        <div class="row">
-            <div class="col-md-6">
-                <div class="mb-3">
-                    <label for="nombreCompleto" class="form-label">Nombre Completo:</label>
-                    <input type="text" id="nombreCompleto" th:field="*{nombreCompleto}" class="form-control" required>
-                    <div class="text-danger" th:if="${#fields.hasErrors('nombreCompleto')}"
-                         th:errors="*{nombreCompleto}"></div>
-                </div>
-                <div class="mb-3">
-                    <label for="email" class="form-label">Email:</label>
-                    <input type="email" id="email" th:field="*{email}" class="form-control" readonly disabled>
-                    <small class="form-text text-muted">El email no se puede cambiar desde aquí.</small>
-                </div>
-                <div class="mb-3">
-                    <label for="telefono" class="form-label">Teléfono:</label>
-                    <input type="text" id="telefono" th:field="*{telefono}" class="form-control">
-                    <div class="text-danger" th:if="${#fields.hasErrors('telefono')}" th:errors="*{telefono}"></div>
-                </div>
-                <div class="mb-3">
-                    <label for="fechaNacimiento" class="form-label">Fecha de Nacimiento:</label>
-                    <input type="date" id="fechaNacimiento" th:field="*{fechaNacimiento}" class="form-control">
-                    <div class="text-danger" th:if="${#fields.hasErrors('fechaNacimiento')}"
-                         th:errors="*{fechaNacimiento}"></div>
-                </div>
-                <div class="mb-3">
-                    <label for="genero" class="form-label">Género:</label>
-                    <select id="genero" th:field="*{genero}" class="form-select">
-                        <option value="">Seleccione...</option>
-                        <option value="Masculino">Masculino</option>
-                        <option value="Femenino">Femenino</option>
-                        <option value="Otro">Otro</option>
-                    </select>
-                    <div class="text-danger" th:if="${#fields.hasErrors('genero')}" th:errors="*{genero}"></div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="mb-3">
-                    <label for="direccion" class="form-label">Dirección:</label>
-                    <textarea id="direccion" th:field="*{direccion}" class="form-control" rows="3"></textarea>
-                    <div class="text-danger" th:if="${#fields.hasErrors('direccion')}" th:errors="*{direccion}"></div>
-                </div>
-                <div class="mb-3">
-                    <label for="altura" class="form-label">Altura (cm):</label>
-                    <input type="number" step="0.01" id="altura" th:field="*{altura}" class="form-control">
-                    <div class="text-danger" th:if="${#fields.hasErrors('altura')}" th:errors="*{altura}"></div>
-                </div>
-                <div class="mb-3">
-                    <label for="peso" class="form-label">Peso (kg):</label>
-                    <input type="number" step="0.01" id="peso" th:field="*{peso}" class="form-control">
-                    <div class="text-danger" th:if="${#fields.hasErrors('peso')}" th:errors="*{peso}"></div>
-                </div>
-                <div class="mb-3">
-                    <label for="contactoEmergencia" class="form-label">Contacto de Emergencia:</label>
-                    <input type="text" id="contactoEmergencia" th:field="*{contactoEmergencia}" class="form-control">
-                    <div class="text-danger" th:if="${#fields.hasErrors('contactoEmergencia')}"
-                         th:errors="*{contactoEmergencia}"></div>
-                </div>
-                <div class="mb-3">
-                    <label for="telefonoEmergencia" class="form-label">Teléfono de Emergencia:</label>
-                    <input type="text" id="telefonoEmergencia" th:field="*{telefonoEmergencia}" class="form-control">
-                    <div class="text-danger" th:if="${#fields.hasErrors('telefonoEmergencia')}"
-                         th:errors="*{telefonoEmergencia}"></div>
-                </div>
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i> <span th:text="${successMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> <span th:text="${errorMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <div class="card mb-4 shadow-sm">
+            <div class="card-body">
+                <form th:action="@{/cliente/perfil/editar}"
+                      th:object="${registroUsuarioDTO}" method="post"
+                      enctype="multipart/form-data">
+
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5 class="mb-3 pb-2 border-bottom">Información de la Cuenta</h5>
+
+                            <div class="mb-3">
+                                <label for="nombreUsuario" class="form-label text-dark fw-semibold">Nombre de
+                                    Usuario:</label>
+                                <input type="text" class="form-control" id="nombreUsuario" th:field="*{nombreUsuario}"
+                                       th:classappend="${#fields.hasErrors('nombreUsuario') ? 'is-invalid' : ''}"
+                                       required>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('nombreUsuario')}"
+                                     th:errors="*{nombreUsuario}"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="email" class="form-label text-dark fw-semibold">Email:</label>
+                                <input type="email" class="form-control" id="email" th:field="*{email}"
+                                       th:classappend="${#fields.hasErrors('email') ? 'is-invalid' : ''}" required>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}"
+                                     th:errors="*{email}"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="password" class="form-label text-dark fw-semibold">Contraseña (dejar en
+                                    blanco para no cambiar):</label>
+                                <input type="password" class="form-control" id="password" th:field="*{password}"
+                                       th:classappend="${#fields.hasErrors('password') ? 'is-invalid' : ''}">
+                                <div class="form-text text-muted">Deja en blanco para no cambiar la contraseña actual.
+                                </div>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('password')}"
+                                     th:errors="*{password}"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="confirmPassword" class="form-label text-dark fw-semibold">Confirmar
+                                    Contraseña:</label>
+                                <input type="password" class="form-control" id="confirmPassword"
+                                       th:field="*{confirmPassword}"
+                                       th:classappend="${#fields.hasErrors('confirmPassword') ? 'is-invalid' : ''}">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('confirmPassword')}"
+                                     th:errors="*{confirmPassword}"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="rolSeleccionado" class="form-label text-dark fw-semibold">Rol del
+                                    Usuario:</label>
+                                <select class="form-select" id="rolSeleccionado" th:field="*{rol}" required>
+                                    <option value="">Seleccione un rol</option>
+                                    <option th:each="rolEnum : ${roles}"
+                                            th:value="${rolEnum}"
+                                            th:text="${rolEnum}">
+                                    </option>
+                                </select>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('rol')}"
+                                     th:errors="*{rol}"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="imagen" class="form-label text-dark fw-semibold">Imagen de Perfil:</label>
+                                <input type="file" class="form-control" id="imagen" name="imagen" accept="image/*">
+                                <div class="form-text text-muted">Archivos permitidos: JPG, PNG, GIF. Máx. 5MB. Deja en
+                                    blanco para no cambiar la imagen.
+                                </div>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('imagen')}"
+                                     th:errors="*{imagen}"></div>
+
+                                <div class="mt-2 text-center"
+                                     th:if="${usuario.rutaImagen != null and !usuario.rutaImagen.isEmpty()}">
+                                    <p class="mb-1 text-muted">Imagen actual:</p>
+                                    <img th:src="@{/assest/{filename}(filename=${usuario.rutaImagen})}"
+                                         alt="Imagen de perfil actual"
+                                         class="img-fluid rounded-circle border border-2 border-secondary"
+                                         style="width: 100px; height: 100px; object-fit: cover;">
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="col-md-6">
+                            <h5 class="mb-3 pb-2 border-bottom">Información Personal</h5>
+
+                            <div class="mb-3">
+                                <label for="nombreCompleto" class="form-label text-dark fw-semibold">Nombre
+                                    Completo:</label>
+                                <input type="text" class="form-control" id="nombreCompleto" th:field="*{nombreCompleto}"
+                                       th:classappend="${#fields.hasErrors('nombreCompleto') ? 'is-invalid' : ''}"
+                                       required>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('nombreCompleto')}"
+                                     th:errors="*{nombreCompleto}"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="fechaNacimiento" class="form-label text-dark fw-semibold">Fecha de
+                                    Nacimiento:</label>
+                                <input type="date" class="form-control" id="fechaNacimiento"
+                                       th:field="*{fechaNacimiento}"
+                                       th:classappend="${#fields.hasErrors('fechaNacimiento') ? 'is-invalid' : ''}"
+                                       required>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('fechaNacimiento')}"
+                                     th:errors="*{fechaNacimiento}"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="telefono" class="form-label text-dark fw-semibold">Teléfono:</label>
+                                <input type="tel" class="form-control" id="telefono" th:field="*{telefono}"
+                                       th:classappend="${#fields.hasErrors('telefono') ? 'is-invalid' : ''}">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('telefono')}"
+                                     th:errors="*{telefono}"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="genero" class="form-label text-dark fw-semibold">Género:</label>
+                                <select class="form-select" id="genero" th:field="*{genero}"
+                                        th:classappend="${#fields.hasErrors('genero') ? 'is-invalid' : ''}">
+                                    <option value="">Seleccione</option>
+                                    <option value="Masculino">Masculino</option>
+                                    <option value="Femenino">Femenino</option>
+                                    <option value="No binario">No binario</option>
+                                    <option value="Prefiero no decir">Prefiero no decir</option>
+                                </select>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('genero')}"
+                                     th:errors="*{genero}"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="peso" class="form-label text-dark fw-semibold">Peso (kg):</label>
+                                <input type="number" step="0.1" class="form-control" id="peso" th:field="*{peso}"
+                                       th:classappend="${#fields.hasErrors('peso') ? 'is-invalid' : ''}" required>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('peso')}"
+                                     th:errors="*{peso}"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="altura" class="form-label text-dark fw-semibold">Altura (m):</label>
+                                <input type="number" step="0.01" class="form-control" id="altura" th:field="*{altura}"
+                                       th:classappend="${#fields.hasErrors('altura') ? 'is-invalid' : ''}" required>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('altura')}"
+                                     th:errors="*{altura}"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="direccion" class="form-label text-dark fw-semibold">Dirección:</label>
+                                <textarea class="form-control" id="direccion" th:field="*{direccion}" rows="3"
+                                          th:classappend="${#fields.hasErrors('direccion') ? 'is-invalid' : ''}"></textarea>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('direccion')}"
+                                     th:errors="*{direccion}"></div>
+                            </div>
+
+                            <h5 class="mt-4 mb-3 pb-2 border-bottom">Contacto de Emergencia</h5>
+
+                            <div class="mb-3">
+                                <label for="contactoEmergencia" class="form-label text-dark fw-semibold">Nombre del
+                                    Contacto de Emergencia:</label>
+                                <input type="text" class="form-control" id="contactoEmergencia"
+                                       th:field="*{contactoEmergencia}"
+                                       th:classappend="${#fields.hasErrors('contactoEmergencia') ? 'is-invalid' : ''}"
+                                       required>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('contactoEmergencia')}"
+                                     th:errors="*{contactoEmergencia}"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="telefonoEmergencia" class="form-label text-dark fw-semibold">Teléfono de
+                                    Emergencia:</label>
+                                <input type="tel" class="form-control" id="telefonoEmergencia"
+                                       th:field="*{telefonoEmergencia}"
+                                       th:classappend="${#fields.hasErrors('telefonoEmergencia') ? 'is-invalid' : ''}"
+                                       required>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('telefonoEmergencia')}"
+                                     th:errors="*{telefonoEmergencia}"></div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="mt-4 d-flex justify-content-end">
+                        <button type="submit" class="btn btn-primary me-2">
+                            <i class="bi bi-person-check"></i> Guardar Cambios
+                        </button>
+                        <a th:href="@{/cliente/perfil}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Cancelar y Volver
+                        </a>
+                    </div>
+                </form>
             </div>
         </div>
-        <button type="submit" class="btn btn-success"><i class="bi bi-save me-2"></i>Guardar Cambios</button>
-        <a th:href="@{/cliente/perfil}" class="btn btn-secondary ms-2"><i class="bi bi-arrow-left-circle me-2"></i>Cancelar</a>
-    </form>
-</th:block>
+    </div>
+</div>
 
-<th:block layout:fragment="scripts"></th:block>
 </body>
 </html>

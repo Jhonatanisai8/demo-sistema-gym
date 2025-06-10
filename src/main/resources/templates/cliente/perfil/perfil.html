@@ -22,48 +22,85 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 
-    <div class="card shadow-sm">
-        <div class="card-header bg-primary text-white">
-            <h5 class="mb-0">Información Personal</h5>
-        </div>
-        <div class="card-body">
-            <div class="row">
-                <div class="col-md-6">
-                    <p><strong>Nombre Completo:</strong> <span th:text="${usuario.nombreCompleto}"></span></p>
-                    <p><strong>Nombre de Usuario:</strong> <span th:text="${usuario.nombreUsuario}"></span></p>
-                    <p><strong>Email:</strong> <span th:text="${usuario.email}"></span></p>
-                    <p><strong>Teléfono:</strong> <span th:text="${usuario.telefono ?: 'N/A'}"></span></p>
-                    <p><strong>Fecha de Nacimiento:</strong> <span
-                            th:text="${usuario.fechaNacimiento != null ? #temporals.format(usuario.fechaNacimiento, 'dd-MM-yyyy') : 'N/A'}"></span>
+    <div class="card shadow-lg mb-4 border-0">
+        <div class="card-header bg-primary text-white py-3"><h5 class="mb-0 fs-5"><i class="bi bi-info-circle me-2"></i>Información
+            Personal</h5></div>
+        <div class="card-body p-4">
+            <div class="row align-items-center mb-4">
+                <div class="col-md-auto text-center">
+                    <div class="profile-image-container mb-3"><img
+                            th:src="${usuario.rutaImagen != null and !usuario.rutaImagen.isEmpty() ? '/assest/' + usuario.rutaImagen : '/images/default-avatar.png'}"
+                            alt="Imagen de perfil"
+                            class="img-fluid rounded-circle border border-3 border-primary shadow-sm"
+                            style="width: 150px; height: 150px; object-fit: cover;"></div>
                     </p>
-                    <p><strong>Género:</strong> <span th:text="${usuario.genero ?: 'N/A'}"></span></p>
                 </div>
-                <div class="col-md-6">
-                    <p><strong>Dirección:</strong> <span th:text="${usuario.direccion ?: 'N/A'}"></span></p>
-                    <p><strong>Altura:</strong> <span
-                            th:text="${usuario.altura != null ? #numbers.formatDecimal(usuario.altura, 0, 'COMMA', 2, 'POINT') + ' cm' : 'N/A'}"></span>
-                    </p>
-                    <p><strong>Peso:</strong> <span
-                            th:text="${usuario.peso != null ? #numbers.formatDecimal(usuario.peso, 0, 'COMMA', 2, 'POINT') + ' kg' : 'N/A'}"></span>
-                    </p>
-                    <p><strong>Contacto de Emergencia:</strong> <span
-                            th:text="${usuario.contactoEmergencia ?: 'N/A'}"></span></p>
-                    <p><strong>Teléfono de Emergencia:</strong> <span
-                            th:text="${usuario.telefonoEmergencia ?: 'N/A'}"></span></p>
-                    <p><strong>Fecha de Registro:</strong> <span
-                            th:text="${#temporals.format(usuario.fechaRegistro, 'dd-MM-yyyy HH:mm')}"></span></p>
+                <div class="col-md"><h3 class="mb-2 text-primary" th:text="${usuario.nombreCompleto}">Nombre Completo
+                    del Usuario</h3>
+                    <p class="lead text-muted" th:text="${usuario.email}">email@example.com</p>
+                    <hr class="my-3">
+                    <div class="row">
+                        <div class="col-sm-6 mb-2">
+                            <p class="mb-0 text-muted"><strong>Nombre de Usuario:</strong></p>
+                            <p class="fw-bold" th:text="${usuario.nombreUsuario}"></p>
+                        </div>
+                        <div class="col-sm-6 mb-2">
+                            <p class="mb-0 text-muted"><strong>Teléfono:</strong></p>
+                            <p class="fw-bold" th:text="${usuario.telefono ?: 'N/A'}"></p>
+                        </div>
+                        <div class="col-sm-6 mb-2">
+                            <p class="mb-0 text-muted"><strong>Fecha de Nacimiento:</strong></p>
+                            <p class="fw-bold"
+                               th:text="${usuario.fechaNacimiento != null ? #temporals.format(usuario.fechaNacimiento, 'dd-MM-yyyy') : 'N/A'}"></p>
+                        </div>
+                        <div class="col-sm-6 mb-2">
+                            <p class="mb-0 text-muted"><strong>Género:</strong></p>
+                            <p class="fw-bold" th:text="${usuario.genero ?: 'N/A'}"></p>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <hr>
-            <a th:href="@{/cliente/perfil/editar}" class="btn btn-warning me-2"><i class="bi bi-pencil-square me-2"></i>Editar
-                Perfil</a>
-            <a th:href="@{/cliente/perfil/cambiar-contrasena}" class="btn btn-secondary"><i class="bi bi-key me-2"></i>Cambiar
-                Contraseña</a>
+
+            <h5 class="mt-4 mb-3 text-secondary"><i class="bi bi-geo-alt-fill me-2"></i>Detalles Adicionales</h5>
+            <div class="row">
+                <div class="col-md-6 mb-2">
+                    <p class="mb-0 text-muted"><strong>Dirección:</strong></p>
+                    <p class="fw-bold" th:text="${usuario.direccion ?: 'N/A'}"></p>
+                </div>
+                <div class="col-md-6 mb-2">
+                    <p class="mb-0 text-muted"><strong>Altura:</strong></p>
+                    <p class="fw-bold"
+                       th:text="${usuario.altura != null ? #numbers.formatDecimal(usuario.altura, 0, 'COMMA', 2, 'POINT') + ' cm' : 'N/A'}"></p>
+                </div>
+                <div class="col-md-6 mb-2">
+                    <p class="mb-0 text-muted"><strong>Peso:</strong></p>
+                    <p class="fw-bold"
+                       th:text="${usuario.peso != null ? #numbers.formatDecimal(usuario.peso, 0, 'COMMA', 2, 'POINT') + ' kg' : 'N/A'}"></p>
+                </div>
+                <div class="col-md-6 mb-2">
+                    <p class="mb-0 text-muted"><strong>Contacto de Emergencia:</strong></p>
+                    <p class="fw-bold" th:text="${usuario.contactoEmergencia ?: 'N/A'}"></p>
+                </div>
+                <div class="col-md-6 mb-2">
+                    <p class="mb-0 text-muted"><strong>Teléfono de Emergencia:</strong></p>
+                    <p class="fw-bold" th:text="${usuario.telefonoEmergencia ?: 'N/A'}"></p>
+                </div>
+                <div class="col-md-6 mb-2">
+                    <p class="mb-0 text-muted"><strong>Miembro desde:</strong></p>
+                    <p class="fw-bold" th:text="${#temporals.format(usuario.fechaRegistro, 'dd-MM-yyyy HH:mm')}"></p>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div class="d-flex justify-content-center justify-content-md-start gap-3"><a
+                    th:href="@{/cliente/perfil/editar}" class="btn btn-warning px-4 py-2 rounded-pill"><i
+                    class="bi bi-pencil-square me-2"></i>Editar Perfil</a>
+                <a th:href="@{/cliente/perfil/cambiar-contrasena}" class="btn btn-info px-4 py-2 rounded-pill"><i
+                        class="bi bi-key me-2"></i>Cambiar Contraseña</a>
+            </div>
         </div>
     </div>
-    <div class="mt-3">
-        <a th:href="@{/cliente/dashboard}" class="btn btn-outline-secondary"><i
-                class="bi bi-arrow-left-circle me-2"></i>Volver al Dashboard</a>
+    <div class="mt-3 text-center text-md-start"><a th:href="@{/cliente/dashboard}" class="btn btn-outline-secondary"><i
+            class="bi bi-arrow-left-circle me-2"></i>Volver al Dashboard</a>
     </div>
 </th:block>
 

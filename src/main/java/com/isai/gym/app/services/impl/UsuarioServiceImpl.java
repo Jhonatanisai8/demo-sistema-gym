@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -41,8 +42,8 @@ public class UsuarioServiceImpl
         Usuario nuevoUsuario = new Usuario();
         nuevoUsuario.setNombreUsuario(usuarioDTO.getNombreUsuario());
         nuevoUsuario.setEmail(usuarioDTO.getEmail());
-        nuevoUsuario.setContrasena(passwordEncoder.encode(usuarioDTO.getPassword())); // ¡Importante: Hashear la contraseña!
-        nuevoUsuario.setRol(TipoUsuario.CLIENTE); // Por defecto, los registros son para clientes
+        nuevoUsuario.setContrasena(passwordEncoder.encode(usuarioDTO.getPassword()));
+        nuevoUsuario.setRol(TipoUsuario.CLIENTE);
         nuevoUsuario.setNombreCompleto(usuarioDTO.getNombreCompleto());
         nuevoUsuario.setFechaNacimiento(usuarioDTO.getFechaNacimiento());
         nuevoUsuario.setTelefono(usuarioDTO.getTelefono());
@@ -52,12 +53,12 @@ public class UsuarioServiceImpl
         nuevoUsuario.setTelefonoEmergencia(usuarioDTO.getTelefonoEmergencia());
         nuevoUsuario.setPeso(usuarioDTO.getPeso());
         nuevoUsuario.setAltura(usuarioDTO.getAltura());
-        //Para manejar las rutas
+
         if (usuarioDTO.getImagen() != null && !usuarioDTO.getImagen().isEmpty()) {
             String rutaImagen = almacenArchivo.almacenarArchivo(usuarioDTO.getImagen());
             nuevoUsuario.setRutaImagen(rutaImagen);
         }
-        // Los @PrePersist en la entidad Usuario manejarán fechaRegistro y activo
+
         return usuarioRepository.save(nuevoUsuario);
     }
 
@@ -90,37 +91,24 @@ public class UsuarioServiceImpl
     public Usuario actualizarUsuario(Long id, RegistroUsuarioDTO usuarioDTO) {
         Optional<Usuario> usuarioOptional = usuarioRepository.findById(id);
         if (usuarioOptional.isEmpty()) {
-            throw new IllegalArgumentException("Usuario no encontrado.");
+            throw new IllegalArgumentException("Usuario no encontrado con ID: " + id);
         }
         Usuario usuarioExistente = usuarioOptional.get();
 
-        // Validar unicidad si el nombre de usuario cambia
         if (!usuarioDTO.getNombreUsuario().equals(usuarioExistente.getNombreUsuario())) {
             if (usuarioRepository.findByNombreUsuario(usuarioDTO.getNombreUsuario()).isPresent()) {
-                throw new IllegalArgumentException("El nombre de usuario ya está en uso.");
+                throw new IllegalArgumentException("El nombre de usuario '" + usuarioDTO.getNombreUsuario() + "' ya está en uso.");
             }
         }
-        // Validar unicidad si el email cambia
+
         if (!usuarioDTO.getEmail().equals(usuarioExistente.getEmail())) {
             if (usuarioRepository.findByEmail(usuarioDTO.getEmail()).isPresent()) {
-                throw new IllegalArgumentException("El email ya está registrado.");
+                throw new IllegalArgumentException("El email '" + usuarioDTO.getEmail() + "' ya está registrado.");
             }
         }
 
-        // Actualizar campos
         usuarioExistente.setNombreUsuario(usuarioDTO.getNombreUsuario());
         usuarioExistente.setEmail(usuarioDTO.getEmail());
-
-        // Actualizar contraseña solo si se proporciona una nueva
-        if (usuarioDTO.getPassword() != null && !usuarioDTO.getPassword().isEmpty()) {
-            usuarioExistente.setContrasena(passwordEncoder.encode(usuarioDTO.getPassword()));
-        }
-
-        // El rol es asignado por el admin
-        if (usuarioDTO.getRol() != null) {
-            usuarioExistente.setRol(usuarioDTO.getRol());
-        }
-
         usuarioExistente.setNombreCompleto(usuarioDTO.getNombreCompleto());
         usuarioExistente.setFechaNacimiento(usuarioDTO.getFechaNacimiento());
         usuarioExistente.setTelefono(usuarioDTO.getTelefono());
@@ -131,16 +119,20 @@ public class UsuarioServiceImpl
         usuarioExistente.setPeso(usuarioDTO.getPeso());
         usuarioExistente.setAltura(usuarioDTO.getAltura());
 
-        if (usuarioDTO.getImagen() != null && !usuarioDTO.getImagen().isEmpty()) {
+        if (usuarioDTO.getPassword() != null && !usuarioDTO.getPassword().isEmpty()) {
+            usuarioExistente.setContrasena(passwordEncoder.encode(usuarioDTO.getPassword()));
+        }
 
+        if (usuarioDTO.getRol() != null) {
+            usuarioExistente.setRol(usuarioDTO.getRol());
+        }
+        MultipartFile imagenArchivo = usuarioDTO.getImagen();
+        if (imagenArchivo != null && !imagenArchivo.isEmpty()) {
             if (usuarioExistente.getRutaImagen() != null && !usuarioExistente.getRutaImagen().isEmpty()) {
                 almacenArchivo.eliminarArchivo(usuarioExistente.getRutaImagen());
             }
-            String nuevaRutaImagen = almacenArchivo.almacenarArchivo(usuarioDTO.getImagen());
+            String nuevaRutaImagen = almacenArchivo.almacenarArchivo(imagenArchivo);
             usuarioExistente.setRutaImagen(nuevaRutaImagen);
-        } else if (usuarioDTO.getImagen() != null && usuarioDTO.getImagen().isEmpty() && usuarioExistente.getRutaImagen() != null && !usuarioExistente.getRutaImagen().isEmpty()) {
-            almacenArchivo.eliminarArchivo(usuarioExistente.getRutaImagen());
-            usuarioExistente.setRutaImagen(usuarioExistente.getRutaImagen());
         }
         return usuarioRepository.save(usuarioExistente);
     }
