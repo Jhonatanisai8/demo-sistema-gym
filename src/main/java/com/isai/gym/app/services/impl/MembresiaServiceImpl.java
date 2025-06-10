@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -106,5 +107,9 @@ public class MembresiaServiceImpl
             membresia.setActiva(activa);
             return membresiaRepository.save(membresia);
         });
+    }
+
+    public List<Membresia> obtenerMembresias() {
+        return membresiaRepository.findAll();
     }
 }
