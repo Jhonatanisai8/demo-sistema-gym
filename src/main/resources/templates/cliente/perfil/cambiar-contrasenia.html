@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/client-layout}">
+<head>
+    <title layout:title-template="Cambiar Contraseña - %s">Cambiar Contraseña</title>
+    <th:block layout:fragment="styles"></th:block>
+</head>
+<body>
+<th:block layout:fragment="header">
+    <h1 class="h3"><i class="bi bi-key me-2"></i>Cambiar Contraseña</h1>
+</th:block>
+
+<th:block layout:fragment="content">
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i> <span th:text="${successMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i> <span th:text="${errorMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <form th:action="@{/cliente/perfil/cambiar-contrasena}" method="post">
+        <div class="mb-3">
+            <label for="oldPassword" class="form-label">Contraseña Actual:</label>
+            <input type="password" id="oldPassword" name="oldPassword" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label for="newPassword" class="form-label">Nueva Contraseña:</label>
+            <input type="password" id="newPassword" name="newPassword" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label for="confirmNewPassword" class="form-label">Confirmar Nueva Contraseña:</label>
+            <input type="password" id="confirmNewPassword" name="confirmNewPassword" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary"><i class="bi bi-key-fill me-2"></i>Cambiar Contraseña</button>
+        <a th:href="@{/cliente/perfil}" class="btn btn-secondary ms-2"><i class="bi bi-arrow-left-circle me-2"></i>Cancelar</a>
+    </form>
+</th:block>
+
+<th:block layout:fragment="scripts"></th:block>
+</body>
+</html>

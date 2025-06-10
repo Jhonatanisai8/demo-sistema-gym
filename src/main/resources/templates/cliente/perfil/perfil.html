@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/client-layout}">
+<head>
+    <title layout:title-template="Mi Perfil - %s">Ver Perfil</title>
+    <th:block layout:fragment="styles"></th:block>
+</head>
+<body>
+<th:block layout:fragment="header">
+    <h1 class="h3"><i class="bi bi-person-fill me-2"></i>Mi Perfil</h1>
+</th:block>
+
+<th:block layout:fragment="content">
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i> <span th:text="${successMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i> <span th:text="${errorMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Información Personal</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Nombre Completo:</strong> <span th:text="${usuario.nombreCompleto}"></span></p>
+                    <p><strong>Nombre de Usuario:</strong> <span th:text="${usuario.nombreUsuario}"></span></p>
+                    <p><strong>Email:</strong> <span th:text="${usuario.email}"></span></p>
+                    <p><strong>Teléfono:</strong> <span th:text="${usuario.telefono ?: 'N/A'}"></span></p>
+                    <p><strong>Fecha de Nacimiento:</strong> <span
+                            th:text="${usuario.fechaNacimiento != null ? #temporals.format(usuario.fechaNacimiento, 'dd-MM-yyyy') : 'N/A'}"></span>
+                    </p>
+                    <p><strong>Género:</strong> <span th:text="${usuario.genero ?: 'N/A'}"></span></p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Dirección:</strong> <span th:text="${usuario.direccion ?: 'N/A'}"></span></p>
+                    <p><strong>Altura:</strong> <span
+                            th:text="${usuario.altura != null ? #numbers.formatDecimal(usuario.altura, 0, 'COMMA', 2, 'POINT') + ' cm' : 'N/A'}"></span>
+                    </p>
+                    <p><strong>Peso:</strong> <span
+                            th:text="${usuario.peso != null ? #numbers.formatDecimal(usuario.peso, 0, 'COMMA', 2, 'POINT') + ' kg' : 'N/A'}"></span>
+                    </p>
+                    <p><strong>Contacto de Emergencia:</strong> <span
+                            th:text="${usuario.contactoEmergencia ?: 'N/A'}"></span></p>
+                    <p><strong>Teléfono de Emergencia:</strong> <span
+                            th:text="${usuario.telefonoEmergencia ?: 'N/A'}"></span></p>
+                    <p><strong>Fecha de Registro:</strong> <span
+                            th:text="${#temporals.format(usuario.fechaRegistro, 'dd-MM-yyyy HH:mm')}"></span></p>
+                </div>
+            </div>
+            <hr>
+            <a th:href="@{/cliente/perfil/editar}" class="btn btn-warning me-2"><i class="bi bi-pencil-square me-2"></i>Editar
+                Perfil</a>
+            <a th:href="@{/cliente/perfil/cambiar-contrasena}" class="btn btn-secondary"><i class="bi bi-key me-2"></i>Cambiar
+                Contraseña</a>
+        </div>
+    </div>
+    <div class="mt-3">
+        <a th:href="@{/cliente/dashboard}" class="btn btn-outline-secondary"><i
+                class="bi bi-arrow-left-circle me-2"></i>Volver al Dashboard</a>
+    </div>
+</th:block>
+
+<th:block layout:fragment="scripts"></th:block>
+</body>
+</html>
