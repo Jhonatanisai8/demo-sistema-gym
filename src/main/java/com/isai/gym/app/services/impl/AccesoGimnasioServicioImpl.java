@@ -1,13 +1,17 @@
 package com.isai.gym.app.services.impl;
 
 import com.isai.gym.app.entities.AccesoGimnasio;
+import com.isai.gym.app.entities.MembresiaCliente;
+import com.isai.gym.app.entities.Usuario;
 import com.isai.gym.app.repository.AccesoGimnacioRepository;
 import com.isai.gym.app.services.AccesoGimnasioService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -16,6 +20,9 @@ public class AccesoGimnasioServicioImpl
         implements AccesoGimnasioService {
 
     private final AccesoGimnacioRepository accesoGimnacioRepository;
+
+    private final MembresiaClienteServiceImpl membresiaClienteServiceImpl;
+
 
     @Override
     public Page<AccesoGimnasio> obtenerAccesosPorUsuario(Long usuarioId, Pageable paginacion) {
@@ -47,4 +54,34 @@ public class AccesoGimnasioServicioImpl
         return accesoGimnasioRepositorio.save(accesoExistente);
     }
     */
+
+    @Transactional
+    @Override
+    public AccesoGimnasio registrarEntrada(Usuario usuario) {
+        MembresiaCliente membresiaCliente = membresiaClienteServiceImpl.obtenerMembresiaActivaPorUsuario(usuario.getId());
+        if (membresiaCliente == null) {
+            throw new IllegalArgumentException("El usuario no existe");
+        }
+        AccesoGimnasio acceso = new AccesoGimnasio();
+        acceso.setUsuario(usuario);
+        acceso.setFechaHoraEntrada(LocalDateTime.now());
+        acceso.setActivo(true);
+        return accesoGimnacioRepository.save(acceso);
+    }
+
+    @Override
+    @Transactional
+    public AccesoGimnasio registrarSalida(Long idAccesoGimnasio) {
+        AccesoGimnasio acceso = accesoGimnacioRepository.findById(idAccesoGimnasio)
+                .orElseThrow(() -> new IllegalArgumentException("Acceso no encontrado."));
+
+        if (!acceso.getActivo()) {
+            throw new IllegalArgumentException("El acceso ya ha sido finalizado.");
+        }
+
+        acceso.setFechaHoraSalida(LocalDateTime.now());
+        acceso.setActivo(false);
+        return accesoGimnacioRepository.save(acceso);
+    }
+
 }

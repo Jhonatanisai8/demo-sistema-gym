@@ -1,6 +1,7 @@
 package com.isai.gym.app.services;
 
 import com.isai.gym.app.entities.AccesoGimnasio;
+import com.isai.gym.app.entities.Usuario;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -12,4 +13,7 @@ public interface AccesoGimnasioService {
 
     List<AccesoGimnasio> obtenerUltimosAccesosPorUsuario(Long usuarioId, int limite);
 
+    AccesoGimnasio registrarEntrada(Usuario usuario);
+
+    AccesoGimnasio registrarSalida(Long idAccesoGimnasio);
 }
