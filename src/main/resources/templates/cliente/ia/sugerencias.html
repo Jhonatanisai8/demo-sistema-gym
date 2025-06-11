@@ -9,6 +9,7 @@
     <style>
         .chat-container {
             max-width: 800px;
+            height: 600px; /* Altura fija */
             margin: 20px auto;
             background-color: #ffffff;
             border-radius: 1rem;
@@ -16,7 +17,6 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            min-height: 600px; /* Altura mínima para que se vea como un chat */
         }
 
         .chat-header {
@@ -26,11 +26,12 @@
             text-align: center;
             font-size: 1.5rem;
             font-weight: 600;
+            flex-shrink: 0;
         }
 
         .chat-body {
             flex-grow: 1;
-            padding: 20px;
+            padding: 1rem;
             overflow-y: auto;
             background-color: var(--light-bg);
             border-bottom: 1px solid var(--border-color);
@@ -45,13 +46,13 @@
         }
 
         .message.user {
-            background-color: #e0f2f7; /* Un azul claro */
+            background-color: #e0f2f7;
             margin-left: auto;
             text-align: right;
         }
 
         .message.ai {
-            background-color: #f0f0f0; /* Un gris claro */
+            background-color: #f0f0f0;
             margin-right: auto;
             text-align: left;
         }
@@ -70,9 +71,10 @@
         }
 
         .form-send {
-            padding: 20px;
+            padding: 1rem;
             background-color: #f8f9fa;
             border-top: 1px solid var(--border-color);
+            flex-shrink: 0;
         }
     </style>
 </head>
@@ -91,6 +93,7 @@
         <div class="chat-header">
             Tu Asesor Personal de Ejercicios
         </div>
+
         <div class="chat-body" id="chatBody">
             <div class="message ai">
                 <p>¡Hola! Soy tu asistente de IA. Pregúntame sobre ejercicios que puedes hacer en el gimnasio, ¡teniendo
@@ -98,22 +101,23 @@
                 <p>Por ejemplo: "¿Qué ejercicios puedo hacer para piernas con mancuernas?" o "¿Qué máquinas cardio
                     tienen?"</p>
             </div>
-            <!-- Los mensajes generados por JS se insertarán aquí -->
         </div>
+
         <div class="loading-spinner d-none" id="loadingSpinner">
             <div class="spinner-border text-primary" role="status">
                 <span class="visually-hidden">Cargando...</span>
             </div>
             <p class="text-muted mt-2">La IA está pensando...</p>
         </div>
+
         <div class="form-send">
             <form id="chatForm">
                 <div class="input-group">
                     <input type="text" id="userQuestion" name="pregunta"
                            class="form-control form-control-lg rounded-pill-start" placeholder="Haz tu pregunta aquí..."
                            required>
-                    <button type="submit" class="btn btn-primary btn-lg rounded-pill-end"><i
-                            class="bi bi-send-fill me-2"></i>Enviar
+                    <button type="submit" class="btn btn-primary btn-lg rounded-pill-end">
+                        <i class="bi bi-send-fill me-2"></i>Enviar
                     </button>
                 </div>
             </form>
@@ -121,8 +125,9 @@
     </div>
 
     <div class="mt-4 text-center">
-        <a th:href="@{/cliente/dashboard}" class="btn btn-outline-secondary"><i
-                class="bi bi-arrow-left-circle me-2"></i>Volver al Dashboard</a>
+        <a th:href="@{/cliente/dashboard}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left-circle me-2"></i>Volver al Dashboard
+        </a>
     </div>
 </th:block>
 
@@ -135,27 +140,24 @@
             const loadingSpinner = document.getElementById('loadingSpinner');
 
             chatForm.addEventListener('submit', async function (event) {
-                event.preventDefault(); // Prevenir el envío normal del formulario
+                event.preventDefault();
 
                 const preguntaUsuario = userQuestionInput.value.trim();
                 if (preguntaUsuario === '') {
-                    return; // No enviar preguntas vacías
+                    return;
                 }
 
-                // Añadir el mensaje del usuario al chat
                 appendMessage(preguntaUsuario, 'user');
-                userQuestionInput.value = ''; // Limpiar el input
+                userQuestionInput.value = '';
 
-                // Mostrar spinner de carga
                 loadingSpinner.classList.remove('d-none');
-                chatBody.scrollTop = chatBody.scrollHeight; // Desplazar al final
+                chatBody.scrollTop = chatBody.scrollHeight;
 
                 try {
-                    // Enviar la pregunta al servidor
                     const response = await fetch('/cliente/ia/sugerencias', {
                         method: 'POST',
                         headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded' // Formato de formulario
+                            'Content-Type': 'application/x-www-form-urlencoded'
                         },
                         body: new URLSearchParams({
                             'pregunta': preguntaUsuario
@@ -167,28 +169,24 @@
                         throw new Error(`Error del servidor: ${response.status} - ${errorText}`);
                     }
 
-                    const data = await response.json(); // Esperamos un JSON
-
-                    // Añadir la respuesta de la IA al chat
+                    const data = await response.json();
                     appendMessage(data.respuestaIA, 'ai');
 
                 } catch (error) {
                     console.error('Error al obtener respuesta de la IA:', error);
                     appendMessage('Lo siento, hubo un error al procesar tu solicitud. Por favor, intenta de nuevo más tarde.', 'ai');
                 } finally {
-                    // Ocultar spinner de carga
                     loadingSpinner.classList.add('d-none');
-                    chatBody.scrollTop = chatBody.scrollHeight; // Desplazar al final
+                    chatBody.scrollTop = chatBody.scrollHeight;
                 }
             });
 
             function appendMessage(text, sender) {
                 const messageDiv = document.createElement('div');
                 messageDiv.classList.add('message', sender);
-                // Usamos innerHTML para permitir que el texto de la IA contenga formato (ej. listas, negritas)
-                messageDiv.innerHTML = `<p>${text.replace(/\n/g, '<br>')}</p>`; // Reemplazar saltos de línea por <br>
+                messageDiv.innerHTML = `<p>${text.replace(/\n/g, '<br>')}</p>`;
                 chatBody.appendChild(messageDiv);
-                chatBody.scrollTop = chatBody.scrollHeight; // Desplazar al final
+                chatBody.scrollTop = chatBody.scrollHeight;
             }
         });
     </script>
