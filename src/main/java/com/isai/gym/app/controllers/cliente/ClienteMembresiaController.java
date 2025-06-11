@@ -12,6 +12,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
 import java.util.List;
@@ -65,7 +67,6 @@ public class ClienteMembresiaController {
         }
     }
 
-
     @GetMapping("/comprar")
     public String mostrarMembresiasCompra(Model model) {
         List<Membresia> membresiasDisponibles = membresiaService.obtenerMembresias();
@@ -78,6 +79,32 @@ public class ClienteMembresiaController {
             model.addAttribute("errorMessage", model.asMap().get("errorMessage"));
         }
         return "cliente/membresias/tienda";
+    }
+
+    @GetMapping("/confirmar-compra")
+    public String confirmarCompra(@RequestParam("id") Long idTipoMembresia, Model modelo, RedirectAttributes atributosRedireccion) {
+        try {
+            Membresia tipoMembresia = membresiaService.obtenerMembresiaId(idTipoMembresia).get();
+
+            if (!tipoMembresia.getActiva()) {
+                atributosRedireccion.addFlashAttribute("mensajeError", "La membresía seleccionada no está disponible para la compra.");
+                return "redirect:/cliente/membresias/tienda";
+            }
+
+            modelo.addAttribute("tipoMembresia", tipoMembresia);
+
+            // recuperamos mensajes de error de redirecciones
+            if (modelo.containsAttribute("mensajeError")) {
+                modelo.addAttribute("mensajeError", modelo.asMap().get("mensajeError"));
+            }
+            return "cliente/membresias/confirmar-compra";
+        } catch (IllegalArgumentException e) {
+            atributosRedireccion.addFlashAttribute("mensajeError", e.getMessage());
+            return "redirect:/cliente/membresias/comprar";
+        } catch (Exception e) {
+            atributosRedireccion.addFlashAttribute("mensajeError", "Ocurrió un error al preparar la compra: " + e.getMessage());
+            return "redirect:/cliente/membresias/comprar";
+        }
     }
 
 
