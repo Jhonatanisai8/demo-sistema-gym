@@ -186,4 +186,8 @@ public class MembresiaClienteServiceImpl implements MembresiaClienteService {
 
         return membresiaGuardada;
     }
+
+    public Optional<MembresiaCliente> obtenerMembresiaActivaPorUsuarioId(Long usuarioId) {
+        return membresiaClienteRepository.findByUsuarioIdAndEstado(usuarioId, EstadoMembresia.ACTIVA);
+    }
 }

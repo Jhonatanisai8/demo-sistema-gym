@@ -4,25 +4,159 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/client-layout}">
 <head>
-    <title layout:title-template="Dashboard - %s">Dashboard</title>
-    <th:block layout:fragment="styles"></th:block>
+    <title>Resumen del Cliente</title>
+    <th:block layout:fragment="styles">
+        <style>
+            .dashboard-card {
+                background-color: #ffffff;
+                border-radius: 0.75rem;
+                box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.05);
+                padding: 1.5rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .dashboard-card h5 {
+                color: var(--primary-color-client);
+                font-weight: 600;
+                margin-bottom: 1rem;
+            }
+
+            .list-group-item {
+                border: none;
+                padding-left: 0;
+            }
+
+            .list-group-item strong {
+                color: #343a40;
+            }
+
+            .table-striped tbody tr:nth-of-type(odd) {
+                background-color: rgba(0, 0, 0, .05);
+            }
+        </style>
+    </th:block>
 </head>
 <body>
 <th:block layout:fragment="header">
-    <h1 class="h3"><i class="bi bi-speedometer2 me-2"></i>Mi Dashboard</h1>
+    <h1 class="h3"><i class="bi bi-speedometer2 me-2"></i>Dashboard del Cliente</h1>
 </th:block>
 
 <th:block layout:fragment="content">
-    <div class="card">
-        <div class="card-header">
-            Resumen General
-        </div>
-        <div class="card-body">
-            <p>Aquí se mostrarán las membresías activas, últimos accesos, etc.</p>
+    <div th:if="${mensajeError}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i> <span th:text="${mensajeError}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+    </div>
+
+    <!-- Sección de Bienvenida y Datos del Usuario -->
+    <div class="row mb-4">
+        <div class="col-lg-12">
+            <div class="dashboard-card text-center">
+                <h2 class="mb-3">¡Bienvenido, <span th:text="${usuario.nombreCompleto}">Nombre del Cliente</span>!</h2>
+                <p class="text-muted">Aquí tienes un resumen rápido de tu actividad en el gimnasio.</p>
+                <div class="row justify-content-center mt-4">
+                    <div class="col-md-auto text-center">
+                        <i class="bi bi-rulers fs-3 text-info"></i>
+                        <p class="mb-0">Altura:</p>
+                        <p class="fw-bold fs-5" th:text="${usuario.altura != null ? usuario.altura + ' cm' : 'N/A'}">175
+                            cm</p>
+                    </div>
+                    <div class="col-md-auto text-center ms-md-4">
+                        <i class="bi bi-weight fs-3 text-info"></i>
+                        <p class="mb-0">Peso:</p>
+                        <p class="fw-bold fs-5" th:text="${usuario.peso != null ? usuario.peso + ' kg' : 'N/A'}">70
+                            kg</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+
+    <div class="row">
+        <!-- Membresía Activa -->
+        <div class="col-lg-6 mb-4">
+            <div class="dashboard-card">
+                <h5><i class="bi bi-award-fill me-2"></i>Tu Membresía Activa</h5>
+                <div th:if="${membresiaActiva != null}">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><strong>Nombre:</strong> <span
+                                th:text="${membresiaActiva.membresia.nombre}">Membresía Premium</span></li>
+                        <li class="list-group-item"><strong>Estado:</strong> <span th:text="${membresiaActiva.estado}">ACTIVA</span>
+                        </li>
+                        <li class="list-group-item"><strong>Fecha Inicio:</strong> <span
+                                th:text="${#temporals.format(membresiaActiva.fechaInicio, 'dd-MM-yyyy')}">01-01-2025</span>
+                        </li>
+                        <li class="list-group-item"><strong>Fecha Fin:</strong> <span
+                                th:text="${#temporals.format(membresiaActiva.fechaFin, 'dd-MM-yyyy')}">31-12-2025</span>
+                        </li>
+                        <li class="list-group-item"><strong>Precio Pagado:</strong> <span
+                                th:text="${#numbers.formatCurrency(membresiaActiva.montoPagado)}">$50.00</span></li>
+                        <li class="list-group-item"><strong>Beneficios:</strong> <span
+                                th:text="${membresiaActiva.membresia.beneficios != null ? membresiaActiva.membresia.beneficios : 'No especificados'}">Acceso ilimitado, clases grupales</span>
+                        </li>
+                    </ul>
+                    <div class="text-center mt-3">
+                        <a href="#" class="btn btn-sm btn-outline-primary">Ver Detalles de Membresía</a>
+                    </div>
+                </div>
+                <div th:if="${membresiaActiva == null}" class="text-center text-muted py-3">
+                    <p><i class="bi bi-exclamation-circle me-2"></i>No tienes una membresía activa en este momento.</p>
+                    <a th:href="@{/cliente/membresias}" class="btn btn-primary">Explorar Membresías</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Últimos Accesos al Gimnasio -->
+        <div class="col-lg-6 mb-4">
+            <div class="dashboard-card">
+                <h5><i class="bi bi-door-open-fill me-2"></i>Tus Últimos Accesos</h5>
+                <div th:if="${!ultimosAccesos.empty}">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Entrada</th>
+                                <th>Salida</th>
+                                <th>Duración</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="acceso, iterStat : ${ultimosAccesos}">
+                                <td th:text="${iterStat.count}">1</td>
+                                <td th:text="${#temporals.format(acceso.fechaHoraEntrada, 'dd-MM-yyyy HH:mm')}"></td>
+                                <td th:text="${acceso.fechaHoraSalida != null ? #temporals.format(acceso.fechaHoraSalida, 'dd-MM-yyyy HH:mm') : 'Activo'}"></td>
+                                <td th:text="${acceso.fechaHoraSalida != null ? #temporals.format(#temporals.diff(acceso.fechaHoraEntrada, acceso.fechaHoraSalida), 'HH:mm') : 'N/A'}"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="text-center mt-3">
+                        <a href="#" class="btn btn-sm btn-outline-secondary">Ver Historial Completo</a>
+                    </div>
+                </div>
+                <div th:if="${ultimosAccesos.empty}" class="text-center text-muted py-3">
+                    <p><i class="bi bi-clock-history me-2"></i>No se han registrado accesos recientes.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sección de Acceso Rápido al Asesor IA -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="dashboard-card text-center">
+                <h5><i class="bi bi-robot me-2"></i>¿Necesitas Sugerencias de Ejercicio?</h5>
+                <p class="text-muted">Consulta a tu Asesor de IA para rutinas personalizadas.</p>
+                <a th:href="@{/cliente/ia/sugerencias}" class="btn btn-success btn-lg"><i
+                        class="bi bi-chat-dots me-2"></i>Abrir Asesor de IA</a>
+            </div>
+        </div>
+    </div>
+
 </th:block>
 
-<th:block layout:fragment="scripts"></th:block>
+<th:block layout:fragment="scripts">
+    <!-- Aquí puedes añadir scripts JS específicos para el dashboard, si los necesitas -->
+</th:block>
 </body>
 </html>

@@ -2,6 +2,7 @@ package com.isai.gym.app.repository;
 
 import com.isai.gym.app.entities.MembresiaCliente;
 import com.isai.gym.app.entities.Usuario;
+import com.isai.gym.app.enums.EstadoMembresia;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -32,4 +33,8 @@ public interface MembresiaClienteRepository
     List<MembresiaCliente> findByUsuarioIdOrderByFechaFinDesc(Long id);
 
     List<MembresiaCliente> findByUsuarioIdAndActivaTrueAndFechaFinAfter(Long id, LocalDate fechaActual);
+
+    //buscamos la membresia por un usuario especifico
+    Optional<MembresiaCliente> findByUsuarioIdAndEstado(Long usuarioId, EstadoMembresia estado);
+
 }

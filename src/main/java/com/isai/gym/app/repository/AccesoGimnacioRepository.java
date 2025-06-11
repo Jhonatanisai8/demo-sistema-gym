@@ -32,4 +32,6 @@ public interface AccesoGimnacioRepository
 
     List<AccesoGimnasio> findTop10ByOrderByFechaHoraEntradaDesc(); // Los 10 últimos accesos en general
 
+    List<AccesoGimnasio> findByUsuarioIdOrderByFechaHoraEntradaDesc(Long usuarioId);
+
 }

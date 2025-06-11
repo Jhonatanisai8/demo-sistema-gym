@@ -15,6 +15,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -110,4 +111,13 @@ public class AccesoGimnasioServicioImpl
     public Optional<AccesoGimnasio> obtenerAccesoActivoPorUsuario(Long id) {
         return accesoGimnasioRepositorio.findTopByUsuarioIdAndActivoTrueOrderByFechaHoraEntradaDesc(id);
     }
+
+    public List<AccesoGimnasio> obtenerUltimosAccesosPorUsuarioId(Long usuarioId, int limite) {
+        // obtenemos todos los accesos ordenados y luego limitar en memoria.
+        return accesoGimnasioRepositorio.findByUsuarioIdOrderByFechaHoraEntradaDesc(usuarioId)
+                .stream()
+                .limit(limite)
+                .collect(Collectors.toList());
+    }
+
 }
