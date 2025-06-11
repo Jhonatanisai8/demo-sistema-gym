@@ -25,4 +25,9 @@ public interface UsuarioService {
 
     Usuario buscarPorNombreUsuarioOEmail(String nombreUsuarioOEmail);
 
+    Optional<Usuario> buscarPorNombreUsuario(String nombreUsuario);
+
+    Optional<Usuario> buscarPorEmail(String email);
+
+    Optional<Usuario> buscarUsuarioPorIdentificador(String identificador);
 }

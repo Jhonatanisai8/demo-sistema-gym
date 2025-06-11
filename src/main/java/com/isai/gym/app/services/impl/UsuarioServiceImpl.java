@@ -153,4 +153,24 @@ public class UsuarioServiceImpl
                 .orElseGet(() -> usuarioRepository.findByEmail(nombreUsuarioOEmail)
                         .orElseThrow());
     }
+
+    @Override
+    public Optional<Usuario> buscarPorNombreUsuario(String nombreUsuario) {
+        return usuarioRepository.findByNombreUsuario(nombreUsuario);
+    }
+
+    @Override
+    public Optional<Usuario> buscarPorEmail(String email) {
+        return usuarioRepository.findByEmail(email);
+    }
+
+    @Override
+    public Optional<Usuario> buscarUsuarioPorIdentificador(String identificador) {
+        try {
+            Long id = Long.parseLong(identificador);
+            return usuarioRepository.findById(id);
+        } catch (NumberFormatException e) {
+            return buscarPorNombreUsuario(identificador);
+        }
+    }
 }
