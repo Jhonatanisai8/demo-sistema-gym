@@ -36,20 +36,24 @@
                         <p class="card-text text-center fs-2 fw-bold text-success mb-2"
                            th:text="${#numbers.formatCurrency(tipoMembresia.precio)}"></p>
                         <p class="card-text text-muted text-center mb-3">por <span
-                                th:text="${tipoMembresia.duracionEnDias + ' días'}"
-                                th:if="${tipoMembresia.duracionEnDias > 0}"></span></p>
+                                th:text="${tipoMembresia.duracionDias + ' días'}"
+                                th:if="${tipoMembresia.duracionDias > 0}"></span></p>
                         <p class="card-text mb-3" th:text="${tipoMembresia.descripcion}">Descripción breve de la
                             membresía y lo que incluye.</p>
-                        <h6>Características:</h6>
+                        <h6>Beneficios:</h6> <!-- Cambié el título para que coincida con tu DTO -->
                         <ul class="list-group list-group-flush mb-3">
-                            <li class="list-group-item"
-                                th:each="caracteristica : ${tipoMembresia.caracteristicas?.split(',')}">
-                                <i class="bi bi-check-circle-fill text-success me-2"></i><span
-                                    th:text="${caracteristica.trim()}"></span>
-                            </li>
+                            <!-- MODIFICACIÓN CLAVE AQUÍ: usar 'beneficios' en lugar de 'caracteristicas' -->
+                            <th:block
+                                    th:if="${tipoMembresia.beneficios != null and !tipoMembresia.beneficios.isEmpty()}">
+                                <li class="list-group-item"
+                                    th:each="beneficio : ${tipoMembresia.beneficios.split(',')}">
+                                    <i class="bi bi-check-circle-fill text-success me-2"></i><span
+                                        th:text="${beneficio.trim()}"></span>
+                                </li>
+                            </th:block>
                             <li class="list-group-item text-muted fst-italic"
-                                th:if="${tipoMembresia.caracteristicas == null or tipoMembresia.caracteristicas.isEmpty()}">
-                                Sin características detalladas.
+                                th:unless="${tipoMembresia.beneficios != null and !tipoMembresia.beneficios.isEmpty()}">
+                                Sin beneficios detallados.
                             </li>
                         </ul>
                     </div>
