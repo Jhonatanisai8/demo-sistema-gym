@@ -13,7 +13,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -139,5 +141,21 @@ public class EquipoServiceImpl
                     equipo.setEstado(estadoEquipo);
                     return equipoRepository.save(equipo);
                 });
+    }
+
+    @Override
+    public List<Equipo> obtenerEquiposDisponibles() {
+        return equipoRepository.findByCantidadDisponibleGreaterThanAndEnMantenimientoFalseAndEstadoEquals(0, EstadoEquipo.DISPONIBLE);
+    }
+
+    @Override
+    public String obtenerDescripcionInventarioDisponible() {
+        List<Equipo> equipos = obtenerEquiposDisponibles();
+        if (equipos.isEmpty()) {
+            return "No hay equipos disponibles en el gimnasio en este momento.";
+        }
+        return equipos.stream()
+                .map(Equipo::obtenerDescripcionConcisa) // Usa el método de la entidad
+                .collect(Collectors.joining("\n- ", "El gimnasio cuenta con el siguiente equipo disponible:\n- ", ""));
     }
 }

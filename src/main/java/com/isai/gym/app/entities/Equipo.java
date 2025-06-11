@@ -100,4 +100,16 @@ public class Equipo {
             estado = EstadoEquipo.DISPONIBLE;
         }
     }
+
+    public String obtenerDescripcionConcisa() {
+        return String.format(
+                "%s (Tipo: %s, Marca: %s, Cantidad Disponible: %d, Estado: %s, Ubicación: %s)",
+                this.nombre,
+                this.tipo != null ? this.tipo.name() : "N/A",
+                this.marca != null && !this.marca.isEmpty() ? this.marca : "N/A",
+                this.cantidadDisponible != null ? this.cantidadDisponible : 0,
+                this.estado != null ? this.estado.name() : "N/A",
+                this.ubicacion != null && !this.ubicacion.isEmpty() ? this.ubicacion : "N/A"
+        );
+    }
 }

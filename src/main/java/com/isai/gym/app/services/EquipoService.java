@@ -6,6 +6,7 @@ import com.isai.gym.app.enums.EstadoEquipo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface EquipoService {
@@ -25,4 +26,8 @@ public interface EquipoService {
     boolean existeEquipoNombre(String nombre, Long id);
 
     Optional<Equipo> cambiarEstadoEquipo(Long id, EstadoEquipo estadoEquipo);
+
+    List<Equipo> obtenerEquiposDisponibles();
+
+    String obtenerDescripcionInventarioDisponible();
 }
