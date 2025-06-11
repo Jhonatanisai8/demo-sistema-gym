@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/admin-layout}">
+<head>
+    <title layout:title-template="Registrar Acceso - %s">Registrar Acceso</title>
+    <th:block layout:fragment="styles"></th:block>
+</head>
+<body>
+<th:block layout:fragment="header">
+    <h1 class="h3"><i class="bi bi-person-fill-add me-2"></i>Registrar Acceso de Cliente</h1>
+</th:block>
+
+<th:block layout:fragment="content">
+    <div th:if="${mensajeExito}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i> <span th:text="${mensajeExito}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+    </div>
+    <div th:if="${mensajeError}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i> <span th:text="${mensajeError}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+    </div>
+    <div th:if="${mensajeAdvertencia}" class="alert alert-warning alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-octagon me-2"></i> <span th:text="${mensajeAdvertencia}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+    </div>
+
+    <div class="card shadow-sm mb-4 border-0">
+        <div class="card-header bg-primary text-white py-3">
+            <h5 class="mb-0"><i class="bi bi-search me-2"></i>Buscar Cliente</h5>
+        </div>
+        <div class="card-body p-4">
+            <form th:action="@{/admin/accesos/buscar-cliente}" method="get" class="mb-4">
+                <div class="input-group">
+                    <input type="text" class="form-control" name="identificadorCliente"
+                           placeholder="Buscar por ID de Usuario o Nombre de Usuario..."
+                           th:value="${identificadorCliente != null ? identificadorCliente : ''}" required>
+                    <button class="btn btn-outline-primary" type="submit"><i class="bi bi-search me-2"></i>Buscar
+                    </button>
+                </div>
+            </form>
+
+            <div th:if="${usuarioEncontrado != null}" class="mt-4">
+                <h5 class="text-info mb-3"><i class="bi bi-person-check me-2"></i>Cliente Encontrado:</h5>
+                <div class="card mb-3 p-3 bg-light border">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h4 class="mb-1 text-dark" th:text="${usuarioEncontrado.nombreCompleto}">Nombre del
+                                Cliente</h4>
+                            <p class="mb-1 text-muted">ID: <span th:text="${usuarioEncontrado.id}"></span> | Nombre de
+                                Usuario: <span th:text="${usuarioEncontrado.nombreUsuario}"></span></p>
+                            <p class="mb-0 text-muted">Email: <span th:text="${usuarioEncontrado.email}"></span></p>
+                        </div>
+                        <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                            <h5 class="mb-1 text-primary">Membresía Activa:</h5>
+                            <div th:if="${membresiaActivaCliente != null}">
+                                <p class="mb-0"><span class="fw-bold"
+                                                      th:text="${membresiaActivaCliente.membresia.nombre}">Membresía Premium</span>
+                                </p>
+                                <span class="badge bg-success"
+                                      th:text="${membresiaActivaCliente.estado.nombreAmigable}">Activa</span>
+                                <span class="badge bg-info"
+                                      th:text="'Hasta: ' + ${#temporals.format(membresiaActivaCliente.fechaFin, 'dd-MM-yyyy')}"></span>
+                            </div>
+                            <div th:unless="${membresiaActivaCliente != null}">
+                                <span class="badge bg-danger">Sin Membresía Activa</span>
+                                <p class="text-muted small mt-1">Considere sugerir una membresía.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr>
+
+                <form th:action="@{/admin/accesos/registrar-entrada}" method="post" class="mt-4">
+                    <input type="hidden" name="usuarioId" th:value="${usuarioEncontrado.id}">
+                    <p class="lead text-center">
+                        <i class="bi bi-fingerprint me-2 text-success"></i>¿Desea registrar la entrada de <strong
+                            th:text="${usuarioEncontrado.nombreCompleto}"></strong>?
+                    </p>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-success btn-lg"><i
+                                class="bi bi-box-arrow-in-right me-2"></i>Registrar Entrada
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div th:if="${usuarioEncontrado == null and identificadorCliente != null}"
+                 class="alert alert-warning text-center mt-4">
+                <i class="bi bi-exclamation-triangle me-2"></i>No se encontró ningún cliente con el identificador '<span
+                    th:text="${identificadorCliente}"></span>'.
+            </div>
+
+            <div class="mt-4 text-center">
+                <a th:href="@{/admin/dashboard}" class="btn btn-outline-secondary"><i
+                        class="bi bi-arrow-left-circle me-2"></i>Volver al Dashboard</a>
+            </div>
+        </div>
+    </div>
+</th:block>
+
+<th:block layout:fragment="scripts"></th:block>
+</body>
+</html>
