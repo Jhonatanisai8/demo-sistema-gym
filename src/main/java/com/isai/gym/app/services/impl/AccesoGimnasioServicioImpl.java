@@ -11,8 +11,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -21,8 +23,11 @@ public class AccesoGimnasioServicioImpl
 
     private final AccesoGimnacioRepository accesoGimnacioRepository;
 
-    private final MembresiaClienteServiceImpl membresiaClienteServiceImpl;
+    private final MembresiaClienteServiceImpl membresiaClienteService;
 
+    private final AccesoGimnacioRepository accesoGimnasioRepositorio;
+
+    private final UsuarioServiceImpl usuarioService;
 
     @Override
     public Page<AccesoGimnasio> obtenerAccesosPorUsuario(Long usuarioId, Pageable paginacion) {
@@ -34,54 +39,72 @@ public class AccesoGimnasioServicioImpl
         return accesoGimnacioRepository.findTop5ByUsuarioIdOrderByFechaHoraEntradaDesc(usuarioId);
     }
 
-    // Si necesitaras un método para registrar una entrada/salida (aunque no es el objetivo de este módulo):
-    /*
-    @Transactional
-    public AccesoGimnasio registrarEntrada(Usuario usuario) {
-        AccesoGimnasio acceso = new AccesoGimnasio();
-        acceso.setUsuario(usuario);
-        acceso.setFechaHoraEntrada(LocalDateTime.now());
-        acceso.setActivo(true); // Indica que el usuario está actualmente dentro
-        return accesoGimnasioRepositorio.save(acceso);
-    }
+    public Page<AccesoGimnasio> obtenerTodosLosAccesos(
+            String filtroUsuario,
+            LocalDate fechaDesde,
+            LocalDate fechaHasta,
+            Pageable paginacion) {
 
-    @Transactional
-    public AccesoGimnasio registrarSalida(Long accesoId) {
-        AccesoGimnasio accesoExistente = accesoGimnasioRepositorio.findById(accesoId)
-                .orElseThrow(() -> new IllegalArgumentException("Registro de acceso no encontrado."));
-        accesoExistente.setFechaHoraSalida(LocalDateTime.now());
-        accesoExistente.setActivo(false); // Indica que el usuario ya salió
-        return accesoGimnasioRepositorio.save(accesoExistente);
-    }
-    */
-
-    @Transactional
-    @Override
-    public AccesoGimnasio registrarEntrada(Usuario usuario) {
-        MembresiaCliente membresiaCliente = membresiaClienteServiceImpl.obtenerMembresiaActivaPorUsuario(usuario.getId());
-        if (membresiaCliente == null) {
-            throw new IllegalArgumentException("El usuario no existe");
+        Long usuarioId = null;
+        if (filtroUsuario != null && !filtroUsuario.trim().isEmpty()) {
+            Optional<Usuario> usuarioOpt = usuarioService.buscarUsuarioPorIdentificador(filtroUsuario.trim());
+            if (usuarioOpt.isPresent()) {
+                usuarioId = usuarioOpt.get().getId();
+            } else {
+                return Page.empty(paginacion);
+            }
         }
+
+        LocalDateTime fechaHoraDesde = (fechaDesde != null) ? fechaDesde.atStartOfDay() : null;
+        LocalDateTime fechaHoraHasta = (fechaHasta != null) ? fechaHasta.atTime(23, 59, 59) : null;
+
+        if (usuarioId != null && fechaHoraDesde != null && fechaHoraHasta != null) {
+            return accesoGimnasioRepositorio.findByUsuarioIdAndFechaHoraEntradaBetween(usuarioId, fechaHoraDesde, fechaHoraHasta, paginacion);
+        } else if (usuarioId != null) {
+            return accesoGimnasioRepositorio.findByUsuarioId(usuarioId, paginacion);
+        } else if (fechaHoraDesde != null && fechaHoraHasta != null) {
+            return accesoGimnasioRepositorio.findByFechaHoraEntradaBetween(fechaHoraDesde, fechaHoraHasta, paginacion);
+        } else {
+            // Sin filtros, obtener todos los accesos
+            return accesoGimnasioRepositorio.findAll(paginacion);
+        }
+    }
+
+    @Transactional
+    public AccesoGimnasio registrarEntrada(Usuario usuario) {
+        // Validaciones:
+        MembresiaCliente membresiaActiva = membresiaClienteService.obtenerMembresiaActivaPorUsuario(usuario.getId());
+
+        if (membresiaActiva == null || !membresiaActiva.getActiva() || membresiaActiva.getFechaFin().isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException("Acceso denegado: El cliente " + usuario.getNombreCompleto() + " no tiene una membresía activa o válida.");
+        }
+
+        // Opcional: Verificar si ya tiene una sesión de acceso activa (entrada sin salida)
+        Optional<AccesoGimnasio> accesoActivo = accesoGimnasioRepositorio.findTopByUsuarioIdAndActivoTrueOrderByFechaHoraEntradaDesc(usuario.getId());
+        if (accesoActivo.isPresent()) {
+            throw new IllegalArgumentException("Acceso denegado: El cliente " + usuario.getNombreCompleto() + " ya tiene un acceso activo sin salida registrada.");
+        }
+
+
         AccesoGimnasio acceso = new AccesoGimnasio();
         acceso.setUsuario(usuario);
         acceso.setFechaHoraEntrada(LocalDateTime.now());
         acceso.setActivo(true);
-        return accesoGimnacioRepository.save(acceso);
+        return accesoGimnasioRepositorio.save(acceso);
     }
 
-    @Override
     @Transactional
     public AccesoGimnasio registrarSalida(Long idAccesoGimnasio) {
-        AccesoGimnasio acceso = accesoGimnacioRepository.findById(idAccesoGimnasio)
-                .orElseThrow(() -> new IllegalArgumentException("Acceso no encontrado."));
+        AccesoGimnasio acceso = accesoGimnasioRepositorio.findById(idAccesoGimnasio)
+                .orElseThrow(() -> new IllegalArgumentException("Registro de acceso no encontrado con ID: " + idAccesoGimnasio));
 
         if (!acceso.getActivo()) {
-            throw new IllegalArgumentException("El acceso ya ha sido finalizado.");
+            throw new IllegalArgumentException("El acceso ID " + idAccesoGimnasio + " ya ha sido finalizado.");
         }
 
         acceso.setFechaHoraSalida(LocalDateTime.now());
         acceso.setActivo(false);
-        return accesoGimnacioRepository.save(acceso);
+        return accesoGimnasioRepositorio.save(acceso);
     }
 
 }
