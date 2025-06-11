@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -104,6 +105,34 @@ public class ClienteMembresiaController {
         } catch (Exception e) {
             atributosRedireccion.addFlashAttribute("mensajeError", "Ocurrió un error al preparar la compra: " + e.getMessage());
             return "redirect:/cliente/membresias/comprar";
+        }
+    }
+
+    @PostMapping("/realizar-compra")
+    public String realizarCompra(@RequestParam("idTipoMembresia") Long idTipoMembresia,
+                                 @RequestParam("metodoPago") String metodoPago,
+                                 Principal principal,
+                                 RedirectAttributes atributosRedireccion) {
+        try {
+            Usuario clienteAutenticado = servicioUsuario.buscarPorNombreUsuarioOEmail(principal.getName());
+
+            Membresia tipoMembresia = membresiaService.obtenerMembresiaId(idTipoMembresia).get();
+
+            if (!tipoMembresia.getActiva()) {
+                atributosRedireccion.addFlashAttribute("mensajeError", "Error: La membresía no está activa para la compra.");
+                return "redirect:/cliente/membresias/comprar";
+            }
+
+            servicioMembresiaCliente.adquirirMembresia(clienteAutenticado, tipoMembresia, metodoPago);
+
+            atributosRedireccion.addFlashAttribute("mensajeExito", "¡Membresía '" + tipoMembresia.getNombre() + "' adquirida exitosamente!");
+            return "redirect:/cliente/membresias"; // Redirigir al listado de membresías del cliente
+        } catch (IllegalArgumentException e) {
+            atributosRedireccion.addFlashAttribute("mensajeError", e.getMessage());
+            return "redirect:/cliente/membresias/confirmar-compra?id=" + idTipoMembresia; // Volver a la confirmación con error
+        } catch (Exception e) {
+            atributosRedireccion.addFlashAttribute("mensajeError", "Ocurrió un error al procesar tu compra: " + e.getMessage());
+            return "redirect:/cliente/membresias/confirmar-compra?id=" + idTipoMembresia;
         }
     }
 

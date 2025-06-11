@@ -55,7 +55,7 @@
                                    th:classappend="${membresiaActiva.estado == 'ACTIVA' ? 'text-success' : (membresiaActiva.estado == 'EXPIRADA' ? 'text-danger' : 'text-secondary')}"></i>Estado:
                                 <span class="badge"
                                       th:classappend="${membresiaActiva.estado == 'ACTIVA' ? 'bg-success' : (membresiaActiva.estado == 'EXPIRADA' ? 'bg-danger' : 'bg-secondary')}"
-                                      th:text="${membresiaActiva.estado.nombreAmigable}">Activa</span></li>
+                                      th:text="${membresiaActiva.estado.name()}">Activa</span></li>
                         </ul>
                     </div>
                     <div class="col-md-4 text-md-end mt-3 mt-md-0">
@@ -111,7 +111,7 @@
                             <td>
                                     <span class="badge"
                                           th:classappend="${mc.estado == 'ACTIVA' ? 'bg-success' : (mc.estado == 'EXPIRADA' ? 'bg-danger' : 'bg-secondary')}"
-                                          th:text="${mc.estado.nombreAmigable}"></span>
+                                          th:text="${mc.estado.name()}"></span>
                             </td>
                             <td>
                                 <a href="#" class="btn btn-sm btn-outline-info disabled" title="Ver Detalles"><i
