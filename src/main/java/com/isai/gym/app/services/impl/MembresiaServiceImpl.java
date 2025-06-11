@@ -6,6 +6,7 @@ import com.isai.gym.app.repository.MembresiaRepository;
 import com.isai.gym.app.services.MembresiaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -111,5 +112,13 @@ public class MembresiaServiceImpl
 
     public List<Membresia> obtenerMembresias() {
         return membresiaRepository.findAll();
+    }
+
+    @Override
+    public List<Membresia> obtenerMembresiasDisponibles() {
+        Pageable pageable = PageRequest.of(0, 10);
+        return membresiaRepository.findByActivaTrue(pageable)
+                .stream()
+                .toList();
     }
 }

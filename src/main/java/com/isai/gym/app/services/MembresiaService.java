@@ -5,6 +5,7 @@ import com.isai.gym.app.entities.Membresia;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface MembresiaService {
@@ -24,4 +25,6 @@ public interface MembresiaService {
     boolean existeNombre(String nombre, Long id);
 
     Optional<Membresia> cambiarEstado(Long id, boolean activa);
+
+    List<Membresia> obtenerMembresiasDisponibles();
 }

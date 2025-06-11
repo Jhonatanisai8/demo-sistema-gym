@@ -146,4 +146,11 @@ public class UsuarioServiceImpl
     public Usuario obtenerPorNombre(String nombreUsuario) {
         return usuarioRepository.findByNombreUsuario(nombreUsuario).orElse(null);
     }
+
+    @Override
+    public Usuario buscarPorNombreUsuarioOEmail(String nombreUsuarioOEmail) {
+        return usuarioRepository.findByNombreUsuario(nombreUsuarioOEmail)
+                .orElseGet(() -> usuarioRepository.findByEmail(nombreUsuarioOEmail)
+                        .orElseThrow());
+    }
 }

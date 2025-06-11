@@ -29,4 +29,7 @@ public interface MembresiaClienteRepository
             "LOWER(m.nombre) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     Page<MembresiaCliente> searchByUsuarioNombreOrMembresiaNombre(@Param("keyword") String keyword, Pageable pageable);
 
+    List<MembresiaCliente> findByUsuarioIdOrderByFechaFinDesc(Long id);
+
+    List<MembresiaCliente> findByUsuarioIdAndActivaTrueAndFechaFinAfter(Long id, LocalDate fechaActual);
 }

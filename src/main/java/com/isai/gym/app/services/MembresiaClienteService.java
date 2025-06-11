@@ -1,10 +1,13 @@
 package com.isai.gym.app.services;
 
 import com.isai.gym.app.dtos.MembresiaClienteDTO;
+import com.isai.gym.app.entities.Membresia;
 import com.isai.gym.app.entities.MembresiaCliente;
+import com.isai.gym.app.entities.Usuario;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface MembresiaClienteService {
@@ -24,4 +27,10 @@ public interface MembresiaClienteService {
     Optional<MembresiaCliente> toggleActiva(Long id, boolean activa);
 
     void actualizarEstadosMembresias();
+
+    List<MembresiaCliente> obtenerMembresiasPorUsuario(Long usuarioId);
+
+    MembresiaCliente obtenerMembresiaActivaPorUsuario(Long usuarioId);
+
+    MembresiaCliente adquirirMembresia(Usuario usuario, Membresia tipoMembresia, String metodoPago);
 }
