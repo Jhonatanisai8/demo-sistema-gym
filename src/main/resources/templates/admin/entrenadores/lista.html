@@ -78,7 +78,7 @@
                         <form th:action="@{/admin/entrenadores/toggleActivo/{id}(id=${entrenador.id})}" method="post"
                               class="d-inline-block">
                             <input type="hidden" name="activo" th:value="${!entrenador.activo}"/>
-                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+<!--                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>-->
                             <button type="submit"
                                     th:class="${entrenador.activo ? 'btn btn-sm btn-success' : 'btn btn-sm btn-secondary'}"
                                     th:title="${entrenador.activo ? 'Desactivar' : 'Activar'}">

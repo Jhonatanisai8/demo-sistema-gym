@@ -38,7 +38,7 @@
 
         <form th:action="@{/admin/equipos/editar/{id}(id=${equipoDTO.id})}"
               th:object="${equipoDTO}" method="post" enctype="multipart/form-data">
-            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+            <!--            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>-->
             <input type="hidden" th:field="*{id}" th:if="${equipoDTO.id != null}"/>
 
             <div class="card mb-4 shadow-sm">
