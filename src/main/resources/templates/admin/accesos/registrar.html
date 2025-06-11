@@ -4,7 +4,7 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/admin-layout}">
 <head>
-    <title layout:title-template="Registrar Acceso - %s">Registrar Acceso</title>
+    <title>Registrar Acceso</title>
     <th:block layout:fragment="styles"></th:block>
 </head>
 <body>
@@ -31,7 +31,7 @@
             <h5 class="mb-0"><i class="bi bi-search me-2"></i>Buscar Cliente</h5>
         </div>
         <div class="card-body p-4">
-            <form th:action="@{/admin/accesos/buscar-cliente}" method="get" class="mb-4">
+            <form th:action="@{/admin/accesos/registrar}" method="get" class="mb-4">
                 <div class="input-group">
                     <input type="text" class="form-control" name="identificadorCliente"
                            placeholder="Buscar por ID de Usuario o Nombre de Usuario..."
@@ -59,7 +59,7 @@
                                                       th:text="${membresiaActivaCliente.membresia.nombre}">Membresía Premium</span>
                                 </p>
                                 <span class="badge bg-success"
-                                      th:text="${membresiaActivaCliente.estado.nombreAmigable}">Activa</span>
+                                      th:text="${membresiaActivaCliente.estado.name()}">Activa</span>
                                 <span class="badge bg-info"
                                       th:text="'Hasta: ' + ${#temporals.format(membresiaActivaCliente.fechaFin, 'dd-MM-yyyy')}"></span>
                             </div>

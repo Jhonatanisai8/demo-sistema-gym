@@ -3,6 +3,7 @@
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/admin-layout}">
+<!-- Asegúrate de que esta ruta sea correcta para tu layout de admin -->
 <head>
     <title>Gestión de Accesos</title>
     <th:block layout:fragment="styles"></th:block>
@@ -32,6 +33,7 @@
         </div>
     </div>
 
+    <!-- Sección de Filtros y Búsqueda -->
     <div class="card shadow-sm mb-4 border-0">
         <div class="card-header bg-light py-3">
             <h5 class="mb-0"><i class="bi bi-filter-square me-2"></i>Filtros de Búsqueda</h5>
@@ -55,6 +57,7 @@
                     <button type="submit" class="btn btn-primary w-100"><i class="bi bi-funnel me-2"></i>Filtrar
                     </button>
                 </div>
+                <!-- Campos ocultos para mantener la paginación y el ordenamiento durante el filtrado -->
                 <input type="hidden" name="pagina" th:value="${paginaActual}">
                 <input type="hidden" name="tamano" th:value="${tamanoPagina}">
                 <input type="hidden" name="ordenarPor" th:value="${ordenarPor}">
@@ -72,8 +75,22 @@
                         <tr>
                             <th scope="col">#</th>
                             <th scope="col">Usuario</th>
-                            <th scope="col">Fecha y Hora de Entrada</th>
-                            <th scope="col">Fecha y Hora de Salida</th>
+                            <th scope="col">
+                                <a th:href="@{/admin/accesos(pagina=${paginaActual}, tamano=${tamanoPagina}, ordenarPor='fechaHoraEntrada', direccionOrden=${ordenarPor == 'fechaHoraEntrada' and direccionOrden == 'asc' ? 'desc' : 'asc'}, filtroUsuario=${filtroUsuario}, fechaDesde=${fechaDesde}, fechaHasta=${fechaHasta})}"
+                                   class="text-decoration-none text-dark">
+                                    Fecha y Hora de Entrada
+                                    <i th:if="${ordenarPor == 'fechaHoraEntrada'}"
+                                       th:classappend="${direccionOrden == 'asc' ? 'bi bi-arrow-up' : 'bi bi-arrow-down'}"></i>
+                                </a>
+                            </th>
+                            <th scope="col">
+                                <a th:href="@{/admin/accesos(pagina=${paginaActual}, tamano=${tamanoPagina}, ordenarPor='fechaHoraSalida', direccionOrden=${ordenarPor == 'fechaHoraSalida' and direccionOrden == 'asc' ? 'desc' : 'asc'}, filtroUsuario=${filtroUsuario}, fechaDesde=${fechaDesde}, fechaHasta=${fechaHasta})}"
+                                   class="text-decoration-none text-dark">
+                                    Fecha y Hora de Salida
+                                    <i th:if="${ordenarPor == 'fechaHoraSalida'}"
+                                       th:classappend="${direccionOrden == 'asc' ? 'bi bi-arrow-up' : 'bi bi-arrow-down'}"></i>
+                                </a>
+                            </th>
                             <th scope="col">Estado</th>
                             <th scope="col">Acciones</th>
                         </tr>
@@ -109,6 +126,7 @@
                         </tbody>
                     </table>
                 </div>
+                <!-- Paginación -->
                 <nav th:if="${accesosPagina.totalPages > 1}" aria-label="Navegación de Páginas" class="p-3">
                     <ul class="pagination justify-content-center">
                         <li class="page-item" th:classappend="${accesosPagina.first ? 'disabled' : ''}">

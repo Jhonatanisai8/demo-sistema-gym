@@ -107,4 +107,7 @@ public class AccesoGimnasioServicioImpl
         return accesoGimnasioRepositorio.save(acceso);
     }
 
+    public Optional<AccesoGimnasio> obtenerAccesoActivoPorUsuario(Long id) {
+        return accesoGimnasioRepositorio.findTopByUsuarioIdAndActivoTrueOrderByFechaHoraEntradaDesc(id);
+    }
 }

@@ -18,13 +18,15 @@ public interface AccesoGimnacioRepository
 
     List<AccesoGimnasio> findTop5ByUsuarioIdOrderByFechaHoraEntradaDesc(Long usuarioId);
 
+    Optional<AccesoGimnasio> findTopByUsuarioIdAndActivoTrueOrderByFechaHoraEntradaDesc(Long usuarioId);
+
+
     Page<AccesoGimnasio> findBy(Pageable paginacion); // Método genérico para todos los accesos sin filtro inicial
 
     Page<AccesoGimnasio> findByUsuarioIdAndFechaHoraEntradaBetween(Long usuarioId, LocalDateTime fechaDesde, LocalDateTime fechaHasta, Pageable paginacion);
 
     Page<AccesoGimnasio> findByFechaHoraEntradaBetween(LocalDateTime fechaDesde, LocalDateTime fechaHasta, Pageable paginacion);
 
-    Optional<AccesoGimnasio> findTopByUsuarioIdAndActivoTrueOrderByFechaHoraEntradaDesc(Long usuarioId);
 
     long countByUsuarioIdAndFechaHoraEntradaBetween(Long usuarioId, LocalDateTime inicioDia, LocalDateTime finDia);
 
