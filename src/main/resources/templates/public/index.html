@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GymPro</title>
+    <link th:href="@{/css/styles.css}" rel="stylesheet">
+</head>
+
+<body>
+
+
+<header class="header">
+    <div class="menu container">
+        <a href="#" class="logo">GymPro</a>
+        <input type="checkbox" id="menu">
+        <label for="menu"> <img
+                th:src="@{/imgs/menu.png}" class="menu-icono" alt="Menú"></label>
+
+        <nav class="navbar">
+
+            <ul>
+                <li><a th:href="@{/login}">LOGIN</a></li>
+                <li><a href="#">INICIO</a></li>
+                <li><a href="#">SERVICIOS</a></li>
+                <li><a href="#">HORARIOS</a></li>
+                <li><a href="#">CONTACTO</a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <div class="header-content container">
+        <div class="header-info">
+            <h1>SÉ FUERTE</h1>
+            <p>Entrena por salud, no solo por estética. Tu bienestar empieza aquí.</p>
+            <a href="#" class="btn-1">Empieza Ya...</a>
+        </div>
+    </div>
+</header>
+
+
+<section class="gym container">
+    <article class="gym-1">
+        <header><span>GymPro</span> Funcional</header>
+        <p>
+            Cada día que entras por la puerta del gimnasio, estás eligiendo creer en ti. Estás dejando atrás las
+            excusas, las dudas y los límites. No importa si hoy levantas poco o corres lento. Lo que importa es que
+            estás aquí, dando ese paso que muchos temen dar.
+        </p>
+        <a class="btn-2" href="#">Empieza</a>
+    </article>
+
+    <article class="gym-2">
+
+
+        <img class="img-1" th:src="@{/imgs/ImageJovenEntrenandop.png}" alt="Joven entrenando">
+        <img class="img-2" th:src="@{/imgs/ImagenChicaAlegragym.png}" alt="Joven con pesas">
+    </article>
+
+</section>
+
+
+<section class="gym container">
+
+    <article class="gym-2">
+
+
+        <img class="img-1" th:src="@{/imgs/ImagenChicaEntrenando.png}" alt="Chica entrenando">
+        <img class="img-2" th:src="@{/imgs/ImagenJovenEntrenando.png}" alt="Joven entrenando">
+    </article>
+
+    <article class="gym-1">
+        <header><span>GymPro</span> Personal</header>
+
+        <p>
+
+            Aquí no se trata de perfección, se trata de progreso. Se trata de levantarte una vez más, incluso cuando
+            todo en ti quiera rendirse. De mirar al espejo y ver no solo un cuerpo que cambia, sino una mente más
+            fuerte, más enfocada, más determinada.
+        </p>
+        <a class="btn-3" href="#">Empieza</a>
+    </article>
+</section>
+
+
+<section class="gym container">
+    <article class="gym-1">
+        <header><span>Nuestra</span> Comunidad</header>
+
+        <p>
+
+            No estás solo. Somos una comunidad que vibra con tu esfuerzo, que celebra tus logros y te empuja cuando
+            sientas que no puedes más. Aquí se construyen hábitos, no excusas. Aquí se forjan sueños, uno a uno, con
+            cada gota de sudor.
+
+            No esperes a mañana. Tu transformación empieza ahora.
+            Porque el verdadero reto no está en el peso que levantas, sino en no rendirte.
+        </p>
+        <a class="btn-4" href="#">Empieza</a>
+    </article>
+
+    <article class="gym-2">
+
+
+        <img class="img-1" th:src="@{/imgs/ImagenJovenPlanchas.png}" alt="Joven haciendo planchas">
+        <img class="img-2" th:src="@{/imgs/ImagenJovenEntrenando.png}" alt="Joven entrenando">
+    </article>
+
+</section>
+
+
+<footer class="footer container">
+    <h3>LOGO</h3>
+    <div class="links">
+        <ul>
+            <li><a href="#">INICIO</a></li>
+            <li><a href="#">INFORMACIÓN</a></li>
+            <li><a href="#">CONTACTO</a></li>
+        </ul>
+    </div>
+    <p class="footer-text">&copy;2025 Jhonatan Isai-GymPro G4</p>
+</footer>
+
+</body>
+
+</html>
