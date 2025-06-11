@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/client-layout}">
+<head>
+    <title layout:title-template="Mis Accesos - %s">Historial de Accesos</title>
+    <th:block layout:fragment="styles"></th:block>
+</head>
+<body>
+<th:block layout:fragment="header">
+    <h1 class="h3"><i class="bi bi-box-arrow-in-right me-2"></i>Mi Historial de Accesos</h1>
+</th:block>
+
+<th:block layout:fragment="content">
+    <div th:if="${mensajeExito}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i> <span th:text="${mensajeExito}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+    </div>
+    <div th:if="${mensajeError}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i> <span th:text="${mensajeError}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="mb-0 text-primary">Registros de Entrada y Salida</h4>
+        <a th:href="@{/cliente/dashboard}" class="btn btn-outline-secondary"><i
+                class="bi bi-arrow-left-circle me-2"></i>Volver al Dashboard</a>
+    </div>
+
+    <div class="card shadow-sm mb-4 border-0">
+        <div class="card-header bg-white py-3">
+            <h5 class="mb-0 text-dark"><i class="bi bi-calendar-check me-2 text-info"></i>Detalles de Accesos</h5>
+        </div>
+        <div class="card-body p-0">
+            <div th:if="${accesosPagina != null and !accesosPagina.content.empty}">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="bg-light">
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Fecha y Hora de Entrada</th>
+                            <th scope="col">Fecha y Hora de Salida</th>
+                            <th scope="col">Estado</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="acceso, stat : ${accesosPagina.content}">
+                            <td th:text="${stat.index + 1 + (accesosPagina.number * accesosPagina.size)}"></td>
+                            <td th:text="${#temporals.format(acceso.fechaHoraEntrada, 'dd-MM-yyyy HH:mm')}"></td>
+                            <td>
+                                <span th:if="${acceso.fechaHoraSalida != null}"
+                                      th:text="${#temporals.format(acceso.fechaHoraSalida, 'dd-MM-yyyy HH:mm')}"></span>
+                                <span th:unless="${acceso.fechaHoraSalida != null}" class="badge bg-warning text-dark">En curso</span>
+                            </td>
+                            <td>
+                                <span th:if="${acceso.activo}" class="badge bg-success">Activo</span>
+                                <span th:unless="${acceso.activo}" class="badge bg-secondary">Finalizado</span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Paginación -->
+                <nav th:if="${accesosPagina.totalPages > 1}" aria-label="Navegación de Páginas" class="p-3">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item" th:classappend="${accesosPagina.first ? 'disabled' : ''}">
+                            <a class="page-link"
+                               th:href="@{/cliente/accesos(pagina=${accesosPagina.number - 1}, tamano=${accesosPagina.size}, ordenarPor=${ordenarPor}, direccionOrden=${direccionOrden})}">Anterior</a>
+                        </li>
+                        <li class="page-item" th:each="i : ${#numbers.sequence(0, accesosPagina.totalPages - 1)}"
+                            th:classappend="${i == accesosPagina.number ? 'active' : ''}">
+                            <a class="page-link"
+                               th:href="@{/cliente/accesos(pagina=${i}, tamano=${accesosPagina.size}, ordenarPor=${ordenarPor}, direccionOrden=${direccionOrden})}"
+                               th:text="${i + 1}">1</a>
+                        </li>
+                        <li class="page-item" th:classappend="${accesosPagina.last ? 'disabled' : ''}">
+                            <a class="page-link"
+                               th:href="@{/cliente/accesos(pagina=${accesosPagina.number + 1}, tamano=${accesosPagina.size}, ordenarPor=${ordenarPor}, direccionOrden=${direccionOrden})}">Siguiente</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+            <div th:unless="${accesosPagina != null and !accesosPagina.content.empty}"
+                 class="alert alert-info m-3 text-center">
+                <i class="bi bi-info-circle me-2"></i>No hay registros de accesos disponibles para tu cuenta.
+            </div>
+        </div>
+    </div>
+</th:block>
+
+<th:block layout:fragment="scripts"></th:block>
+</body>
+</html>
