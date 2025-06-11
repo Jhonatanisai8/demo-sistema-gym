@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/admin-layout}">
+<head>
+    <title>Gestión de Accesos</title>
+    <th:block layout:fragment="styles"></th:block>
+</head>
+<body>
+<th:block layout:fragment="header">
+    <h1 class="h3"><i class="bi bi-person-lines-fill me-2"></i>Historial de Accesos del Gimnasio</h1>
+</th:block>
+
+<th:block layout:fragment="content">
+    <div th:if="${mensajeExito}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i> <span th:text="${mensajeExito}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+    </div>
+    <div th:if="${mensajeError}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i> <span th:text="${mensajeError}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="mb-0 text-primary">Registros de Entrada y Salida de Clientes</h4>
+        <div>
+            <a th:href="@{/admin/accesos/registrar}" class="btn btn-success me-2"><i class="bi bi-plus-circle me-2"></i>Registrar
+                Nuevo Acceso</a>
+            <a th:href="@{/admin/dashboard}" class="btn btn-outline-secondary"><i
+                    class="bi bi-arrow-left-circle me-2"></i>Volver al Dashboard</a>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-4 border-0">
+        <div class="card-header bg-light py-3">
+            <h5 class="mb-0"><i class="bi bi-filter-square me-2"></i>Filtros de Búsqueda</h5>
+        </div>
+        <div class="card-body">
+            <form th:action="@{/admin/accesos}" method="get" class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label for="filtroUsuario" class="form-label">Usuario (ID o Nombre de Usuario):</label>
+                    <input type="text" class="form-control" id="filtroUsuario" name="filtroUsuario"
+                           th:value="${filtroUsuario}" placeholder="ID o Nombre de Usuario">
+                </div>
+                <div class="col-md-3">
+                    <label for="fechaDesde" class="form-label">Desde Fecha:</label>
+                    <input type="date" class="form-control" id="fechaDesde" name="fechaDesde" th:value="${fechaDesde}">
+                </div>
+                <div class="col-md-3">
+                    <label for="fechaHasta" class="form-label">Hasta Fecha:</label>
+                    <input type="date" class="form-control" id="fechaHasta" name="fechaHasta" th:value="${fechaHasta}">
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100"><i class="bi bi-funnel me-2"></i>Filtrar
+                    </button>
+                </div>
+                <input type="hidden" name="pagina" th:value="${paginaActual}">
+                <input type="hidden" name="tamano" th:value="${tamanoPagina}">
+                <input type="hidden" name="ordenarPor" th:value="${ordenarPor}">
+                <input type="hidden" name="direccionOrden" th:value="${direccionOrden}">
+            </form>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-4 border-0">
+        <div class="card-body p-0">
+            <div th:if="${accesosPagina != null and !accesosPagina.content.empty}">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="bg-light">
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Usuario</th>
+                            <th scope="col">Fecha y Hora de Entrada</th>
+                            <th scope="col">Fecha y Hora de Salida</th>
+                            <th scope="col">Estado</th>
+                            <th scope="col">Acciones</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="acceso, stat : ${accesosPagina.content}">
+                            <td th:text="${stat.index + 1 + (accesosPagina.number * accesosPagina.size)}"></td>
+                            <td th:text="${acceso.usuario.nombreCompleto + ' (' + acceso.usuario.nombreUsuario + ')'}">
+                                Nombre del Cliente (usuario)
+                            </td>
+                            <td th:text="${#temporals.format(acceso.fechaHoraEntrada, 'dd-MM-yyyy HH:mm')}"></td>
+                            <td>
+                                <span th:if="${acceso.fechaHoraSalida != null}"
+                                      th:text="${#temporals.format(acceso.fechaHoraSalida, 'dd-MM-yyyy HH:mm')}"></span>
+                                <span th:unless="${acceso.fechaHoraSalida != null}" class="badge bg-warning text-dark">En curso</span>
+                            </td>
+                            <td>
+                                <span th:if="${acceso.activo}" class="badge bg-success">Activo</span>
+                                <span th:unless="${acceso.activo}" class="badge bg-secondary">Finalizado</span>
+                            </td>
+                            <td>
+                                <form th:if="${acceso.activo}" th:action="@{/admin/accesos/registrar-salida}"
+                                      method="post"
+                                      onsubmit="return confirm('¿Estás seguro de registrar la salida de este acceso?');">
+                                    <input type="hidden" name="idAccesoGimnasio" th:value="${acceso.id}">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger"
+                                            title="Registrar Salida"><i class="bi bi-box-arrow-right"></i> Salida
+                                    </button>
+                                </form>
+                                <span th:unless="${acceso.activo}" class="text-muted">Finalizado</span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <nav th:if="${accesosPagina.totalPages > 1}" aria-label="Navegación de Páginas" class="p-3">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item" th:classappend="${accesosPagina.first ? 'disabled' : ''}">
+                            <a class="page-link"
+                               th:href="@{/admin/accesos(pagina=${accesosPagina.number - 1}, tamano=${accesosPagina.size}, ordenarPor=${ordenarPor}, direccionOrden=${direccionOrden}, filtroUsuario=${filtroUsuario}, fechaDesde=${fechaDesde}, fechaHasta=${fechaHasta})}">Anterior</a>
+                        </li>
+                        <li class="page-item" th:each="i : ${#numbers.sequence(0, accesosPagina.totalPages - 1)}"
+                            th:classappend="${i == accesosPagina.number ? 'active' : ''}">
+                            <a class="page-link"
+                               th:href="@{/admin/accesos(pagina=${i}, tamano=${accesosPagina.size}, ordenarPor=${ordenarPor}, direccionOrden=${direccionOrden}, filtroUsuario=${filtroUsuario}, fechaDesde=${fechaDesde}, fechaHasta=${fechaHasta})}"
+                               th:text="${i + 1}">1</a>
+                        </li>
+                        <li class="page-item" th:classappend="${accesosPagina.last ? 'disabled' : ''}">
+                            <a class="page-link"
+                               th:href="@{/admin/accesos(pagina=${accesosPagina.number + 1}, tamano=${accesosPagina.size}, ordenarPor=${ordenarPor}, direccionOrden=${direccionOrden}, filtroUsuario=${filtroUsuario}, fechaDesde=${fechaDesde}, fechaHasta=${fechaHasta})}">Siguiente</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+            <div th:unless="${accesosPagina != null and !accesosPagina.content.empty}"
+                 class="alert alert-info m-3 text-center">
+                <i class="bi bi-info-circle me-2"></i>No hay registros de accesos para mostrar con los filtros
+                aplicados.
+            </div>
+        </div>
+    </div>
+</th:block>
+
+<th:block layout:fragment="scripts"></th:block>
+</body>
+</html>
