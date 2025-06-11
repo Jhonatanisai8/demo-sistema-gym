@@ -1,0 +1,273 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    text-decoration: none;
+    list-style: none;
+}
+
+body {
+    font-family: "Poppins", sans-serif;
+    background-color: #080708;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.header {
+    color: #F6F7F8;
+    background-image: url('/imgs/bg3.png');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.menu {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 1000;
+    background-color: #011627 transparent;
+    border-bottom: 1px solid #fff;
+}
+
+.logo {
+    color: #fff;
+    font-size: 25px;
+    font-weight: 800;
+}
+
+.menu .navbar ul li {
+    position: relative;
+    float: left;
+}
+
+.menu .navbar ul li a {
+    font-size: 18px;
+    padding: 20px;
+    color: #00A5CF;
+    display: block;
+}
+
+.menu .navbar ul li a:hover {
+    text-shadow: 2px 2px 3px #444;
+    color: #ddd;
+    font-weight: bold;
+}
+
+#menu {
+    display: none;
+}
+
+.menu-icono {
+    width: 25px;
+}
+
+.menu label {
+    display: none;
+    cursor: pointer;
+}
+
+.header-info {
+    color: #FFFFFF;
+    text-transform: uppercase;
+    font-size: 40px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+    text-shadow: 5px 5px 5px #333;
+}
+
+.header-info p {
+    color: #FFFFFF;
+    font-size: 22px;
+    text-transform: capitalize;
+    margin-bottom: 35px;
+}
+
+.btn-1,
+.btn-2,
+.btn-3,
+.btn-4 {
+    display: inline-block;
+    padding: 10px 35px;
+    background-color: #00A5CF;
+    border-radius: 10px;
+    font-size: 20px;
+    color: #F6F7F8;
+    text-transform: uppercase;
+}
+
+.btn-1:hover,
+.btn-2:hover,
+.btn-3:hover,
+.btn-4:hover {
+    background-color: #E9724C;
+    color: #F6F7F8;
+}
+
+.gym {
+    padding: 100px 0;
+    display: flex;
+    align-items: center;
+}
+
+.gym-1 {
+    width: 50%;
+    padding-right: 150px;
+}
+
+.gym-1 h2 {
+    font-size: 40px;
+    color: #ffff;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 35px;
+}
+
+section {
+    color: #F6F7F8;
+}
+
+.gym-1 p {
+    font-size: 16px;
+    color: #F6F7F8;
+}
+
+.gym-1 span {
+    color: #00A5CF;
+}
+
+.img-1,
+.img-2 {
+    width: 250px;
+    box-shadow: 5px 6px 7px #ddd;
+    margin-right: 30px;
+}
+
+.footer {
+    border-top: 1px solid #00A5CF;
+    padding: 50px;
+    display: flex;
+    justify-content: space-between;
+    background-color: #ddd;
+}
+
+.footer h3 {
+    color: #00A5CF;
+    font-size: 25px;
+    font-weight: 800;
+}
+
+.links ul {
+    display: flex;
+}
+
+.links ul li {
+    margin-right: 35px;
+}
+
+.links ul li a {
+    color: #00A5CF;
+}
+
+.footer-text {
+    justify-content: center;
+}
+
+@media (max-width: 991px) {
+    .menu {
+        padding: 20px;
+    }
+
+    .menu label {
+        display: initial;
+    }
+
+    .menu .navbar {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        display: none;
+        background-color: #fff;
+    }
+
+
+    .menu .navbar ul li {
+        width: 100%;
+    }
+
+    #menu:checked ~ .navbar {
+        display: initial;
+    }
+
+    .header-content {
+        padding: 30px;
+    }
+
+    .header-info h1 {
+        font-size: 50px;
+        margin-bottom: 5px;
+    }
+
+    .gym {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 30px;
+    }
+
+    .gym-1 {
+        width: 100%;
+        padding: 0;
+        order: 1;
+    }
+
+    .gym-1 h2 {
+        margin-bottom: 15px;
+    }
+
+    .btn-2 {
+        margin-bottom: 35px;
+    }
+
+    .gym-2 {
+        order: 2;
+        width: 100%;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .img-1,
+    .img-2 {
+        margin: 0 0 20px 0;
+    }
+
+    .footer {
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    .footer h3 {
+        margin-bottom: 15px;
+    }
+
+    .links ul li {
+        margin: 0;
+    }
+}
