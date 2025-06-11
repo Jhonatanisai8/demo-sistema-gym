@@ -3,12 +3,15 @@ package com.isai.gym.app.services.impl;
 import com.isai.gym.app.dtos.MembresiaClienteDTO;
 import com.isai.gym.app.entities.Membresia;
 import com.isai.gym.app.entities.MembresiaCliente;
+import com.isai.gym.app.entities.Pago;
 import com.isai.gym.app.entities.Usuario;
 import com.isai.gym.app.enums.EstadoMembresia;
 import com.isai.gym.app.repository.MembresiaClienteRepository;
 import com.isai.gym.app.repository.MembresiaRepository;
+import com.isai.gym.app.repository.PagoRepository;
 import com.isai.gym.app.repository.UsuarioRepository;
 import com.isai.gym.app.services.MembresiaClienteService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,21 +19,22 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@Transactional
+@RequiredArgsConstructor
 public class MembresiaClienteServiceImpl implements MembresiaClienteService {
 
-    @Autowired
-    private MembresiaClienteRepository membresiaClienteRepository;
+    private final MembresiaClienteRepository membresiaClienteRepository;
 
-    @Autowired
-    private MembresiaRepository membresiaRepository;
-    // Para buscar el tipo de membresía
+    private final MembresiaRepository membresiaRepository;
 
-    @Autowired
-    private UsuarioRepository usuarioRepository;
+    private final UsuarioRepository usuarioRepository;
+
+    private final PagoRepository pagoRepository;
     // Para buscar el usuario
 
     @Override
@@ -135,5 +139,51 @@ public class MembresiaClienteServiceImpl implements MembresiaClienteService {
             } else if (mc.getFechaInicio().isAfter(today) && mc.getEstado() == EstadoMembresia.ACTIVA) {
             }
         }
+    }
+
+    @Override
+    public List<MembresiaCliente> obtenerMembresiasPorUsuario(Long usuarioId) {
+        return membresiaClienteRepository.findByUsuarioIdOrderByFechaFinDesc(usuarioId);
+    }
+
+    @Override
+    public MembresiaCliente obtenerMembresiaActivaPorUsuario(Long usuarioId) {
+        List<MembresiaCliente> activas = membresiaClienteRepository
+                .findByUsuarioIdAndActivaTrueAndFechaFinAfter(usuarioId, LocalDate.now());
+        return activas.isEmpty() ? null : activas.get(0); // Devuelve la primera activa encontrada, o null
+
+    }
+
+    @Override
+    public MembresiaCliente adquirirMembresia(Usuario usuario, Membresia tipoMembresia, String metodoPago) {
+        // creamos la instancia de MembresiaCliente
+        MembresiaCliente nuevaMembresia = new MembresiaCliente();
+        nuevaMembresia.setUsuario(usuario);
+        nuevaMembresia.setMembresia(tipoMembresia);
+        nuevaMembresia.setFechaCompra(LocalDateTime.now());
+        nuevaMembresia.setFechaInicio(LocalDate.now());
+        // calculamos la fecha de fin
+        nuevaMembresia.setFechaFin(LocalDate.now().plusDays(tipoMembresia.getDuracionDias()));
+        nuevaMembresia.setMontoPagado(tipoMembresia.getPrecio());
+        nuevaMembresia.setMetodoPago(metodoPago);
+        nuevaMembresia.setActiva(true);
+        nuevaMembresia.setEstado(EstadoMembresia.ACTIVA);
+
+        // guardamos la MembresiaCliente
+        MembresiaCliente membresiaGuardada = membresiaClienteRepository.save(nuevaMembresia);
+
+        //  registramos el pago
+        Pago nuevoPago = new Pago();
+        nuevoPago.setUsuario(usuario);
+        nuevoPago.setConcepto("Compra de membresía: " + tipoMembresia.getNombre());
+        nuevoPago.setMonto(tipoMembresia.getPrecio());
+        nuevoPago.setMetodoPago(metodoPago);
+        nuevoPago.setFechaPago(LocalDateTime.now());
+        nuevoPago.setFechaRegistro(LocalDateTime.now());
+        nuevoPago.setEstado("COMPLETADO");
+        nuevoPago.setReferenciaId(membresiaGuardada.getId());
+        pagoRepository.save(nuevoPago);
+
+        return membresiaGuardada;
     }
 }
