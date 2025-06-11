@@ -13,12 +13,12 @@
 </th:block>
 
 <th:block layout:fragment="content">
-    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
-        <i class="bi bi-exclamation-triangle-fill me-2"></i> <span th:text="${errorMessage}"></span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    <div th:if="${mensajeError}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i> <span th:text="${mensajeError}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
     </div>
 
-    <h4 class="mb-4 text-primary">Estás a punto de comprar:</h4>
+    <h4 class="mb-4 text-primary">Estás a punto de adquirir:</h4>
 
     <div class="card shadow-lg mb-4 border-0">
         <div class="card-header bg-success text-white py-3">
@@ -37,33 +37,42 @@
                                                                                                     th:text="${#numbers.formatCurrency(tipoMembresia.precio)}"></span>
                             </li>
                             <li class="mb-2"><i class="bi bi-hourglass-split me-2 text-info"></i>Duración: <span
-                                    class="fw-bold" th:text="${tipoMembresia.duracionEnDias + ' días'}"
-                                    th:if="${tipoMembresia.duracionEnDias > 0}"></span></li>
-                            <li class="mb-2"><i class="bi bi-list-check me-2 text-primary"></i>Características:
+                                    class="fw-bold" th:text="${tipoMembresia.duracionDias + ' días'}"
+                                    th:if="${tipoMembresia.duracionDias > 0}"></span></li>
+                            <li class="mb-2"><i class="bi bi-calendar me-2 text-warning"></i>Accesos por día: <span
+                                    class="fw-bold"
+                                    th:text="${tipoMembresia.limiteAccesosDia != null ? tipoMembresia.limiteAccesosDia : 'Ilimitados'}"></span>
+                            </li>
+                            <li class="mb-2"><i class="bi bi-list-check me-2 text-primary"></i>Beneficios:
                                 <ul class="list-unstyled ms-4 mt-2">
-                                    <li th:each="caracteristica : ${tipoMembresia.caracteristicas?.split(',')}">
-                                        <i class="bi bi-check-lg text-success me-1"></i><span
-                                            th:text="${caracteristica.trim()}"></span>
-                                    </li>
+                                    <th:block
+                                            th:if="${tipoMembresia.beneficios != null and !tipoMembresia.beneficios.isEmpty()}">
+                                        <li th:each="beneficio : ${tipoMembresia.beneficios.split(',')}">
+                                            <i class="bi bi-check-lg text-success me-1"></i><span
+                                                th:text="${beneficio.trim()}"></span>
+                                        </li>
+                                    </th:block>
                                     <li class="text-muted fst-italic"
-                                        th:if="${tipoMembresia.caracteristicas == null or tipoMembresia.caracteristicas.isEmpty()}">
-                                        No se especifican características adicionales.
+                                        th:unless="${tipoMembresia.beneficios != null and !tipoMembresia.beneficios.isEmpty()}">
+                                        No se especifican beneficios adicionales.
                                     </li>
                                 </ul>
                             </li>
                         </ul>
                     </div>
                     <div class="col-md-4 text-center mt-3 mt-md-0">
-                        <i class="bi bi-award-fill text-warning" style="font-size: 8rem;"></i></div>
+                        <i class="bi bi-award-fill text-warning" style="font-size: 8rem;"></i>
+                    </div>
                 </div>
             </div>
-            <div th:unless="${tipoMembresia != null}" class="alert alert-warning">
+            <div th:unless="${tipoMembresia != null}" class="alert alert-warning text-center">
                 <i class="bi bi-exclamation-triangle me-2"></i>No se ha seleccionado una membresía válida para
                 confirmar.
             </div>
         </div>
     </div>
 
+    <!-- Formulario de Confirmación y Pago -->
     <div class="card shadow-lg mb-4 border-0" th:if="${tipoMembresia != null}">
         <div class="card-header bg-info text-white py-3">
             <h5 class="mb-0 fs-5"><i class="bi bi-credit-card me-2"></i>Método de Pago</h5>
@@ -90,9 +99,9 @@
                 </div>
                 <div class="d-grid gap-2">
                     <button type="submit" class="btn btn-success btn-lg rounded-pill"><i
-                            class="bi bi-credit-card-fill me-2"></i>Confirmar y Pagar
+                            class="bi bi-check-circle-fill me-2"></i>Confirmar y Pagar
                     </button>
-                    <a th:href="@{/cliente/membresias/comprar}" class="btn btn-outline-secondary btn-lg rounded-pill"><i
+                    <a th:href="@{/cliente/membresias/tienda}" class="btn btn-outline-secondary btn-lg rounded-pill"><i
                             class="bi bi-arrow-left-circle me-2"></i>Cancelar y Volver</a>
                 </div>
             </form>

@@ -2,7 +2,7 @@
 <html lang="es"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layouts/client-layout}">
+      layout:decorate="~{client/layouts/client-layout}">
 <head>
     <title layout:title-template="Mis Membresías - %s">Listado de Membresías</title>
     <th:block layout:fragment="styles"></th:block>
@@ -13,61 +13,76 @@
 </th:block>
 
 <th:block layout:fragment="content">
-    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
-        <i class="bi bi-check-circle-fill me-2"></i> <span th:text="${successMessage}"></span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    <div th:if="${mensajeExito}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i> <span th:text="${mensajeExito}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
     </div>
-    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
-        <i class="bi bi-exclamation-triangle-fill me-2"></i> <span th:text="${errorMessage}"></span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    <div th:if="${mensajeError}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i> <span th:text="${mensajeError}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
     </div>
 
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h4 class="mb-0 text-primary">Mis Suscripciones Activas e Históricas</h4>
-        <a th:href="@{/cliente/membresias/comprar}" class="btn btn-success"><i class="bi bi-plus-circle me-2"></i>Comprar
+        <h4 class="mb-0 text-primary">Mis Suscripciones</h4>
+        <a th:href="@{/cliente/membresias/tienda}" class="btn btn-success"><i class="bi bi-plus-circle me-2"></i>Comprar
             Nueva Membresía</a>
     </div>
 
-    <div class="card shadow-sm mb-4">
-        <div class="card-header bg-white">
-            <h5 class="mb-0 text-dark"><i class="bi bi-star-fill me-2 text-warning"></i>Membresía Actual / Activa</h5>
+    <!-- Sección de Membresía Actual / Activa -->
+    <div class="card shadow-sm mb-4 border-0">
+        <div class="card-header bg-white py-3">
+            <h5 class="mb-0 text-dark"><i class="bi bi-star-fill me-2 text-warning"></i>Membresía Activa</h5>
         </div>
-        <div class="card-body">
+        <div class="card-body p-4">
             <div th:if="${membresiaActiva != null}">
                 <div class="row align-items-center">
                     <div class="col-md-8">
-                        <h4 class="card-title text-primary" th:text="${membresiaActiva.tipoMembresia.nombre}">Membresía
+                        <h4 class="card-title text-primary mb-1" th:text="${membresiaActiva.membresia.nombre}">Membresía
                             Platinum</h4>
-                        <p class="card-text text-muted" th:text="${membresiaActiva.tipoMembresia.descripcion}">
-                            Descripción de la membresía</p>
+                        <p class="card-text text-muted mb-3" th:text="${membresiaActiva.membresia.descripcion}">
+                            Descripción de la membresía.</p>
                         <ul class="list-unstyled mb-0">
-                            <li><i class="bi bi-calendar-check me-2 text-success"></i>Inicio: <span
+                            <li class="mb-1"><i class="bi bi-calendar-check me-2 text-success"></i>Inicio: <span
                                     th:text="${#temporals.format(membresiaActiva.fechaInicio, 'dd-MM-yyyy')}"></span>
                             </li>
-                            <li><i class="bi bi-calendar-x me-2 text-danger"></i>Fin: <span
+                            <li class="mb-1"><i class="bi bi-calendar-x me-2 text-danger"></i>Fin: <span
                                     th:text="${#temporals.format(membresiaActiva.fechaFin, 'dd-MM-yyyy')}"></span></li>
-                            <li><i class="bi bi-currency-dollar me-2 text-info"></i>Precio Pagado: <span
-                                    th:text="${#numbers.formatCurrency(membresiaActiva.precioPagado)}"></span></li>
-                            <li><i class="bi bi-tag-fill me-2 text-secondary"></i>Estado: <span class="badge bg-success"
-                                                                                                th:text="${membresiaActiva.estado}">Activa</span>
-                            </li>
+                            <li class="mb-1"><i class="bi bi-currency-dollar me-2 text-info"></i>Monto Pagado: <span
+                                    th:text="${#numbers.formatCurrency(membresiaActiva.montoPagado)}"></span></li>
+                            <li class="mb-1"><i class="bi bi-cash-coin me-2 text-secondary"></i>Método de Pago: <span
+                                    th:text="${membresiaActiva.metodoPago}"></span></li>
+                            <li><i class="bi bi-tag-fill me-2"
+                                   th:classappend="${membresiaActiva.estado == 'ACTIVA' ? 'text-success' : (membresiaActiva.estado == 'EXPIRADA' ? 'text-danger' : 'text-secondary')}"></i>Estado:
+                                <span class="badge"
+                                      th:classappend="${membresiaActiva.estado == 'ACTIVA' ? 'bg-success' : (membresiaActiva.estado == 'EXPIRADA' ? 'bg-danger' : 'bg-secondary')}"
+                                      th:text="${membresiaActiva.estado.nombreAmigable}">Activa</span></li>
                         </ul>
                     </div>
                     <div class="col-md-4 text-md-end mt-3 mt-md-0">
-                        <a href="#" class="btn btn-outline-primary disabled"><i class="bi bi-arrow-clockwise me-2"></i>Renovar
-                            (Próx.)</a>
+                        <span th:if="${membresiaActiva.estado == 'ACTIVA'}" class="badge bg-primary fs-6 py-2 px-3">
+                            <i class="bi bi-activity me-1"></i>¡Activa!
+                        </span>
+                        <span th:unless="${membresiaActiva.estado == 'ACTIVA'}"
+                              class="badge bg-secondary fs-6 py-2 px-3">
+                            <i class="bi bi-archive me-1"></i>Inactiva
+                        </span>
+                        <div class="mt-3">
+                            <a href="#" class="btn btn-outline-primary btn-sm disabled"><i
+                                    class="bi bi-arrow-clockwise me-2"></i>Renovar (Próx.)</a>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div th:unless="${membresiaActiva != null}" class="alert alert-info mb-0">
-                <i class="bi bi-info-circle me-2"></i>Actualmente no tienes una membresía activa. ¡Considera adquirir
-                una!
+            <div th:unless="${membresiaActiva != null}" class="alert alert-info mb-0 text-center">
+                <i class="bi bi-info-circle me-2"></i>Actualmente no tienes una membresía activa. ¡Adquiere una para
+                empezar!
             </div>
         </div>
     </div>
 
-    <div class="card shadow-sm">
-        <div class="card-header bg-white">
+    <!-- Sección de Historial de Membresías -->
+    <div class="card shadow-sm mb-4 border-0">
+        <div class="card-header bg-white py-3">
             <h5 class="mb-0 text-dark"><i class="bi bi-clock-history me-2 text-secondary"></i>Historial de Membresías
             </h5>
         </div>
@@ -80,21 +95,23 @@
                             <th scope="col">Membresía</th>
                             <th scope="col">Inicio</th>
                             <th scope="col">Fin</th>
-                            <th scope="col">Precio</th>
+                            <th scope="col">Monto Pagado</th>
+                            <th scope="col">Método Pago</th>
                             <th scope="col">Estado</th>
                             <th scope="col">Acciones</th>
                         </tr>
                         </thead>
                         <tbody>
-                        <tr th:each="membresia : ${membresiasHistoricas}">
-                            <td th:text="${membresia.tipoMembresia.nombre}"></td>
-                            <td th:text="${#temporals.format(membresia.fechaInicio, 'dd-MM-yyyy')}"></td>
-                            <td th:text="${#temporals.format(membresia.fechaFin, 'dd-MM-yyyy')}"></td>
-                            <td th:text="${#numbers.formatCurrency(membresia.precioPagado)}"></td>
+                        <tr th:each="mc : ${membresiasHistoricas}">
+                            <td th:text="${mc.membresia.nombre}"></td>
+                            <td th:text="${#temporals.format(mc.fechaInicio, 'dd-MM-yyyy')}"></td>
+                            <td th:text="${#temporals.format(mc.fechaFin, 'dd-MM-yyyy')}"></td>
+                            <td th:text="${#numbers.formatCurrency(mc.montoPagado)}"></td>
+                            <td th:text="${mc.metodoPago}"></td>
                             <td>
                                     <span class="badge"
-                                          th:classappend="${membresia.estado == 'Activa' ? 'bg-success' : (membresia.estado == 'Vencida' ? 'bg-danger' : 'bg-secondary')}"
-                                          th:text="${membresia.estado}"></span>
+                                          th:classappend="${mc.estado == 'ACTIVA' ? 'bg-success' : (mc.estado == 'EXPIRADA' ? 'bg-danger' : 'bg-secondary')}"
+                                          th:text="${mc.estado.nombreAmigable}"></span>
                             </td>
                             <td>
                                 <a href="#" class="btn btn-sm btn-outline-info disabled" title="Ver Detalles"><i
@@ -106,7 +123,7 @@
                 </div>
             </div>
             <div th:unless="${membresiasHistoricas != null and !membresiasHistoricas.empty}"
-                 class="alert alert-info m-3">
+                 class="alert alert-info m-3 text-center">
                 <i class="bi bi-info-circle me-2"></i>No hay historial de membresías para mostrar.
             </div>
         </div>

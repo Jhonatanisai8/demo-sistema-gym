@@ -22,4 +22,7 @@ public interface UsuarioService {
     void eliminarUsuario(Long id);
 
     Usuario actualizarUsuario(Long id, RegistroUsuarioDTO usuarioDTO);
+
+    Usuario buscarPorNombreUsuarioOEmail(String nombreUsuarioOEmail);
+
 }
