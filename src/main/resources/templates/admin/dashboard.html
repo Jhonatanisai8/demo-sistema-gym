@@ -14,10 +14,12 @@
                 box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
                 transition: transform 0.3s ease, box-shadow 0.3s ease;
             }
+
             .stat-card:hover {
                 transform: translateY(-5px);
                 box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
             }
+
             .stat-card .icon-circle {
                 width: 60px;
                 height: 60px;
@@ -27,30 +29,46 @@
                 justify-content: center;
                 background-color: #f1f3f5;
             }
+
             .stat-card .card-title {
                 font-size: 0.9rem;
                 font-weight: 600;
                 color: #6c757d;
             }
+
             .stat-card .card-text {
                 font-size: 2rem;
                 font-weight: 700;
             }
-            .stat-card.border-primary { border-color: #4e73df!important; }
-            .stat-card.border-success { border-color: #1cc88a!important; }
-            .stat-card.border-info { border-color: #36b9cc!important; }
-            .stat-card.border-warning { border-color: #f6c23e!important; }
+
+            .stat-card.border-primary {
+                border-color: #4e73df !important;
+            }
+
+            .stat-card.border-success {
+                border-color: #1cc88a !important;
+            }
+
+            .stat-card.border-info {
+                border-color: #36b9cc !important;
+            }
+
+            .stat-card.border-warning {
+                border-color: #f6c23e !important;
+            }
 
             .main-panel {
                 border-radius: 0.75rem;
                 box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
             }
+
             .quick-action-btn {
                 transition: all 0.3s ease;
             }
+
             .quick-action-btn:hover {
                 transform: scale(1.03);
-                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             }
         </style>
     </th:block>
@@ -72,7 +90,8 @@
                     <div class="card-body d-flex align-items-center">
                         <div class="flex-grow-1">
                             <h5 class="card-title text-uppercase text-muted">Total Ventas</h5>
-                            <h3 class="card-text text-dark" th:text="${stats.totalVentas != null ? #numbers.formatCurrency(stats.totalVentas) : '$0.00'}"></h3>
+                            <h3 class="card-text text-dark"
+                                th:text="${stats.totalVentas != null ? #numbers.formatCurrency(stats.totalVentas) : '$0.00'}"></h3>
                         </div>
                         <div class="icon-circle ms-3">
                             <i class="bi bi-cash-coin fs-2 text-primary"></i>
@@ -87,7 +106,8 @@
                     <div class="card-body d-flex align-items-center">
                         <div class="flex-grow-1">
                             <h5 class="card-title text-uppercase text-muted">Ingresos Membresías</h5>
-                            <h3 class="card-text text-dark" th:text="${stats.totalMembresiasPagadas != null ? #numbers.formatCurrency(stats.totalMembresiasPagadas) : '$0.00'}"></h3>
+                            <h3 class="card-text text-dark"
+                                th:text="${stats.totalMembresiasPagadas != null ? #numbers.formatCurrency(stats.totalMembresiasPagadas) : '$0.00'}"></h3>
                         </div>
                         <div class="icon-circle ms-3">
                             <i class="bi bi-wallet2 fs-2 text-success"></i>
@@ -130,22 +150,26 @@
         <!-- Panel Principal -->
         <div class="card main-panel p-lg-4">
             <div class="card-body text-center">
-                <h2 class="card-title mb-2">Bienvenido, <span class="fw-bold text-primary" sec:authentication="name"></span></h2>
+                <h2 class="card-title mb-2">Bienvenido, <span class="fw-bold text-primary"
+                                                              sec:authentication="name"></span></h2>
                 <p class="text-muted mb-4">
-                    Rol: <span class="badge bg-light text-dark border" sec:authentication="principal.authorities[0]"></span>
+                    Rol: <span class="badge bg-light text-dark border"
+                               sec:authentication="principal.authorities[0]"></span>
                 </p>
                 <hr>
                 <div class="mt-4">
                     <h4 class="mb-4 fw-light">Acciones Rápidas</h4>
                     <div class="row justify-content-center g-3">
                         <div class="col-sm-6 col-md-5 col-lg-4">
-                            <a th:href="@{/admin/usuarios/lista}" class="btn btn-light border quick-action-btn btn-lg w-100 d-flex flex-column align-items-center py-3">
+                            <a th:href="@{/admin/usuarios/lista}"
+                               class="btn btn-light border quick-action-btn btn-lg w-100 d-flex flex-column align-items-center py-3">
                                 <i class="bi bi-people fs-1 text-primary"></i>
                                 <span class="mt-2">Gestionar Usuarios</span>
                             </a>
                         </div>
                         <div class="col-sm-6 col-md-5 col-lg-4">
-                            <a th:href="@{/admin/membresias/tipos/lista}" class="btn btn-light border quick-action-btn btn-lg w-100 d-flex flex-column align-items-center py-3">
+                            <a th:href="@{/admin/membresias/tipos}"
+                               class="btn btn-light border quick-action-btn btn-lg w-100 d-flex flex-column align-items-center py-3">
                                 <i class="bi bi-card-checklist fs-1 text-info"></i>
                                 <span class="mt-2">Gestionar Membresías</span>
                             </a>
