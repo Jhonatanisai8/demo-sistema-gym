@@ -3,7 +3,11 @@ package com.isai.gym.app.services.impl;
 import com.isai.gym.app.dtos.CarritoDTO;
 import com.isai.gym.app.dtos.CarritoItemDTO;
 import com.isai.gym.app.dtos.ItemVentaDTO;
+import com.isai.gym.app.dtos.ItemVentaHistorialDTO;
 import com.isai.gym.app.dtos.VentaDTO;
+import com.isai.gym.app.dtos.VentaDetalleAdminDTO;
+import com.isai.gym.app.dtos.VentaHistorialDTO;
+import com.isai.gym.app.dtos.VentaHistorialFilterDTO;
 import com.isai.gym.app.entities.*;
 import com.isai.gym.app.enums.EstadoPago;
 import com.isai.gym.app.enums.EstadoVenta;
@@ -21,6 +25,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,7 +38,8 @@ public class VentaServiceImpl implements VentaService {
     private final ProductoRepository productoRepository;
     private final UsuarioRepository usuarioRepository;
 
-    public VentaServiceImpl(VentaRepository ventaRepository, ItemVentaRepository itemVentaRepository, PagoRepository pagoRepository, ProductoRepository productoRepository, UsuarioRepository usuarioRepository) {
+    public VentaServiceImpl(VentaRepository ventaRepository, ItemVentaRepository itemVentaRepository,
+            PagoRepository pagoRepository, ProductoRepository productoRepository, UsuarioRepository usuarioRepository) {
         this.ventaRepository = ventaRepository;
         this.itemVentaRepository = itemVentaRepository;
         this.pagoRepository = pagoRepository;
@@ -54,7 +61,8 @@ public class VentaServiceImpl implements VentaService {
 
         for (CarritoItemDTO itemDTO : carrito.getItems()) {
             Producto producto = productoRepository.findById(itemDTO.getIdProducto())
-                    .orElseThrow(() -> new RuntimeException("Producto no encontrado con ID: " + itemDTO.getIdProducto()));
+                    .orElseThrow(
+                            () -> new RuntimeException("Producto no encontrado con ID: " + itemDTO.getIdProducto()));
 
             if (producto.getStock() < itemDTO.getCantidad()) {
                 throw new RuntimeException("Stock insuficiente para el producto: " + producto.getNombre());
@@ -156,7 +164,7 @@ public class VentaServiceImpl implements VentaService {
         return ventaRepository.findByEstado(estado, pageable).map(this::convertToDto);
     }
 
-    // --- Métodos de Conversión --- 
+    // --- Métodos de Conversión ---
 
     private VentaDTO convertToDto(Venta venta) {
         VentaDTO dto = new VentaDTO();
@@ -206,16 +214,79 @@ public class VentaServiceImpl implements VentaService {
 
         if (dto.getUsuarioId() != null) {
             Usuario cliente = usuarioRepository.findById(dto.getUsuarioId())
-                .orElseThrow(() -> new EntityNotFoundException("Cliente no encontrado con ID: " + dto.getUsuarioId()));
+                    .orElseThrow(
+                            () -> new EntityNotFoundException("Cliente no encontrado con ID: " + dto.getUsuarioId()));
             venta.setUsuario(cliente);
         }
 
         if (dto.getVendedorId() != null) {
             Usuario vendedor = usuarioRepository.findById(dto.getVendedorId())
-                .orElseThrow(() -> new EntityNotFoundException("Vendedor no encontrado con ID: " + dto.getVendedorId()));
+                    .orElseThrow(
+                            () -> new EntityNotFoundException("Vendedor no encontrado con ID: " + dto.getVendedorId()));
             venta.setVendedor(vendedor);
         }
-        
+
         return venta;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<VentaDetalleAdminDTO> obtenerDetalleVenta(Long ventaId) {
+        return ventaRepository.findByIdWithDetails(ventaId).map(venta -> {
+            VentaHistorialDTO ventaInfo = mapToVentaHistorialDTO(venta);
+            List<ItemVentaHistorialDTO> items = venta.getItems().stream()
+                    .map(this::mapToItemVentaHistorialDTO)
+                    .collect(Collectors.toList());
+            VentaDetalleAdminDTO detalleDTO = new VentaDetalleAdminDTO();
+            detalleDTO.setVentaInfo(ventaInfo);
+            detalleDTO.setDescuento(venta.getDescuento());
+            detalleDTO.setItems(items);
+            return detalleDTO;
+        });
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<VentaHistorialDTO> obtenerHistorialVentas(VentaHistorialFilterDTO filtros, Pageable pageable) {
+        LocalDateTime fechaInicio = null;
+        if (filtros.getFechaInicio() != null) {
+            fechaInicio = filtros.getFechaInicio().atStartOfDay();
+        }
+        LocalDateTime fechaFin = null;
+        if (filtros.getFechaFin() != null) {
+            fechaFin = filtros.getFechaFin().atTime(23, 59, 59);
+        }
+
+        Page<Venta> ventasPage = ventaRepository.findFilteredVentas(
+                fechaInicio,
+                fechaFin,
+                filtros.getEstado(),
+                filtros.getKeywordCliente(),
+                filtros.getKeywordVendedor(),
+                pageable);
+        return ventasPage.map(this::mapToVentaHistorialDTO);
+    }
+
+    private VentaHistorialDTO mapToVentaHistorialDTO(Venta venta) {
+        VentaHistorialDTO dto = new VentaHistorialDTO();
+        dto.setId(venta.getId());
+        dto.setFechaVenta(venta.getFechaVenta());
+        dto.setMontoTotal(venta.getMontoTotal());
+        dto.setEstado(venta.getEstado());
+        dto.setMetodoPago(venta.getMetodoPago());
+        dto.setNombreCliente(venta.getUsuario() != null ? venta.getUsuario().getNombreCompleto() : "N/A");
+        dto.setNombreVendedor(venta.getVendedor() != null ? venta.getVendedor().getNombreCompleto() : "N/A");
+        return dto;
+    }
+
+    private ItemVentaHistorialDTO mapToItemVentaHistorialDTO(ItemVenta itemVenta) {
+        ItemVentaHistorialDTO dto = new ItemVentaHistorialDTO();
+        dto.setId(itemVenta.getId());
+        dto.setNombreProducto(
+                itemVenta.getProducto() != null ? itemVenta.getProducto().getNombre() : "Producto Desconocido");
+        dto.setCantidad(itemVenta.getCantidad());
+        dto.setPrecioUnitario(itemVenta.getPrecioUnitario());
+        dto.setSubtotal(itemVenta.getSubtotal());
+        return dto;
     }
 }

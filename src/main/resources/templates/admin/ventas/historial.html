@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/admin-layout}">
+<head>
+    <title layout:title-template="Historial de Ventas - %s">Historial de Ventas</title>
+    <th:block layout:fragment="styles">
+        <style>
+            .filter-card {
+                background-color: #ffffff;
+                border-radius: 0.75rem;
+                box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.05);
+                padding: 1.5rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .table-responsive {
+                border-radius: 0.75rem;
+                overflow: hidden;
+            }
+
+            .table thead {
+                background-color: var(--primary-color-admin);
+                color: white;
+            }
+
+            .table-striped tbody tr:nth-of-type(odd) {
+                background-color: rgba(0, 0, 0, .03);
+            }
+
+            .table-hover tbody tr:hover {
+                background-color: rgba(0, 0, 0, .07);
+            }
+
+            .pagination .page-item.active .page-link {
+                background-color: var(--primary-color-admin);
+                border-color: var(--primary-color-admin);
+                color: white;
+            }
+
+            .pagination .page-link {
+                color: var(--primary-color-admin);
+            }
+        </style>
+    </th:block>
+</head>
+<body>
+<th:block layout:fragment="header">
+    <h1 class="h3"><i class="bi bi-receipt-cutoff me-2"></i>Historial de Ventas</h1>
+</th:block>
+
+<th:block layout:fragment="content">
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i> <span th:text="${successMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i> <span th:text="${errorMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <!-- Sección de Filtros y Búsqueda -->
+    <div class="filter-card mb-4">
+        <h5><i class="bi bi-funnel me-2"></i>Filtros de Búsqueda</h5>
+        <form th:action="@{/admin/ventas/historial}" method="get" th:object="${filtros}" class="row g-3">
+            <div class="col-md-3">
+                <label for="fechaInicio" class="form-label">Fecha Inicio</label>
+                <input type="date" class="form-control" id="fechaInicio" th:field="*{fechaInicio}">
+            </div>
+            <div class="col-md-3">
+                <label for="fechaFin" class="form-label">Fecha Fin</label>
+                <input type="date" class="form-control" id="fechaFin" th:field="*{fechaFin}">
+            </div>
+            <div class="col-md-3">
+                <label for="estado" class="form-label">Estado</label>
+                <select class="form-select" id="estado" th:field="*{estado}">
+                    <option value="">Todos</option>
+                    <option th:each="estado : ${estadosVenta}"
+                            th:value="${estado}"
+                            th:text="${estado.name()}">
+                        Estado
+                    </option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="keywordCliente" class="form-label">Cliente</label>
+                <input type="text" class="form-control" id="keywordCliente" th:field="*{keywordCliente}"
+                       placeholder="Nombre del cliente">
+            </div>
+            <div class="col-md-3">
+                <label for="keywordVendedor" class="form-label">Vendedor</label>
+                <input type="text" class="form-control" id="keywordVendedor" th:field="*{keywordVendedor}"
+                       placeholder="Nombre del vendedor">
+            </div>
+            <div class="col-12 d-flex justify-content-end gap-2">
+                <button type="submit" class="btn btn-primary"><i class="bi bi-search me-2"></i>Buscar</button>
+                <a th:href="@{/admin/ventas/historial}" class="btn btn-outline-secondary"><i
+                        class="bi bi-x-circle me-2"></i>Limpiar Filtros</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Tabla de Historial de Ventas -->
+    <div th:if="${ventasPage != null and !ventasPage.isEmpty()}">
+        <div class="table-responsive shadow-sm">
+            <table class="table table-striped table-hover mb-0">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Fecha</th>
+                    <th>Cliente</th>
+                    <th>Vendedor</th>
+                    <th>Método Pago</th>
+                    <th>Monto Total</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="venta : ${ventasPage.content}">
+                    <td th:text="${venta.id}">1</td>
+                    <td th:text="${#temporals.format(venta.fechaVenta, 'dd-MM-yyyy HH:mm')}">01-01-2024 10:30</td>
+                    <td th:text="${venta.nombreCliente}">Cliente Ejemplo</td>
+                    <td th:text="${venta.nombreVendedor}">Vendedor Ejemplo</td>
+                    <td th:text="${venta.metodoPago}">Tarjeta</td>
+                    <td th:text="${#numbers.formatCurrency(venta.montoTotal)}">$100.00</td>
+                    <td><span th:text="${venta.estado}">COMPLETADA</span></td>
+                    <td>
+                        <a th:href="@{/admin/venta-historial/{id}(id=${venta.id})}" class="btn btn-info btn-sm"
+                           title="Ver Detalles">
+                            <i class="bi bi-eye"></i>
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Paginación -->
+        <nav aria-label="Page navigation" class="mt-4">
+            <ul class="pagination justify-content-center">
+                <li class="page-item" th:classappend="${ventasPage.first ? 'disabled' : ''}">
+                    <a class="page-link"
+                       th:href="@{/admin/ventas/historial(page=${ventasPage.number - 1}, size=${ventasPage.size}, fechaInicio=${filtros.fechaInicio}, fechaFin=${filtros.fechaFin}, estado=${filtros.estado}, keywordCliente=${filtros.keywordCliente}, keywordVendedor=${filtros.keywordVendedor})}">Anterior</a>
+                </li>
+                <li class="page-item" th:each="i : ${pageNumbers}"
+                    th:classappend="${i == ventasPage.number + 1 ? 'active' : ''}">
+                    <a class="page-link"
+                       th:href="@{/admin/ventas/historial(page=${i - 1}, size=${ventasPage.size}, fechaInicio=${filtros.fechaInicio}, fechaFin=${filtros.fechaFin}, estado=${filtros.estado}, keywordCliente=${filtros.keywordCliente}, keywordVendedor=${filtros.keywordVendedor})}"
+                       th:text="${i}">1</a>
+                </li>
+                <li class="page-item" th:classappend="${ventasPage.last ? 'disabled' : ''}">
+                    <a class="page-link"
+                       th:href="@{/admin/ventas/historial(page=${ventasPage.number + 1}, size=${ventasPage.size}, fechaInicio=${filtros.fechaInicio}, fechaFin=${filtros.fechaFin}, estado=${filtros.estado}, keywordCliente=${filtros.keywordCliente}, keywordVendedor=${filtros.keywordVendedor})}">Siguiente</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+    <div th:unless="${ventasPage != null and !ventasPage.isEmpty()}"
+         class="alert alert-info text-center py-4 rounded-3 shadow-sm">
+        <i class="bi bi-info-circle-fill me-2 fs-4"></i>
+        <p class="mb-0 fs-5">No se encontraron ventas con los criterios de búsqueda o filtro.</p>
+    </div>
+
+</th:block>
+
+<th:block layout:fragment="scripts"></th:block>
+</body>
+</html>
