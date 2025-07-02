@@ -1,8 +1,7 @@
 <!DOCTYPE html>
-<html lang="es"
-      xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -16,12 +15,16 @@
     <style th:inline="css">
         /* Copia y adapta tus estilos internos aquí si quieres */
         :root {
-            --primary-color: #1a73e8; /* Un azul más corporativo */
-            --dark-bg: #2d3e50; /* Azul oscuro profundo */
-            --light-bg: #eef2f6; /* Gris muy claro para el fondo */
+            --primary-color: #1a73e8;
+            /* Un azul más corporativo */
+            --dark-bg: #2d3e50;
+            /* Azul oscuro profundo */
+            --light-bg: #eef2f6;
+            /* Gris muy claro para el fondo */
             --text-light: #f8f9fa;
             --text-dark: #37474f;
-            --accent-color: #4285f4; /* Azul de acento */
+            --accent-color: #4285f4;
+            /* Azul de acento */
             --border-color: #dee2e6;
             --card-bg: #ffffff;
             --shadow-light: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.06);
@@ -47,7 +50,8 @@
             font-weight: 600;
         }
 
-        .btn-outline-light { /* Mantén esto si es global */
+        .btn-outline-light {
+            /* Mantén esto si es global */
             border-color: rgba(255, 255, 255, 0.6);
             color: var(--text-light);
             transition: all 0.25s ease-in-out;
@@ -55,7 +59,8 @@
             padding: 0.4rem 0.9rem;
         }
 
-        .btn-outline-light:hover { /* Mantén esto si es global */
+        .btn-outline-light:hover {
+            /* Mantén esto si es global */
             background-color: var(--text-light);
             color: var(--primary-color);
             border-color: var(--text-light);
@@ -118,11 +123,13 @@
         }
 
         aside.admin-sidebar .dropdown-toggle::after {
-            margin-left: auto; /* Empuja la flecha a la derecha */
+            margin-left: auto;
+            /* Empuja la flecha a la derecha */
         }
 
         aside.admin-sidebar .collapse .nav-link {
-            padding-left: 2.5rem; /* Indentación para submenús */
+            padding-left: 2.5rem;
+            /* Indentación para submenús */
             font-size: 0.95rem;
             margin-bottom: 0.4rem;
         }
@@ -142,7 +149,8 @@
             font-weight: 700;
         }
 
-        .card { /* Mantén esto si es global */
+        .card {
+            /* Mantén esto si es global */
             border: none;
             border-radius: 1rem;
             box-shadow: var(--shadow-light);
@@ -150,7 +158,8 @@
             overflow: hidden;
         }
 
-        .card-header { /* Mantén esto si es global */
+        .card-header {
+            /* Mantén esto si es global */
             background-color: #f2f6fa;
             border-bottom: 1px solid var(--border-color);
             border-top-left-radius: 1rem;
@@ -161,7 +170,8 @@
             font-size: 1.05rem;
         }
 
-        .card-body { /* Mantén esto si es global */
+        .card-body {
+            /* Mantén esto si es global */
             padding: 2rem;
         }
 
@@ -172,6 +182,7 @@
         }
 
         @media (max-width: 991.98px) {
+
             /* Adaptaciones para móviles/tabletas */
             .d-flex {
                 flex-direction: column;
@@ -208,8 +219,10 @@
                 font-size: 1.0rem;
             }
 
-            aside.admin-sidebar .collapse .nav-link { /* Ocultar submenús en móvil si no quieres que se expandan */
-                display: none; /* O puedes adaptarlos para un menú hamburguesa */
+            aside.admin-sidebar .collapse .nav-link {
+                /* Ocultar submenús en móvil si no quieres que se expandan */
+                display: none;
+                /* O puedes adaptarlos para un menú hamburguesa */
             }
 
             main.admin-content {
@@ -229,192 +242,196 @@
 
 <body>
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm navbar-admin">
-    <div class="container-fluid">
-        <a class="navbar-brand fw-bold" th:href="@{/admin/dashboard}">
-            <img th:src="@{/images/logo-small.png}" alt="Logo" height="30" class="me-2 d-inline-block align-text-top"/>
-            Panel Admin Gimnasio GymPro
-        </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarCollapse"
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm navbar-admin">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" th:href="@{/admin/dashboard}">
+                <img th:src="@{/images/logo-small.png}" alt="Logo" height="30"
+                    class="me-2 d-inline-block align-text-top" />
+                Panel Admin Gimnasio GymPro
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarCollapse"
                 aria-controls="sidebarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-        <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
-            <ul class="navbar-nav">
-                <li class="nav-item d-flex align-items-center me-3">
-                    <span class="text-white me-2">
-                        <i class="bi bi-person-circle me-1"></i>
-                        Admin: <span sec:authentication="name"></span>!
-                    </span>
-                </li>
-                <li class="nav-item">
-                    <form th:action="@{/logout}" method="post">
-                        <button type="submit" class="btn btn-outline-light">
-                            <i class="bi bi-box-arrow-right me-1"></i> Salir
-                        </button>
-                    </form>
-                </li>
-            </ul>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
+                <ul class="navbar-nav">
+                    <li class="nav-item d-flex align-items-center me-3">
+                        <span class="text-white me-2">
+                            <i class="bi bi-person-circle me-1"></i>
+                            Admin: <span sec:authentication="name"></span>!
+                        </span>
+                    </li>
+                    <li class="nav-item">
+                        <form th:action="@{/logout}" method="post">
+                            <button type="submit" class="btn btn-outline-light">
+                                <i class="bi bi-box-arrow-right me-1"></i> Salir
+                            </button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
         </div>
-    </div>
-</nav>
+    </nav>
 
-<div class="d-flex">
-    <aside class="bg-dark text-white p-3 d-flex flex-column admin-sidebar">
-        <div class="text-center mb-4">
-            <h4 class="text-white mt-2 mb-0">Gestión General</h4>
-            <small class="text-muted">Administración Total</small>
-        </div>
+    <div class="d-flex">
+        <aside class="bg-dark text-white p-3 d-flex flex-column admin-sidebar">
+            <div class="text-center mb-4">
+                <h4 class="text-white mt-2 mb-0">Gestión General</h4>
+                <small class="text-muted">Administración Total</small>
+            </div>
 
-        <ul class="nav flex-column gap-2 flex-grow-1">
-            <li>
-                <a class="nav-link" th:href="@{/admin/dashboard}">
-                    <i class="bi bi-speedometer2"></i> Dashboard
-                </a>
-            </li>
+            <ul class="nav flex-column gap-2 flex-grow-1">
+                <li>
+                    <a class="nav-link" th:href="@{/admin/dashboard}">
+                        <i class="bi bi-speedometer2"></i> Dashboard
+                    </a>
+                </li>
 
-            <li>
-                <a class="nav-link dropdown-toggle" href="#submenuUsuarios" data-bs-toggle="collapse"
-                   role="button" aria-expanded="false" aria-controls="submenuUsuarios">
-                    <i class="bi bi-people"></i> Usuarios
-                </a>
-                <div class="collapse" id="submenuUsuarios">
-                    <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small ms-3">
-                        <li><a th:href="@{/admin/usuarios/lista}"
-                               class="link-light d-inline-flex text-decoration-none rounded py-1 px-2">Listar
-                            Usuarios</a></li>
-                        <li><a th:href="@{/admin/usuarios/nuevo}"
-                               class="link-light d-inline-flex text-decoration-none rounded py-1 px-2">Crear Usuario</a>
-                        </li>
-                    </ul>
-                </div>
-            </li>
+                <li>
+                    <a class="nav-link dropdown-toggle" href="#submenuUsuarios" data-bs-toggle="collapse" role="button"
+                        aria-expanded="false" aria-controls="submenuUsuarios">
+                        <i class="bi bi-people"></i> Usuarios
+                    </a>
+                    <div class="collapse" id="submenuUsuarios">
+                        <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small ms-3">
+                            <li><a th:href="@{/admin/usuarios/lista}"
+                                    class="link-light d-inline-flex text-decoration-none rounded py-1 px-2">Listar
+                                    Usuarios</a></li>
+                            <li><a th:href="@{/admin/usuarios/nuevo}"
+                                    class="link-light d-inline-flex text-decoration-none rounded py-1 px-2">Crear
+                                    Usuario</a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
 
-            <li>
-                <a class="nav-link dropdown-toggle" href="#submenuMembresias" data-bs-toggle="collapse"
-                   role="button" aria-expanded="false" aria-controls="submenuMembresias">
-                    <i class="bi bi-card-checklist"></i> Membresías
-                </a>
-                <div class="collapse" id="submenuMembresias">
-                    <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small ms-3">
-                        <li><a th:href="@{/admin/membresias/tipos}"
-                               class="link-light d-inline-flex text-decoration-none rounded py-1 px-2">Tipos de
-                            Membresía</a></li>
-                        <li><a th:href="@{/admin/membresias/clientes}"
-                               class="link-light d-inline-flex text-decoration-none rounded py-1 px-2">Membresías
-                            Clientes</a></li>
-                    </ul>
-                </div>
-            </li>
+                <li>
+                    <a class="nav-link dropdown-toggle" href="#submenuMembresias" data-bs-toggle="collapse"
+                        role="button" aria-expanded="false" aria-controls="submenuMembresias">
+                        <i class="bi bi-card-checklist"></i> Membresías
+                    </a>
+                    <div class="collapse" id="submenuMembresias">
+                        <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small ms-3">
+                            <li><a th:href="@{/admin/membresias/tipos}"
+                                    class="link-light d-inline-flex text-decoration-none rounded py-1 px-2">Tipos de
+                                    Membresía</a></li>
+                            <li><a th:href="@{/admin/membresias/clientes}"
+                                    class="link-light d-inline-flex text-decoration-none rounded py-1 px-2">Membresías
+                                    Clientes</a></li>
+                        </ul>
+                    </div>
+                </li>
 
-            <li>
-                <a class="nav-link dropdown-toggle" href="#submenuEntrenadores" data-bs-toggle="collapse"
-                   role="button" aria-expanded="false" aria-controls="submenuEntrenadores">
-                    <i class="bi bi-person-workspace"></i> Entrenadores
-                </a>
-                <div class="collapse" id="submenuEntrenadores">
-                    <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small ms-3">
-                        <li><a th:href="@{/admin/entrenadores}"
-                               class="link-light d-inline-flex text-decoration-none rounded py-1 px-2">Listar
-                            Entrenadores</a></li>
-                        <li><a th:href="@{/admin/entrenadores/crear}"
-                               class="link-light d-inline-flex text-decoration-none rounded py-1 px-2">Crear
-                            Entrenador</a></li>
-                        <li><a th:href="@{/admin/entrenadores/asignaciones}"
-                               class="link-light d-inline-flex text-decoration-none rounded py-1 px-2">Asignaciones</a>
-                        </li>
-                    </ul>
-                </div>
-            </li>
+                <li>
+                    <a class="nav-link dropdown-toggle" href="#submenuEntrenadores" data-bs-toggle="collapse"
+                        role="button" aria-expanded="false" aria-controls="submenuEntrenadores">
+                        <i class="bi bi-person-workspace"></i> Entrenadores
+                    </a>
+                    <div class="collapse" id="submenuEntrenadores">
+                        <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small ms-3">
+                            <li><a th:href="@{/admin/entrenadores}"
+                                    class="link-light d-inline-flex text-decoration-none rounded py-1 px-2">Listar
+                                    Entrenadores</a></li>
+                            <li><a th:href="@{/admin/entrenadores/crear}"
+                                    class="link-light d-inline-flex text-decoration-none rounded py-1 px-2">Crear
+                                    Entrenador</a></li>
+                            <li><a th:href="@{/admin/entrenadores/asignaciones}"
+                                    class="link-light d-inline-flex text-decoration-none rounded py-1 px-2">Asignaciones</a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
 
-            <li>
-                <a class="nav-link dropdown-toggle" href="#submenuVentas" data-bs-toggle="collapse"
-                   role="button" aria-expanded="false" aria-controls="submenuVentas">
-                    <i class="bi bi-currency-dollar"></i> Ventas y Productos
-                </a>
-                <div class="collapse" id="submenuVentas">
-                    <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small ms-3">
-                        <li><a th:href="@{/admin/ventas/pos}"
-                               class="link-light d-inline-flex text-decoration-none rounded py-1 px-2">Punto de Venta
-                            (POS)</a></li>
-                        <li><a th:href="@{/admin/ventas/historial}"
-                               class="link-light d-inline-flex text-decoration-none rounded py-1 px-2">Historial de
-                            Ventas</a></li>
-                        <li><a th:href="@{/admin/productos/lista}"
-                               class="link-light d-inline-flex text-decoration-none rounded py-1 px-2">Gestión de
-                            Productos</a></li>
-                        <li><a th:href="@{/admin/productos/nuevo}"
-                               class="link-light d-inline-flex text-decoration-none rounded py-1 px-2">Crear
-                            Producto</a></li>
-                    </ul>
-                </div>
-            </li>
+                <li>
+                    <a class="nav-link dropdown-toggle" href="#submenuVentas" data-bs-toggle="collapse" role="button"
+                        aria-expanded="false" aria-controls="submenuVentas">
+                        <i class="bi bi-currency-dollar"></i> Ventas y Productos
+                    </a>
+                    <div class="collapse" id="submenuVentas">
+                        <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small ms-3">
+                            <li><a th:href="@{/admin/ventas/pos}"
+                                    class="link-light d-inline-flex text-decoration-none rounded py-1 px-2">Punto de
+                                    Venta
+                                    (POS)</a></li>
+                            <li><a th:href="@{/admin/ventas/historial}"
+                                    class="link-light d-inline-flex text-decoration-none rounded py-1 px-2">Historial de
+                                    Ventas</a></li>
+                            <li><a th:href="@{/admin/productos/lista}"
+                                    class="link-light d-inline-flex text-decoration-none rounded py-1 px-2">Gestión de
+                                    Productos</a></li>
+                            <li><a th:href="@{/admin/productos/nuevo}"
+                                    class="link-light d-inline-flex text-decoration-none rounded py-1 px-2">Crear
+                                    Producto</a></li>
+                        </ul>
+                    </div>
+                </li>
 
-            <li>
-                <a class="nav-link dropdown-toggle" href="#submenuEquipo" data-bs-toggle="collapse"
-                   role="button" aria-expanded="false" aria-controls="submenuEquipo">
-                    <i class="bi bi-tools"></i> Gestión de Equipo
-                </a>
-                <div class="collapse" id="submenuEquipo">
-                    <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small ms-3">
-                        <li><a th:href="@{/admin/equipos}"
-                               class="link-light d-inline-flex text-decoration-none rounded py-1 px-2">Inventario</a>
-                        </li>
-                        <li><a th:href="@{/admin/equipos/crear}"
-                               class="link-light d-inline-flex text-decoration-none rounded py-1 px-2">Registrar
-                            Equipo</a></li>
-                    </ul>
-                </div>
-            </li>
+                <li>
+                    <a class="nav-link dropdown-toggle" href="#submenuEquipo" data-bs-toggle="collapse" role="button"
+                        aria-expanded="false" aria-controls="submenuEquipo">
+                        <i class="bi bi-tools"></i> Gestión de Equipo
+                    </a>
+                    <div class="collapse" id="submenuEquipo">
+                        <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small ms-3">
+                            <li><a th:href="@{/admin/equipos}"
+                                    class="link-light d-inline-flex text-decoration-none rounded py-1 px-2">Inventario</a>
+                            </li>
+                            <li><a th:href="@{/admin/equipos/crear}"
+                                    class="link-light d-inline-flex text-decoration-none rounded py-1 px-2">Registrar
+                                    Equipo</a></li>
+                        </ul>
+                    </div>
+                </li>
 
-            <li>
-                <a class="nav-link" th:href="@{/admin/accesos}">
-                    <i class="bi bi-unlock"></i> Registro de Accesos
-                </a>
-            </li>
+                <li>
+                    <a class="nav-link" th:href="@{/admin/accesos}">
+                        <i class="bi bi-unlock"></i> Registro de Accesos
+                    </a>
+                </li>
 
-            <li>
-                <a class="nav-link" th:href="@{/admin/pagos/historial}">
-                    <i class="bi bi-wallet-fill"></i> Historial de Pagos
-                </a>
-            </li>
-
+                <li>
+                    <a class="nav-link" th:href="@{/admin/pagos/historial}">
+                        <i class="bi bi-wallet-fill"></i> Historial de Pagos
+                    </a>
+                </li>
+                <!-- 
             <li>
                 <a class="nav-link" th:href="@{/admin/ajustes/configuracion}">
                     <i class="bi bi-gear"></i> Ajustes
                 </a>
-            </li>
+            </li> -->
 
-        </ul>
-        <div class="mt-auto pt-3 border-top text-center">
-            <small class="text-muted">&copy; [[${#dates.format(#dates.createNow(), 'yyyy')}]] Gimnasio App</small>
-        </div>
-    </aside>
-
-    <main class="p-4 w-100 d-flex flex-column admin-content">
-        <header layout:fragment="header">
-            <h1 class="h3"><i class="bi bi-house-fill me-2"></i>Panel de Administración</h1>
-        </header>
-
-        <section layout:fragment="content" class="flex-grow-1">
-            <div class="card">
-                <div class="card-header">
-                    Título del Contenido
-                </div>
-                <div class="card-body">
-                    <p>Aquí va el contenido específico de cada página.</p>
-                    <p>Puedes agregar tablas, formularios, gráficos, etc. Asegúrate de que los estilos de estos
-                        elementos también sean consistentes.</p>
-                </div>
+            </ul>
+            <div class="mt-auto pt-3 border-top text-center">
+                <small class="text-muted">&copy; [[${#dates.format(#dates.createNow(), 'yyyy')}]] Gimnasio App</small>
             </div>
-        </section>
+        </aside>
 
-    </main>
-</div>
+        <main class="p-4 w-100 d-flex flex-column admin-content">
+            <header layout:fragment="header">
+                <h1 class="h3"><i class="bi bi-house-fill me-2"></i>Panel de Administración</h1>
+            </header>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>
-<th:block layout:fragment="scripts"></th:block>
+            <section layout:fragment="content" class="flex-grow-1">
+                <div class="card">
+                    <div class="card-header">
+                        Título del Contenido
+                    </div>
+                    <div class="card-body">
+                        <p>Aquí va el contenido específico de cada página.</p>
+                        <p>Puedes agregar tablas, formularios, gráficos, etc. Asegúrate de que los estilos de estos
+                            elementos también sean consistentes.</p>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>
+    <th:block layout:fragment="scripts"></th:block>
 
 </body>
+
 </html>
