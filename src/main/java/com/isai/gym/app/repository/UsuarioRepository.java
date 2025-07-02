@@ -1,6 +1,7 @@
 package com.isai.gym.app.repository;
 
 import com.isai.gym.app.entities.Usuario;
+import com.isai.gym.app.enums.TipoUsuario;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import org.springframework.data.domain.Page;
@@ -20,5 +21,8 @@ public interface UsuarioRepository
     Optional<Usuario> findByEmail(String email);
 
     Page<Usuario> findByNombreCompletoContainingIgnoreCaseOrEmailContainingIgnoreCase(String nombreCompleto, String email, Pageable pageable);
+
+    @Query("SELECT count(u) FROM Usuario u WHERE u.rol = :rol AND u.activo = :activo")
+    long countByRolAndActivo(@Param("rol") TipoUsuario rol, @Param("activo") boolean activo);
 
 }

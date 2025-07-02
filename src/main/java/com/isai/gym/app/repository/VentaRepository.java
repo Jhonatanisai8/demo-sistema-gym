@@ -27,4 +27,7 @@ public interface VentaRepository extends JpaRepository<Venta, Long> {
     Page<Venta> findByUsuarioId(Long usuarioId, Pageable pageable);
 
     Page<Venta> findByEstado(EstadoVenta estado, Pageable pageable);
+
+    @Query("SELECT SUM(v.montoTotal) FROM Venta v WHERE v.estado = :estado")
+    java.math.BigDecimal sumTotalVentasByEstado(@Param("estado") EstadoVenta estado);
 }

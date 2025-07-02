@@ -20,4 +20,6 @@ public interface EntrenadorRepository
 
     // método para verificar unicidad de email (muy recomendable)
     Optional<Entrenador> findByEmail(String email);
+
+    long countByActivo(boolean activo);
 }

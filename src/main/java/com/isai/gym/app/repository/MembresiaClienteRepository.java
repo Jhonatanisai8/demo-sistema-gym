@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -36,17 +37,10 @@ public interface MembresiaClienteRepository
     // Lista de membresías activas de un usuario cuya fecha de fin es posterior a la fecha actual
     List<MembresiaCliente> findByUsuarioIdAndActivaTrueAndFechaFinAfter(Long id, LocalDate fechaActual);
 
-    // Método original que causaba el error de "unique result"
-    // Optional<MembresiaCliente> findByUsuarioIdAndEstado(Long usuarioId, EstadoMembresia estado);
-    // Este método ya no se usa directamente para obtener la "única" activa si hay duplicados.
-
     // Nuevo método para obtener la membresía activa más reciente para un usuario.
-    // Esto ayuda a resolver el error "Query did not return a unique result"
-    // al garantizar que solo se devuelva un resultado (el más reciente por fecha de inicio)
-    // incluso si hay múltiples registros 'ACTIVA' para el mismo usuario.
     Optional<MembresiaCliente> findTopByUsuarioIdAndEstadoOrderByFechaInicioDesc(Long usuarioId, EstadoMembresia estado);
 
-    // Este método podría ser útil si necesitas todas las membresías activas ordenadas,
-    // pero para obtener "la" membresía activa principal, se prefiere findTopBy...
-    List<MembresiaCliente> findByUsuarioIdAndEstadoOrderByFechaInicioDesc(Long usuarioId, EstadoMembresia estado);
+    // Método para sumar el total de membresías pagadas por estado
+    @Query("SELECT SUM(mc.montoPagado) FROM MembresiaCliente mc WHERE mc.estado IN :estados")
+    BigDecimal sumTotalMembresiasPagadasByEstadoIn(@Param("estados") List<EstadoMembresia> estados);
 }
