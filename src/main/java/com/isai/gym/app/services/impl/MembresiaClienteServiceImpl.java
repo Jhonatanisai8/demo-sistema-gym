@@ -12,7 +12,6 @@ import com.isai.gym.app.repository.PagoRepository;
 import com.isai.gym.app.repository.UsuarioRepository;
 import com.isai.gym.app.services.MembresiaClienteService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -188,6 +187,6 @@ public class MembresiaClienteServiceImpl implements MembresiaClienteService {
     }
 
     public Optional<MembresiaCliente> obtenerMembresiaActivaPorUsuarioId(Long usuarioId) {
-        return membresiaClienteRepository.findByUsuarioIdAndEstado(usuarioId, EstadoMembresia.ACTIVA);
+        return membresiaClienteRepository.findTopByUsuarioIdAndEstadoOrderByFechaInicioDesc(usuarioId, EstadoMembresia.ACTIVA);
     }
 }

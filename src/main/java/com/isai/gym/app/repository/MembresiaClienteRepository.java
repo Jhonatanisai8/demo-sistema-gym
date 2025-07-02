@@ -18,23 +18,35 @@ import java.util.Optional;
 public interface MembresiaClienteRepository
         extends JpaRepository<MembresiaCliente, Long> {
 
-    //membresias activas por usuario
+    // Membresías activas por usuario
     List<MembresiaCliente> findByUsuarioAndActivaTrue(Usuario usuario);
 
-    //membresia actual de un usuario
+    // Membresía actual de un usuario que aún no ha terminado
     Optional<MembresiaCliente> findByUsuarioAndActivaTrueAndFechaFinGreaterThanEqual(Usuario usuario, LocalDate fechaActual);
 
-    // En IMembresiaClienteRepository.java
+    // Búsqueda de membresías por nombre completo de usuario o nombre de membresía (paginada)
     @Query("SELECT mc FROM MembresiaCliente mc JOIN mc.usuario u JOIN mc.membresia m " +
             "WHERE LOWER(u.nombreCompleto) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
             "LOWER(m.nombre) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     Page<MembresiaCliente> searchByUsuarioNombreOrMembresiaNombre(@Param("keyword") String keyword, Pageable pageable);
 
+    // Lista de membresías de un usuario ordenadas por fecha de fin descendente
     List<MembresiaCliente> findByUsuarioIdOrderByFechaFinDesc(Long id);
 
+    // Lista de membresías activas de un usuario cuya fecha de fin es posterior a la fecha actual
     List<MembresiaCliente> findByUsuarioIdAndActivaTrueAndFechaFinAfter(Long id, LocalDate fechaActual);
 
-    //buscamos la membresia por un usuario especifico
-    Optional<MembresiaCliente> findByUsuarioIdAndEstado(Long usuarioId, EstadoMembresia estado);
+    // Método original que causaba el error de "unique result"
+    // Optional<MembresiaCliente> findByUsuarioIdAndEstado(Long usuarioId, EstadoMembresia estado);
+    // Este método ya no se usa directamente para obtener la "única" activa si hay duplicados.
 
+    // Nuevo método para obtener la membresía activa más reciente para un usuario.
+    // Esto ayuda a resolver el error "Query did not return a unique result"
+    // al garantizar que solo se devuelva un resultado (el más reciente por fecha de inicio)
+    // incluso si hay múltiples registros 'ACTIVA' para el mismo usuario.
+    Optional<MembresiaCliente> findTopByUsuarioIdAndEstadoOrderByFechaInicioDesc(Long usuarioId, EstadoMembresia estado);
+
+    // Este método podría ser útil si necesitas todas las membresías activas ordenadas,
+    // pero para obtener "la" membresía activa principal, se prefiere findTopBy...
+    List<MembresiaCliente> findByUsuarioIdAndEstadoOrderByFechaInicioDesc(Long usuarioId, EstadoMembresia estado);
 }

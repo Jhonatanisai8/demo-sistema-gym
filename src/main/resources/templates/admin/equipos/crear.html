@@ -24,7 +24,7 @@
 
         <form th:action="@{/admin/equipos/crear}" th:object="${equipoDTO}" method="post"
               enctype="multipart/form-data">
-            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+            <!--            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>-->
 
             <div class="card mb-4 shadow-sm">
                 <div class="card-header bg-primary text-white">

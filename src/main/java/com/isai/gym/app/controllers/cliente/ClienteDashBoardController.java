@@ -33,7 +33,7 @@ public class ClienteDashBoardController {
     public String mostrarDashboard(Principal principal, Model modelo) {
         if (principal == null) {
             modelo.addAttribute("mensajeError", "No se pudo identificar al usuario. Por favor, inicia sesión.");
-            return "auth/login";
+            return "/cliente/dashboard";
         }
 
         try {
@@ -61,7 +61,7 @@ public class ClienteDashBoardController {
             System.err.println("Error al cargar el dashboard del cliente: " + e.getMessage());
             e.printStackTrace();
             modelo.addAttribute("mensajeError", "Ocurrió un error al cargar el dashboard. Intenta de nuevo más tarde.");
-            return "auth/login";
+            return "cliente/dashboard";
         }
 
         return "cliente/dashboard";
