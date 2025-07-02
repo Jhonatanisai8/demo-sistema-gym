@@ -20,7 +20,7 @@ public class ClientCarritoController {
     @GetMapping("")
     public String verCarrito(HttpSession session, Model model) {
         model.addAttribute("carrito", carritoService.getCarrito(session));
-        return "cliente/carrito/ver_carrito"; // Vista para mostrar el carrito
+        return "cliente/carrito/ver_carrito";
     }
 
     @PostMapping("/agregar")
@@ -28,13 +28,12 @@ public class ClientCarritoController {
                                    @RequestParam(value = "cantidad", defaultValue = "1") int cantidad,
                                    HttpSession session, RedirectAttributes redirectAttributes) {
         try {
-            // CORRECCIÓN: El método se llama agregarProducto
             carritoService.agregarProducto(session, idProducto, cantidad);
             redirectAttributes.addFlashAttribute("successMessage", "Producto añadido al carrito con éxito.");
         } catch (RuntimeException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         }
-        return "redirect:/cliente/productos/tienda"; // Redirigir a la tienda de productos
+        return "redirect:/cliente/productos/tienda";
     }
 
     @PostMapping("/actualizar")

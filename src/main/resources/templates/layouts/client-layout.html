@@ -14,18 +14,17 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style th:inline="css">
-        /* Variables y estilos generales (copiados y adaptados del panel admin) */
         :root {
-            --primary-color-client: #007bff; /* Un azul diferente para cliente */
-            --dark-bg-client: #34495e; /* Azul oscuro suave para sidebar cliente */
-            --light-bg: #eef2f6; /* Gris muy claro para el fondo */
+            --primary-color-client: #007bff;
+            --dark-bg-client: #34495e;
+            --light-bg: #eef2f6;
             --text-light: #f8f9fa;
             --text-dark: #37474f;
-            --accent-color-client: #17a2b8; /* Azul turquesa para acento cliente */
+            --accent-color-client: #17a2b8;
             --border-color: #dee2e6;
             --card-bg: #ffffff;
             --shadow-light: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.06);
-            --shadow-medium: 0 0.8rem 1.8rem rgba(0, 0, 0, 0.1); /* Sutilmente menos denso */
+            --shadow-medium: 0 0.8rem 1.8rem rgba(0, 0, 0, 0.1);
         }
 
         body {
@@ -47,7 +46,7 @@
             font-weight: 600;
         }
 
-        .btn-outline-light-client { /* Botón de salir específico para cliente */
+        .btn-outline-light-client {
             border-color: rgba(255, 255, 255, 0.6);
             color: var(--text-light);
             transition: all 0.25s ease-in-out;
@@ -62,7 +61,6 @@
             transform: translateY(-1px);
         }
 
-        /* Sidebar Cliente (Adaptado del admin) */
         aside.client-sidebar {
             background-color: var(--dark-bg-client);
             color: var(--text-light);
@@ -102,7 +100,7 @@
         aside.client-sidebar .nav-link.active {
             background-color: var(--accent-color-client);
             color: #ffffff;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25); /* Sutilmente menos denso que admin */
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
             transform: translateY(-3px);
         }
 
@@ -118,11 +116,11 @@
         }
 
         aside.client-sidebar .dropdown-toggle::after {
-            margin-left: auto; /* Empuja la flecha a la derecha */
+            margin-left: auto;
         }
 
         aside.client-sidebar .collapse .nav-link {
-            padding-left: 2.5rem; /* Indentación para submenús */
+            padding-left: 2.5rem;
             font-size: 0.95rem;
             margin-bottom: 0.4rem;
         }
@@ -142,7 +140,7 @@
             font-weight: 700;
         }
 
-        .card { /* Mantén esto si es global */
+        .card {
             border: none;
             border-radius: 1rem;
             box-shadow: var(--shadow-light);
@@ -150,7 +148,7 @@
             overflow: hidden;
         }
 
-        .card-header { /* Mantén esto si es global */
+        .card-header {
             background-color: #f2f6fa;
             border-bottom: 1px solid var(--border-color);
             border-top-left-radius: 1rem;
@@ -161,7 +159,7 @@
             font-size: 1.05rem;
         }
 
-        .card-body { /* Mantén esto si es global */
+        .card-body {
             padding: 2rem;
         }
 
@@ -171,7 +169,6 @@
             font-size: 0.8rem;
         }
 
-        /* Responsive adjustments (copiados y adaptados del admin) */
         @media (max-width: 991.98px) {
             .d-flex {
                 flex-direction: column;
@@ -222,6 +219,90 @@
                 margin-bottom: 1rem;
             }
         }
+
+        @media (max-width: 767.98px) {
+            nav.navbar-client {
+                flex-direction: column;
+                padding: 0.5rem 1rem;
+            }
+
+            .navbar-brand {
+                font-size: 1rem;
+            }
+
+            .navbar-nav {
+                flex-direction: column;
+                gap: 0.5rem;
+                align-items: stretch !important;
+                text-align: center;
+            }
+
+            aside.client-sidebar {
+                min-height: auto;
+                position: relative;
+                width: 100%;
+                padding: 1rem;
+                border-right: none;
+            }
+
+            aside.client-sidebar .nav {
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            aside.client-sidebar .nav-link {
+                font-size: 0.85rem;
+                padding: 0.6rem 0.8rem;
+                margin: 0.25rem;
+                flex: 1 0 45%;
+                text-align: center;
+            }
+
+            aside.client-sidebar .nav-link i {
+                display: block;
+                margin-bottom: 0.3rem;
+                font-size: 1.2rem;
+            }
+
+            aside.client-sidebar .collapse .nav-link {
+                display: none;
+            }
+
+            main.client-content {
+                padding: 1.5rem 1rem;
+            }
+
+            header h1.h3 {
+                font-size: 1.6rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .card-header {
+                font-size: 1rem;
+                padding: 1rem;
+            }
+
+            .card-body {
+                padding: 1rem;
+                font-size: 0.95rem;
+            }
+        }
+
+        @media (max-width: 991.98px) {
+            main.client-content {
+                padding: 2rem;
+            }
+
+            aside.client-sidebar {
+                padding: 1.5rem;
+            }
+
+            .card {
+                margin-bottom: 1.5rem;
+            }
+        }
+
     </style>
 
     <th:block layout:fragment="styles"></th:block>
@@ -326,40 +407,6 @@
             <li>
                 <a class="nav-link" th:href="@{/cliente/productos/tienda}">
                     <i class="bi bi-shop"></i> Tienda
-                </a>
-            </li>
-
-            <li>
-                <a class="nav-link dropdown-toggle" href="#submenuEntrenadoresCliente" data-bs-toggle="collapse"
-                   role="button" aria-expanded="false" aria-controls="submenuEntrenadoresCliente">
-                    <i class="bi bi-people-fill"></i> Entrenadores
-                </a>
-                <div class="collapse" id="submenuEntrenadoresCliente">
-                    <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small ms-3">
-                        <li><a th:href="@{/cliente/entrenadores}"
-                               class="link-light d-inline-flex text-decoration-none rounded py-1 px-2">Ver
-                            Entrenadores</a></li>
-                        <li><a th:href="@{/cliente/entrenadores/reservar}"
-                               class="link-light d-inline-flex text-decoration-none rounded py-1 px-2 disabled">Reservar
-                            Sesión (Próx.)</a>
-                        </li>
-                    </ul>
-                </div>
-            </li>
-
-            <li>
-                <a class="nav-link" th:href="@{/cliente/rutinas}" aria-disabled="true">
-                    <i class="bi bi-clipboard-data-fill"></i> Mis Rutinas (Próx.)
-                </a>
-            </li>
-            <li>
-                <a class="nav-link" th:href="@{/cliente/clases}" aria-disabled="true">
-                    <i class="bi bi-calendar-event-fill"></i> Clases y Horarios (Próx.)
-                </a>
-            </li>
-            <li>
-                <a class="nav-link" th:href="@{/cliente/pagos}" aria-disabled="true">
-                    <i class="bi bi-wallet-fill"></i> Mis Pagos (Próx.)
                 </a>
             </li>
 

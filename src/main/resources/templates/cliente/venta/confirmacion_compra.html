@@ -17,20 +17,21 @@
         <div th:if="${successMessage}" class="alert alert-success fs-5" role="alert">
             <i class="bi bi-patch-check-fill me-2"></i> <span th:text="${successMessage}"></span>
         </div>
-        
+
         <div class="card shadow-sm mt-4">
             <div class="card-body">
                 <h2 class="card-title text-success">¡Tu pedido ha sido procesado con éxito!</h2>
                 <p class="card-text fs-5 text-muted mt-3">
-                    Hemos recibido tu pedido y lo estamos preparando para el envío. Recibirás una notificación por correo electrónico con los detalles de seguimiento una vez que haya sido enviado.
+                    Hemos recibido tu pedido y lo estamos preparando para el envío. Recibirás una notificación por
+                    correo electrónico con los detalles de seguimiento una vez que haya sido enviado.
                 </p>
                 <hr>
                 <p class="mt-4">
                     <a th:href="@{/cliente/productos/tienda}" class="btn btn-primary rounded-pill me-2">
                         <i class="bi bi-arrow-left me-2"></i> Seguir Comprando
                     </a>
-                    <a th:href="@{/cliente/perfil/historial}" class="btn btn-outline-secondary rounded-pill">
-                        <i class="bi bi-receipt me-2"></i> Ver Historial de Compras
+                    <a th:href="@{/cliente/dashboard}" class="btn btn-outline-secondary rounded-pill">
+                        <i class="bi bi-receipt me-2"></i> Volver al Inicio
                     </a>
                 </p>
             </div>

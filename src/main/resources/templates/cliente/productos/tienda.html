@@ -99,7 +99,7 @@
 
     <!-- Sección de Filtros y Búsqueda -->
     <div class="filter-section mb-4">
-        <form th:action="@{/client/productos/tienda}" method="get" class="row g-3 align-items-center">
+        <form th:action="@{/cliente/productos/tienda}" method="get" class="row g-3 align-items-center">
             <div class="col-md-4">
                 <label for="categoria" class="form-label visually-hidden">Filtrar por Categoría</label>
                 <select class="form-select rounded-pill" id="categoria" name="categoria" onchange="this.form.submit()">
@@ -121,7 +121,7 @@
                 </div>
             </div>
             <div class="col-md-2 text-end">
-                <a th:href="@{/client/productos/tienda}" class="btn btn-outline-secondary rounded-pill">Limpiar
+                <a th:href="@{/cliente/productos/tienda}" class="btn btn-outline-secondary rounded-pill">Limpiar
                     Filtros</a>
             </div>
         </form>
