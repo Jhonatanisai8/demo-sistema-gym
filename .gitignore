@@ -33,3 +33,4 @@ build/
 .vscode/
 # Ignorar la carpeta de assets donde se guardan las imágenes subidas
 /assets/
+static/imgs/
