@@ -1,6 +1,7 @@
 package com.isai.gym.app.services.impl;
 
 import com.isai.gym.app.dtos.ProductoDTO;
+import com.isai.gym.app.dtos.ProductoTiendaDTO;
 import com.isai.gym.app.entities.Producto;
 import com.isai.gym.app.enums.CategoriaProducto;
 import com.isai.gym.app.exceptions.WarehouseException;
@@ -258,5 +259,48 @@ public class ProductoServiceImpl implements ProductoService {
                 .stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ProductoTiendaDTO> obtenerTodosLosProductosActivosTienda() {
+        return productoRepository.findByActivoTrue().stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ProductoTiendaDTO> obtenerProductosActivosPorCategoria(CategoriaProducto categoria) {
+        return productoRepository.findByActivoTrueAndCategoria(categoria).stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ProductoTiendaDTO> buscarProductosActivos(String keyword) {
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return obtenerTodosLosProductosActivosTienda();
+        }
+        return productoRepository.findByActivoTrueAndNombreContainingIgnoreCase(keyword).stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Optional<ProductoTiendaDTO> obtenerProductoActivoPorId(Long id) {
+        return productoRepository.findByIdAndActivoTrue(id)
+                .map(this::mapToDTO);
+    }
+
+    private ProductoTiendaDTO mapToDTO(Producto producto) {
+        return new ProductoTiendaDTO(
+                producto.getId(),
+                producto.getNombre(),
+                producto.getDescripcion(),
+                producto.getPrecio(),
+                producto.getStock(),
+                producto.getRutaImagen(),
+                producto.getCategoria(),
+                producto.getActivo()
+        );
     }
 }

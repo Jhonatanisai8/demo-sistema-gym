@@ -1,14 +1,20 @@
 package com.isai.gym.app.services;
 
+import java.time.LocalDateTime;
 
-import com.isai.gym.app.dtos.VentaDTO;
-import com.isai.gym.app.enums.EstadoVenta;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.time.LocalDateTime;
+import com.isai.gym.app.dtos.CarritoDTO;
+import com.isai.gym.app.dtos.VentaDTO;
+import com.isai.gym.app.entities.Usuario;
+import com.isai.gym.app.entities.Venta;
+import com.isai.gym.app.enums.EstadoVenta;
+import com.isai.gym.app.enums.MetodoPago;
 
 public interface VentaService {
+    Venta crearVenta(CarritoDTO carrito, Usuario usuario, MetodoPago metodoPago);
+
     VentaDTO registrarVenta(VentaDTO ventaDTO);
 
     VentaDTO obtenerVentaPorId(Long id);

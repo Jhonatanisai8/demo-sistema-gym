@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -37,4 +38,20 @@ public interface ProductoRepository extends JpaRepository<Producto, Long> {
     Page<Producto> buscarProductosActivosPorKeyword(@Param("keyword") String keyword, Pageable pageable);
 
     Page<Producto> findByCategoriaAndActivoTrue(CategoriaProducto categoria, Pageable pageable);
+
+    // Encuentra todos los productos activos
+    List<Producto> findByActivoTrue();
+
+    // Encuentra productos activos por categoría
+    List<Producto> findByActivoTrueAndCategoria(CategoriaProducto categoria);
+
+    // Busca productos activos por nombre (case-insensitive)
+    List<Producto> findByActivoTrueAndNombreContainingIgnoreCase(String nombre);
+
+    // Busca productos activos por nombre o descripción (paginado)
+    @Query("SELECT p FROM Producto p WHERE p.activo = true AND (LOWER(p.nombre) LIKE LOWER(CONCAT('%', :keyword, '%')) OR LOWER(p.descripcion) LIKE LOWER(CONCAT('%', :keyword, '%')))")
+    Page<Producto> searchActiveProducts(@Param("keyword") String keyword, Pageable pageable);
+
+    // Obtener un producto activo por su ID
+    Optional<Producto> findByIdAndActivoTrue(Long id);
 }

@@ -2,6 +2,7 @@ package com.isai.gym.app.services;
 
 
 import com.isai.gym.app.dtos.ProductoDTO;
+import com.isai.gym.app.dtos.ProductoTiendaDTO;
 import com.isai.gym.app.enums.CategoriaProducto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -36,4 +37,12 @@ public interface ProductoService {
     void incrementarStock(Long productoId, Integer cantidad);
 
     List<ProductoDTO> obtenerTodosLosProductosActivos();
+
+    List<ProductoTiendaDTO> obtenerTodosLosProductosActivosTienda();
+
+    List<ProductoTiendaDTO> obtenerProductosActivosPorCategoria(CategoriaProducto categoria);
+
+    List<ProductoTiendaDTO> buscarProductosActivos(String keyword);
+
+    Optional<ProductoTiendaDTO> obtenerProductoActivoPorId(Long id);
 }

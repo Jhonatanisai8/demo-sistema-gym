@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/client-layout}">
+<head>
+    <title layout:title-template="Tienda de Productos - %s">Nuestra Tienda</title>
+    <th:block layout:fragment="styles">
+        <style>
+            .product-card {
+                border: 1px solid #e0e0e0;
+                border-radius: 0.75rem;
+                box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.05);
+                transition: transform 0.2s ease-in-out;
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .product-card:hover {
+                transform: translateY(-5px);
+            }
+
+            .product-card-img {
+                width: 100%;
+                height: 200px;
+                object-fit: cover;
+                border-top-left-radius: 0.75rem;
+                border-top-right-radius: 0.75rem;
+            }
+
+            .product-card-body {
+                padding: 1.25rem;
+                flex-grow: 1;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .product-card-title {
+                font-size: 1.25rem;
+                font-weight: 600;
+                color: var(--primary-color-client);
+                margin-bottom: 0.5rem;
+            }
+
+            .product-card-price {
+                font-size: 1.5rem;
+                font-weight: bold;
+                color: #28a745;
+                margin-bottom: 0.75rem;
+            }
+
+            .product-card-description {
+                font-size: 0.9rem;
+                color: #6c757d;
+                flex-grow: 1;
+                margin-bottom: 1rem;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                display: -webkit-box;
+                -webkit-line-clamp: 3;
+                -webkit-box-orient: vertical;
+            }
+
+            .btn-add-to-cart {
+                width: 100%;
+                margin-top: auto;
+            }
+
+            .out-of-stock {
+                color: #dc3545;
+                font-weight: bold;
+            }
+
+            .filter-section {
+                background-color: #ffffff;
+                border-radius: 0.75rem;
+                box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.05);
+                padding: 1.5rem;
+                margin-bottom: 1.5rem;
+            }
+        </style>
+    </th:block>
+</head>
+<body>
+<th:block layout:fragment="header">
+    <h1 class="h3"><i class="bi bi-shop-window me-2"></i>Tienda de Productos</h1>
+</th:block>
+
+<th:block layout:fragment="content">
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i> <span th:text="${successMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i> <span th:text="${errorMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <!-- Sección de Filtros y Búsqueda -->
+    <div class="filter-section mb-4">
+        <form th:action="@{/client/productos/tienda}" method="get" class="row g-3 align-items-center">
+            <div class="col-md-4">
+                <label for="categoria" class="form-label visually-hidden">Filtrar por Categoría</label>
+                <select class="form-select rounded-pill" id="categoria" name="categoria" onchange="this.form.submit()">
+                    <option value="">Todas las Categorías</option>
+                    <option th:each="cat : ${categorias}"
+                            th:value="${cat.name()}"
+                            th:text="${cat.name()}"
+                            th:selected="${categoriaSeleccionada != null and categoriaSeleccionada == cat.name()}">
+                        Categoría
+                    </option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label for="search" class="form-label visually-hidden">Buscar Productos</label>
+                <div class="input-group">
+                    <input type="text" class="form-control rounded-pill-start" id="search" name="search"
+                           th:value="${keyword}" placeholder="Buscar por nombre o descripción...">
+                    <button type="submit" class="btn btn-primary rounded-pill-end"><i class="bi bi-search"></i></button>
+                </div>
+            </div>
+            <div class="col-md-2 text-end">
+                <a th:href="@{/client/productos/tienda}" class="btn btn-outline-secondary rounded-pill">Limpiar
+                    Filtros</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Lista de Productos -->
+    <div th:if="${productos != null and !productos.isEmpty()}"
+         class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+        <div class="col" th:each="producto : ${productos}">
+            <div class="card product-card">
+                <img th:src="${producto.rutaImagen != null and !producto.rutaImagen.isEmpty() ? '/assest/' + producto.rutaImagen : '/images/default-product.png'}"
+                     class="card-img-top product-card-img" alt="Imagen del producto">
+                <div class="card-body product-card-body">
+                    <h5 class="card-title product-card-title" th:text="${producto.nombre}">Nombre del Producto</h5>
+                    <p class="card-text product-card-description" th:text="${producto.descripcion}">Descripción breve
+                        del producto.</p>
+                    <p class="card-text product-card-price" th:text="${#numbers.formatCurrency(producto.precio)}">
+                        $0.00</p>
+                    <p class="card-text">
+                        <span th:if="${producto.hayStock()}" class="text-success fw-bold">En Stock: <span
+                                th:text="${producto.stock}"></span></span>
+                        <span th:unless="${producto.hayStock()}" class="out-of-stock">Agotado</span>
+                    </p>
+                    <form th:action="@{/cliente/carrito/agregar}" method="post" class="mt-auto">
+                        <input type="hidden" name="idProducto" th:value="${producto.id}" />
+                        <div class="input-group">
+                            <input type="number" name="cantidad" class="form-control" value="1" min="1" th:max="${producto.stock}" th:disabled="${!producto.hayStock()}" aria-label="Cantidad">
+                            <button type="submit" class="btn btn-success btn-add-to-cart" th:disabled="${!producto.hayStock()}">
+                                <i class="bi bi-cart-plus"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div th:unless="${productos != null and !productos.isEmpty()}"
+         class="alert alert-info text-center py-4 rounded-3 shadow-sm">
+        <i class="bi bi-info-circle-fill me-2 fs-4"></i>
+        <p class="mb-0 fs-5">No se encontraron productos disponibles con los criterios de búsqueda o filtro.</p>
+    </div>
+
+</th:block>
+
+<th:block layout:fragment="scripts">
+</th:block>
+</body>
+</html>

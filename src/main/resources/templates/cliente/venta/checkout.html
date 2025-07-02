@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/client-layout}">
+<head>
+    <title>Finalizar Compra</title>
+</head>
+<body>
+
+<th:block layout:fragment="header">
+    <h1 class="h3"><i class="bi bi-credit-card-fill me-2"></i>Finalizar Compra</h1>
+</th:block>
+
+<th:block layout:fragment="content">
+    <div class="row">
+        <!-- Resumen del Pedido -->
+        <div class="col-lg-7 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Resumen de tu Pedido</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li th:each="item : ${carrito.items}" class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="my-0" th:text="${item.nombre}"></h6>
+                                <small class="text-muted" th:text="'Cantidad: ' + ${item.cantidad}"></small>
+                            </div>
+                            <span class="text-muted" th:text="${#numbers.formatCurrency(item.subtotal)}"></span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between bg-light">
+                            <strong class="fs-5">Total (PEN)</strong>
+                            <strong class="fs-5 text-success" th:text="${#numbers.formatCurrency(carrito.total)}"></strong>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulario de Pago -->
+        <div class="col-lg-5">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Información de Pago</h5>
+                </div>
+                <div class="card-body">
+                    <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+                    
+                    <form th:action="@{/cliente/venta/procesar}" th:object="${ventaRequest}" method="post">
+                        <div class="mb-3">
+                            <label for="metodoPago" class="form-label">Selecciona un Método de Pago</label>
+                            <select id="metodoPago" th:field="*{metodoPago}" class="form-select form-select-lg" required>
+                                <option th:each="metodo : ${metodosPago}" 
+                                        th:value="${metodo}" 
+                                        th:text="${metodo.displayName}"></option>
+                            </select>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <p class="text-muted small">
+                            Al hacer clic en "Confirmar y Pagar", aceptas nuestros <a href="#">Términos y Condiciones</a>.
+                        </p>
+
+                        <button class="w-100 btn btn-primary btn-lg rounded-pill" type="submit">
+                            Confirmar y Pagar <i class="bi bi-lock-fill ms-2"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</th:block>
+
+</body>
+</html>

@@ -241,13 +241,27 @@
         </button>
 
         <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContentClient">
-            <ul class="navbar-nav">
+            <ul class="navbar-nav align-items-center">
+                <!-- Icono del Carrito -->
+                <li class="nav-item me-3">
+                    <a class="nav-link text-white position-relative" th:href="@{/cliente/carrito}">
+                        <i class="bi bi-cart-fill fs-5"></i>
+                        <span th:if="${session.carrito != null && session.carrito.items != null && !session.carrito.items.isEmpty()}"
+                              class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                              th:text="${#lists.size(session.carrito.items)}">
+                        </span>
+                    </a>
+                </li>
+
+                <!-- Mensaje de Bienvenida -->
                 <li class="nav-item d-flex align-items-center me-3">
                     <span class="text-white me-2">
                         <i class="bi bi-person-circle me-1"></i>
                         Bienvenido, <span sec:authentication="name"></span>!
                     </span>
                 </li>
+
+                <!-- Botón de Salir -->
                 <li class="nav-item">
                     <form th:action="@{/logout}" method="post">
                         <button type="submit" class="btn btn-outline-light-client">
@@ -310,7 +324,7 @@
             </li>
 
             <li>
-                <a class="nav-link" th:href="@{/cliente/productos}">
+                <a class="nav-link" th:href="@{/cliente/productos/tienda}">
                     <i class="bi bi-shop"></i> Tienda
                 </a>
             </li>
